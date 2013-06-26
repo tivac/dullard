@@ -1,0 +1,26 @@
+{
+    "root" : {
+        "demand"      : true,
+        "alias"       : "r",
+        "description" : "Input directory"
+    },
+    
+    "dest" : {
+        "alias"       : "d",
+        "description" : "Output directory"
+    },
+    
+    "temp" : {
+        "description" : "Working directory"
+    },
+    
+    "tasks" : {
+        "alias"       : "t",
+        "description" : "Custom tasks directory"
+    },
+    
+    "quiet" : {
+        "alias"       : "q",
+        "description" : "Minimal output"
+    }
+}
