@@ -1,0 +1,26 @@
+{
+  "name": "node-web-build",
+  "version": "0.0.1",
+  "description": "Automated web optimization, simple style.",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tivac/node-web-build.git"
+  },
+  "author": "Pat Cavit <pcavit@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tivac/node-web-build/issues"
+  },
+  "devDependencies": {
+    "audit-fs": "~0.3.0",
+    "mocha": "~1.11.0",
+    "istanbul": "~0.1.37"
+  },
+  "dependencies": {
+    "optimist": "~0.6.0"
+  }
+}
