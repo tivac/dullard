@@ -44,5 +44,33 @@ describe("Node web build", function() {
                 path.join(__dirname, "specimens", "tasks")
             );
         });
+        
+        it("should invoke tasks", function(done) {
+            var b = new Build({ root  : "." });
+            
+            b.tasks.test = function(config) {};
+            
+            b.invoke([ "test" ], done);
+        });
+        
+        it("should error on invalid task names", function(done) {
+            var b = new Build({ root  : "." });
+            
+            b.invoke([ "test" ], function(err) {
+                assert(err);
+                
+                done();
+            });
+        });
+        
+        it("should run async tasks correctly", function(done) {
+            var b = new Build({ root  : "." });
+            
+            b.tasks.async = function(config, done) { done(); };
+            
+            b.invoke([ "async" ], function(err) {
+                done();
+            });
+        });
     });
 });
