@@ -5,15 +5,10 @@
         "description" : "Input directory"
     },
     
-    "dest" : {
-        "alias"       : "d",
+    "output" : {
+        "alias"       : "o",
         "description" : "Output directory",
         "default"     : "./output"
-    },
-    
-    "temp" : {
-        "description" : "Working directory",
-        "default"     : "./temp"
     },
     
     "tasks" : {
