@@ -4,32 +4,31 @@
 
 var fs     = require("fs"),
     path   = require("path"),
-    exec   = require("child_process").exec,
     assert = require("assert"),
     
-    wrench = require("wrench");
+    wrench = require("wrench"),
+    
+    copy   = require("../tasks/copy");
     
 
-describe.skip("Node web build", function() {
+describe("Node web build", function() {
     describe("Task: Copy", function() {
-        /*before(function() {
-            wrench
-        });*/
+        after(function() {
+            wrench.rmdirSyncRecursive(path.join(__dirname, "temp"));
+        });
         
-        it("should copy simple files", function(done) {
-            exec(
-                "node bin/cli.js -r test/specimens/simple copy",
-                function(error) {
-                    var dir = path.resolve(__dirname, "../temp/simple");
-                    
-                    assert.ifError(error);
-                    
-                    assert(fs.existsSync(dir));
-                    assert(fs.existsSync(path.join(dir, "test.js")));
-                    
-                    done();
+        it("should copy simple files", function() {
+            copy({
+                config : {
+                    dirs : {
+                        root : path.join(__dirname, "specimens", "simple"),
+                        temp : path.join(__dirname, "temp", "simple")
+                    }
                 }
-            );
+            });
+            
+            assert(fs.existsSync(path.join(__dirname, "temp", "simple")));
+            assert(fs.existsSync(path.join(__dirname, "temp", "simple", "test.js")));
         });
     });
 });
