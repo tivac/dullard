@@ -21,6 +21,9 @@
     "istanbul": "~0.1.37"
   },
   "dependencies": {
-    "optimist": "~0.6.0"
+    "optimist": "~0.6.0",
+    "wrench": "~1.5.1",
+    "async": "~0.2.9",
+    "duration": "~0.1.4"
   }
 }
