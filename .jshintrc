@@ -59,4 +59,13 @@
 
     // Legacy
     "onevar"        : true,     // true: Allow only one `var` statement per function
+    
+    "predef"        : [
+        "describe",
+        "it",
+        "before",
+        "beforeEach",
+        "after",
+        "afterEach"
+    ]
 }
