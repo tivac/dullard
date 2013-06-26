@@ -7,11 +7,13 @@
     
     "dest" : {
         "alias"       : "d",
-        "description" : "Output directory"
+        "description" : "Output directory",
+        "default"     : "./output"
     },
     
     "temp" : {
-        "description" : "Working directory"
+        "description" : "Working directory",
+        "default"     : "./temp"
     },
     
     "tasks" : {

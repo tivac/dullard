@@ -4,13 +4,14 @@
 
 var wrench = require("wrench");
 
-module.exports = function(config) {
+module.exports = function(build) {
+    var dirs = build.config.dirs;
     
-    wrench.mkdirSyncRecursive(config.dirs.temp);
+    wrench.mkdirSyncRecursive(dirs.temp);
     
     wrench.copyDirSyncRecursive(
-        config.dirs.root,
-        config.dirs.temp,
+        dirs.root,
+        dirs.temp,
         { forceDelete : true }
     );
 };

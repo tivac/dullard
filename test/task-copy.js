@@ -2,18 +2,23 @@
 
 "use strict";
 
-var fs   = require("fs"),
-    path = require("path"),
-    exec = require("child_process").exec,
+var fs     = require("fs"),
+    path   = require("path"),
+    exec   = require("child_process").exec,
+    assert = require("assert"),
     
-    assert = require("assert");
+    wrench = require("wrench");
     
 
 describe("Node web build", function() {
     describe("Task: Copy", function() {
+        /*before(function() {
+            wrench
+        });*/
+        
         it("should copy simple files", function(done) {
             exec(
-                "node build.js -r test/specimens/simple copy",
+                "node bin/cli.js -r test/specimens/simple copy",
                 function(error) {
                     var dir = path.resolve(__dirname, "../temp/simple");
                     
