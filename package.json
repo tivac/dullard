@@ -2,7 +2,7 @@
   "name": "node-web-build",
   "version": "0.0.1",
   "description": "Automated web optimization, simple style.",
-  "main": "build.js",
+  "main": "./lib/build.js",
   "scripts": {
     "test": "istanbul test --print both ./node_modules/mocha/bin/_mocha"
   },
