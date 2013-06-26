@@ -10,6 +10,7 @@ module.exports = function(config) {
     
     wrench.copyDirSyncRecursive(
         config.dirs.root,
-        config.dirs.temp
+        config.dirs.temp,
+        { forceDelete : true }
     );
 };
