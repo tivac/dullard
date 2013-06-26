@@ -21,7 +21,7 @@ describe("Node web build", function() {
         });
         
         it("should use the right defaults", function() {
-            var b    = new Build({ root : "./test/specimens/simple/" }),
+            var b    = new Build({ root : "./test/specimens/simple" }),
                 dirs = b.config.dirs,
                 __base = path.resolve(__dirname, "../");
             
@@ -31,6 +31,18 @@ describe("Node web build", function() {
             
             assert.equal(dirs.tasks.internal, path.join(__base, "tasks"));
             assert.equal(dirs.tasks.custom, false);
+        });
+        
+        it("should accept custom task dirs", function() {
+            var b = new Build({
+                    root  : "./test/specimens/simple",
+                    tasks : "./test/specimens/tasks"
+                });
+            
+            assert.equal(
+                b.config.dirs.tasks.custom,
+                path.join(__dirname, "specimens", "tasks")
+            );
         });
     });
 });
