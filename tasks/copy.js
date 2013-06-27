@@ -2,6 +2,7 @@
 
 "use strict";
 
+
 var wrench = require("wrench");
 
 module.exports = function(build) {
@@ -15,3 +16,5 @@ module.exports = function(build) {
         { forceDelete : true }
     );
 };
+
+module.exports.description = "Copy files from root dir into temporary location";

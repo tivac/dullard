@@ -17,6 +17,10 @@ describe("Node web build", function() {
             wrench.rmdirSyncRecursive(path.join(__dirname, "temp"));
         });
         
+        it("should have a description", function() {
+            assert(copy.description);
+        });
+        
         it("should copy simple files", function() {
             copy({
                 config : {
