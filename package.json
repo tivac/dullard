@@ -4,7 +4,8 @@
   "description": "Automated web optimization, simple style.",
   "main": "./lib/build.js",
   "scripts": {
-    "test": "istanbul test --print both ./node_modules/mocha/bin/_mocha"
+    "test": "istanbul test --print both ./node_modules/mocha/bin/_mocha",
+    "debug": "nodebug ./node_modules/mocha/bin/_mocha --debug-brk -- -t 500000"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,8 @@
   },
   "devDependencies": {
     "mocha": "~1.11.0",
-    "istanbul": "~0.1.37"
+    "istanbul": "~0.1.37",
+    "nodebug": "~0.1.5"
   },
   "dependencies": {
     "optimist": "~0.6.0",
