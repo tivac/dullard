@@ -11,7 +11,11 @@ var argv = require("optimist")
     
     Build = require("../lib/build.js"),
     _build, _start;
-        
+
+if(argv.tasks) {
+    argv.tasks = argv.tasks.split(",");
+}
+
 _build = new Build(argv);
 
 _start = new Date();

@@ -8,7 +8,8 @@ var path   = require("path"),
 
 describe("Node web build", function() {
     describe("Build Object", function() {
-        it("should be instatiable", function() {
+        
+        it("should be instantiable", function() {
             assert(new Build({ root : "./specimens/simple/" }));
         });
         
@@ -29,20 +30,41 @@ describe("Node web build", function() {
             assert.equal(dirs.dest, path.join(__base, "output"));
             assert.equal(dirs.temp, path.join(__base, "temp", "simple"));
             
-            assert.equal(dirs.tasks.internal, path.join(__base, "tasks"));
-            assert.equal(dirs.tasks.custom, false);
+            assert.equal(dirs.tasks[0], path.join(__base, "tasks"));
         });
         
         it("should accept custom task dirs", function() {
             var b = new Build({
                     root  : "./test/specimens/simple",
-                    tasks : "./test/specimens/tasks"
+                    tasks : [
+                        "./test/specimens/tasks",
+                        "./test/specimens/tasks-two"
+                    ]
                 });
             
             assert.equal(
-                b.config.dirs.tasks.custom,
+                b.config.dirs.tasks[1],
                 path.join(__dirname, "specimens", "tasks")
             );
+            
+            assert.equal(
+                b.config.dirs.tasks[2],
+                path.join(__dirname, "specimens", "tasks-two")
+            );
+        });
+        
+        it("should load tasks from all task dirs", function() {
+            var b = new Build({
+                    root  : "./test/specimens/simple",
+                    tasks : [
+                        "./test/specimens/tasks",
+                        "./test/specimens/tasks-two"
+                    ]
+                });
+            
+            assert(b.tasks.copy);
+            assert(b.tasks.fooga);
+            assert(b.tasks.wooga);
         });
         
         it("should invoke tasks", function(done) {
