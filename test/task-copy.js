@@ -8,7 +8,7 @@ var fs     = require("fs"),
     
     wrench = require("wrench"),
     
-    copy   = require("../tasks/copy");
+    task   = require("../tasks/copy");
     
 
 describe("Node web build", function() {
@@ -18,11 +18,11 @@ describe("Node web build", function() {
         });
         
         it("should have a description", function() {
-            assert(copy.description);
+            assert(task.description);
         });
         
         it("should copy simple files", function() {
-            copy({
+            task({
                 config : {
                     dirs : {
                         root : path.join(__dirname, "specimens", "simple"),
