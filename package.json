@@ -25,6 +25,10 @@
     "optimist": "~0.6.0",
     "wrench": "~1.5.1",
     "async": "~0.2.9",
-    "duration": "~0.1.4"
+    "duration": "~0.1.4",
+    "esprima": "~1.0.3",
+    "escodegen": "0.0.23",
+    "esmangle": "0.0.14",
+    "glob": "~3.2.1"
   }
 }
