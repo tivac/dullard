@@ -22,12 +22,54 @@ describe("Node web build", function() {
             assert(task.description);
         });
         
+        it("should handle glob failures", function(done) {
+            var config = {
+                    dirs : {
+                        temp : path.join(__dirname, "temp", "simple")
+                    },
+                    tasks : {
+                        "compress-js" : {
+                            globError : true
+                        }
+                    }
+                };
+            
+            task({ config : config }, function(err) {
+                assert(err);
+                
+                done();
+            });
+        });
+        
+        it("should handle file read failures", function(done) {
+            var config = {
+                    dirs : {
+                        root : path.join(__dirname, "specimens", "simple"),
+                        temp : path.join(__dirname, "temp", "simple")
+                    },
+                    tasks : {
+                        "compress-js" : {
+                            fileError : true
+                        }
+                    }
+                };
+            
+            lib.copy(config.dirs.root, config.dirs.temp);
+            
+            task({ config : config }, function(err) {
+                assert(err);
+                
+                done();
+            });
+        });
+        
         it("should compress js files using config.dirs.temp", function(done) {
             var config = {
                     dirs : {
                         root : path.join(__dirname, "specimens", "simple"),
                         temp : path.join(__dirname, "temp", "simple")
-                    }
+                    },
+                    tasks : {}
                 };
             
             lib.copy(config.dirs.root, config.dirs.temp);
@@ -61,7 +103,8 @@ describe("Node web build", function() {
                     dirs : {
                         root   : path.join(__dirname, "specimens", "simple"),
                         static : path.join(__dirname, "temp", "simple")
-                    }
+                    },
+                    tasks : {}
                 };
             
             lib.copy(config.dirs.root, config.dirs.static);

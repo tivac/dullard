@@ -5,6 +5,7 @@
 var fs   = require("fs"),
     path = require("path"),
     
+    _         = require("lodash"),
     glob      = require("glob"),
     async     = require("async"),
     esprima   = require("esprima"),
@@ -12,14 +13,19 @@ var fs   = require("fs"),
     escodegen = require("escodegen");
 
 module.exports = function compressJs(build, done) {
-    var dir = build.config.dirs.static || build.config.dirs.temp;
+    var dir     = build.config.dirs.static || build.config.dirs.temp,
+        task    = build.config.tasks["compress-js"] || {};
     
     glob(
-        "**/*.js",
-        { cwd : dir },
+        task.filter || "**/*.js",
+        _.defaults(
+            { cwd : dir },
+            task.glob || {}
+        ),
         function compressJsGlob(err, files) {
-            if(err) {
-                return done(err);
+            // globError for code coverage
+            if(err || task.globError) {
+                return done(err || task.globError);
             }
             
             async.each(
@@ -29,7 +35,8 @@ module.exports = function compressJs(build, done) {
                         js = fs.readFileSync(file, { encoding : "utf8" }),
                         ast;
                    
-                    if(!js) {
+                    // fileError for code coverage
+                    if(!js || task.fileError) {
                         return cb("Unable to read " + file);
                     }
                     
