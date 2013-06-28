@@ -21,6 +21,15 @@ describe("Node web build", function() {
             );
         });
         
+        it("should set up defaults", function() {
+            var b = new Build({ root : "./test/specimens/simple" });
+            
+            assert(b.tasks);
+            assert(b.config);
+            assert(b.config.dirs);
+            assert(b.config.tasks);
+        });
+        
         it("should use the right defaults", function() {
             var b    = new Build({ root : "./test/specimens/simple" }),
                 dirs = b.config.dirs,
