@@ -6,15 +6,14 @@ var fs     = require("fs"),
     path   = require("path"),
     assert = require("assert"),
     
-    wrench = require("wrench"),
-    
+    lib    = require("./_lib"),
     task   = require("../tasks/copy");
     
 
 describe("Node web build", function() {
     describe("Task: Copy", function() {
         after(function() {
-            wrench.rmdirSyncRecursive(path.join(__dirname, "temp"));
+            lib.remove(path.join(__dirname, "temp"));
         });
         
         it("should have a description", function() {
