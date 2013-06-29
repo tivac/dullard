@@ -42,9 +42,16 @@ module.exports = function compressJs(build, done) {
                     
                     ast = esprima.parse(js);
                     ast = esmangle.optimize(ast, null);
-                    ast = esmangle.mangle(ast);
+                    ast = esmangle.mangle(ast, null, {
+                        destructive : true
+                    });
                     js  = escodegen.generate(ast, {
-                        format : {
+                        sourceMap : path.join(
+                            path.dirname(file),
+                            path.basename(file, path.extname(file)),
+                            "." + (task.map || "map")
+                        ),
+                        format    : {
                             renumber    : true,
                             hexadecimal : true,
                             escapeless  : true,
