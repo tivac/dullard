@@ -55,19 +55,10 @@ module.exports = function compressJs(build, done) {
                     ast = esmangle.mangle(ast, null, {
                         destructive : true
                     });
-<<<<<<< HEAD
                     
                     result = escodegen.generate(ast, {
                         sourceMap         : url.resolve(rel, "/" + base + ext),
                         sourceMapWithCode : true,
-=======
-                    js  = escodegen.generate(ast, {
-                        sourceMap : path.join(
-                            path.dirname(file),
-                            path.basename(file, path.extname(file)),
-                            "." + (task.map || "map")
-                        ),
->>>>>>> ca469c83f771e142e8cf21ec1b2e12ee078402be
                         format    : {
                             renumber    : true,
                             hexadecimal : true,
