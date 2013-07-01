@@ -74,25 +74,20 @@ describe("Node web build", function() {
             
             lib.copy(config.dirs.root, config.dirs.temp);
             
-            async.series([
-                function runTask(cb) {
-                    task({ config : config }, cb);
-                },
+            task({ config : config }, function(err) {
+                var compressed;
                 
-                function assertions(cb) {
-                    var compressed = config.dirs.root.replace(
-                            "specimens",
-                            path.join("specimens", "compressed")
-                        ),
-                        specimen = fs.readFileSync(path.join(compressed, "test.js"), { encoding : "utf8" }),
-                        built    = fs.readFileSync(path.join(config.dirs.temp, "test.js"), { encoding : "utf8" });
-                    
-                    assert.equal(built, specimen);
-                    
-                    cb();
-                }
-            ], function(err) {
                 assert.ifError(err);
+                
+                compressed = config.dirs.root.replace(
+                    "specimens",
+                    path.join("specimens", "compressed")
+                );
+                
+                assert.equal(
+                    fs.readFileSync(path.join(compressed, "test.js"), { encoding : "utf8" }),
+                    fs.readFileSync(path.join(config.dirs.temp, "test.js"), { encoding : "utf8" })
+                );
                 
                 done();
             });
@@ -109,26 +104,66 @@ describe("Node web build", function() {
             
             lib.copy(config.dirs.root, config.dirs.static);
             
-            async.series([
-                function runTask(cb) {
-                    task({ config : config }, cb);
-                },
+            task({ config : config }, function(err) {
+                var compressed;
                 
-                function assertions(cb) {
-                    var compressed = config.dirs.root.replace(
-                            "specimens",
-                            path.join("specimens", "compressed")
-                        ),
-                        specimen = fs.readFileSync(path.join(compressed, "test.js"), { encoding : "utf8" }),
-                        built    = fs.readFileSync(path.join(config.dirs.static, "test.js"), { encoding : "utf8" });
-                    
-                    assert.equal(built, specimen);
-                    
-                    cb();
-                }
-            ], function(err) {
                 assert.ifError(err);
                 
+                compressed = config.dirs.root.replace(
+                    "specimens",
+                    path.join("specimens", "compressed")
+                );
+                
+                assert.equal(
+                    fs.readFileSync(path.join(compressed, "test.js"), { encoding : "utf8" }),
+                    fs.readFileSync(path.join(config.dirs.static, "test.js"), { encoding : "utf8" })
+                );
+                
+                done();
+            });
+        });
+
+        it("should create a -debug.js unminified file", function(done) {
+            var config = {
+                    dirs : {
+                        root : path.join(__dirname, "specimens", "simple"),
+                        temp : path.join(__dirname, "temp", "simple")
+                    },
+                    tasks : {}
+                };
+            
+            lib.copy(config.dirs.root, config.dirs.temp);
+            
+            task({ config : config }, function(err) {
+                assert.ifError(err);
+                
+                assert.equal(
+                    fs.readFileSync(path.join(config.dirs.root, "test.js"), { encoding : "utf8" }),
+                    fs.readFileSync(path.join(config.dirs.temp, "test-debug.js"), { encoding : "utf8" })
+                );
+                
+                done();
+            });
+        });
+
+        it("should create a .map file", function(done) {
+            var config = {
+                    dirs : {
+                        root : path.join(__dirname, "specimens", "simple"),
+                        temp : path.join(__dirname, "temp", "simple")
+                    },
+                    tasks : {}
+                };
+            
+            lib.copy(config.dirs.root, config.dirs.temp);
+            
+            task({
+                config : config
+            }, function(err) {
+                
+                assert.ifError(err);
+                assert(fs.existsSync(path.join(config.dirs.temp, "test.map")));
+                    
                 done();
             });
         });
