@@ -2,7 +2,8 @@
 
 "use strict";
 
-var wrench = require("wrench");
+var fs     = require("fs"),
+    wrench = require("wrench");
 
 module.exports = {
     copy : function(src, dest) {
@@ -11,6 +12,10 @@ module.exports = {
     },
     
     remove : function(dir) {
+        if(!fs.existsSync(dir)) {
+            return;
+        }
+        
         wrench.rmdirSyncRecursive(dir);
     }
 };
