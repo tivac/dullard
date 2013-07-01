@@ -2,13 +2,15 @@
 
 "use strict";
 
-
-var wrench = require("wrench");
+var fs     = require("fs"),
+    wrench = require("wrench");
 
 module.exports = function(build) {
     var dirs = build.config.dirs;
     
-    wrench.mkdirSyncRecursive(dirs.temp);
+    if(!fs.existsSync(dirs.temp)) {
+        wrench.mkdirSyncRecursive(dirs.temp);
+    }
     
     wrench.copyDirSyncRecursive(
         dirs.root,
