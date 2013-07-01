@@ -8,21 +8,19 @@ var fs   = require("fs"),
     _         = require("lodash"),
     glob      = require("glob"),
     async     = require("async"),
-    esprima   = require("esprima"),
-    esmangle  = require("esmangle"),
-    escodegen = require("escodegen");
+    cleaner   = require("clean-css");
 
-module.exports = function compressJs(build, done) {
+module.exports = function compressCss(build, done) {
     var dir     = build.config.dirs.static || build.config.dirs.temp,
-        task    = build.config.tasks["compress-js"] || {};
+        task    = build.config.tasks["compress-css"] || {};
     
     glob(
-        task.filter || "**/*.js",
+        task.filter || "**/*.css",
         _.defaults(
             { cwd : dir },
             task.glob || {}
         ),
-        function compressJsGlob(err, files) {
+        function compressCssGlob(err, files) {
             // globError for code coverage
             if(err || task.globError) {
                 return done(err || task.globError);
@@ -30,33 +28,21 @@ module.exports = function compressJs(build, done) {
             
             async.each(
                 files,
-                function compressJsFile(name, cb) {
+                function compressCssFile(name, cb) {
                     var file = path.join(dir, name),
-                        js = fs.readFileSync(file, { encoding : "utf8" }),
+                        css  = fs.readFileSync(file, { encoding : "utf8" }),
                         ast;
                    
                     // fileError for code coverage
-                    if(!js || task.fileError) {
+                    if(!css || task.fileError) {
                         return cb("Unable to read " + file);
                     }
                     
-                    ast = esprima.parse(js);
-                    ast = esmangle.optimize(ast, null);
-                    ast = esmangle.mangle(ast);
-                    js  = escodegen.generate(ast, {
-                        format : {
-                            renumber    : true,
-                            hexadecimal : true,
-                            escapeless  : true,
-                            compact     : true,
-                            semicolons  : false,
-                            parentheses : false
-                        }
-                    });
+                    css = cleaner.process(css);
                     
-                    fs.writeFile(file, js, done);
+                    fs.writeFile(file, css, done);
                 },
-                function compressJsDone(err) {
+                function compressCssDone(err) {
                     done(err);
                 }
             );
@@ -64,4 +50,4 @@ module.exports = function compressJs(build, done) {
     );
 };
 
-module.exports.description = "Compress JavaScript code";
+module.exports.description = "Compress CSS";
