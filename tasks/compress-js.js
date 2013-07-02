@@ -3,6 +3,7 @@
 "use strict";
 
 var fs   = require("fs"),
+    os   = require("os"),
     url  = require("url"),
     path = require("path"),
     
@@ -33,12 +34,17 @@ module.exports = function compressJs(build, done) {
                 files,
                 function compressJsFile(name, cb) {
                     var file  = path.join(root, name),
+                        // File parts
                         dir   = path.dirname(file),
                         ext   = path.extname(name),
                         base  = path.basename(name, ext),
                         rel   = ("/" + path.relative(root, dir)).replace(/\/\//g, "/"),
+                        
+                        // File names
+                        orig  = base + ext,
                         map   = base + "." + (task.map || "map"),
                         debug = base + "-debug" + ext,
+                        
                         src   = fs.readFileSync(file, { encoding : "utf8" }),
                         ast, result;
                     
@@ -57,7 +63,7 @@ module.exports = function compressJs(build, done) {
                     });
                     
                     result = escodegen.generate(ast, {
-                        sourceMap         : url.resolve(rel, "/" + base + ext),
+                        sourceMap         : url.resolve(rel, "/" + orig),
                         sourceMapWithCode : true,
                         format    : {
                             renumber    : true,
@@ -81,7 +87,7 @@ module.exports = function compressJs(build, done) {
                         function compressJsWriteSrc(cb) {
                             fs.writeFile(
                                 file,
-                                result.code + "\n//# sourceMappingURL=" + url.resolve(rel, "/" + map),
+                                result.code + os.EOL + "//# sourceMappingURL=" + url.resolve(rel, "/" + map),
                                 cb
                             );
                         },
