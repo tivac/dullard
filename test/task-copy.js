@@ -21,17 +21,31 @@ describe("Node web build", function() {
         });
         
         it("should copy simple files", function() {
-            task({
-                config : {
+            var config = {
                     dirs : {
                         root : path.join(__dirname, "specimens", "simple"),
                         temp : path.join(__dirname, "temp", "simple")
                     }
-                }
-            });
+                };
             
-            assert(fs.existsSync(path.join(__dirname, "temp", "simple")));
-            assert(fs.existsSync(path.join(__dirname, "temp", "simple", "test.js")));
+            task({ config : config });
+            
+            assert(fs.existsSync(config.dirs.temp));
+            assert(fs.existsSync(path.join(config.dirs.temp, "test.js")));
+        });
+        
+        it("shouldn't recreate existing directories", function() {
+            var config = {
+                    dirs : {
+                        root : path.join(__dirname, "specimens", "simple"),
+                        temp : path.join(__dirname, "temp", "simple")
+                    }
+                };
+            
+            task({ config : config });
+            
+            assert(fs.existsSync(config.dirs.temp));
+            assert(fs.existsSync(config.dirs.temp, "test.js"));
         });
     });
 });
