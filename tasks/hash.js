@@ -29,7 +29,7 @@ HashingStream.prototype._write = function(buffer, encoding, done) {
 
 task = function(build, done) {
     var root = build.config.dirs.static || build.config.dirs.temp,
-        conf = build.config.tasks[build.task] || {};
+        conf = build.config.tasks.hash || {};
         
     glob(
         conf.filter || "**/*",
