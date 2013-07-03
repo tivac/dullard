@@ -54,12 +54,16 @@ describe("Node web build", function() {
             task(
                 { config : config },
                 function(err) {
+                    var files;
+                    
                     assert.ifError(err);
                     
-                    console.log(require("wrench").readdirSyncRecursive(config.dirs.temp));
+                    // Files should have been renamed
+                    assert(!fs.existsSync(path.join(config.dirs.temp, "test.js")));
+                    assert(!fs.existsSync(path.join(config.dirs.temp, "test.css")));
                     
-                    assert(fs.existsSync(path.join(config.dirs.temp, "test.32fef7a.js")));
-                    assert(fs.existsSync(path.join(config.dirs.temp, "test.4b8cf11d.css")));
+                    // but they should still exist
+                    assert.equal(fs.readdirSync(config.dirs.temp).length, 2);
                     
                     done();
                 }
