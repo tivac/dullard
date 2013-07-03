@@ -14,7 +14,7 @@ var fs     = require("fs"),
 describe("Node web build", function() {
     describe("Task: Hash", function() {
         after(function() {
-            //lib.remove(path.join(__dirname, "temp"));
+            lib.remove(path.join(__dirname, "temp"));
         });
         
         it("should have a description", function() {
@@ -55,6 +55,8 @@ describe("Node web build", function() {
                 { config : config },
                 function(err) {
                     assert.ifError(err);
+                    
+                    console.log(require("wrench").readdirSyncRecursive(config.dirs.temp));
                     
                     assert(fs.existsSync(path.join(config.dirs.temp, "test.32fef7a.js")));
                     assert(fs.existsSync(path.join(config.dirs.temp, "test.4b8cf11d.css")));
