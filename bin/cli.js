@@ -7,6 +7,7 @@ var argv = require("optimist")
         .options(require("../args.json"))
         .argv,
     
+    _        = require("lodash"),
     Duration = require("duration"),
     findup   = require("findup-sync"),
     
@@ -20,16 +21,21 @@ if(typeof argv.tasks === "string") {
     argv.tasks = argv.tasks.split(",");
 }
 
-_config = require(findup("_build.js*", { nocase : true }));
+argv.steps = argv._;
 
-// TODO: merge _config (or _config()!) with argv before passing to new Build
-// TODO: figure out what should be in the config
-//          - tasks (dirs to load task modules from)
-//          - steps (tasks to run, in an order)
-//          - other misc stuff added to shared state object
-_build  = new Build(argv);
+_config = findup("_build.js*", { nocase : true });
 
-_build.invoke(argv._, function(err) {
+console.log(_config);
+
+// config file found
+if(_config) {
+    _config = require(_config);
+    _config = _.merge(_config, argv);
+}
+
+_build = new Build(_config || argv);
+
+_build.run(function(err) {
     if(err) {
         console.error("Build failed\n", err);
         process.exit(1);
