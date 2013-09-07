@@ -1,7 +1,7 @@
 {
     "tasks" : {
         "alias"       : "t",
-        "description" : "tasks directories",
+        "description" : "tasks directories (supports multiple directories seperated by commas)",
         "default"     : [ ]
     },
     
