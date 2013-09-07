@@ -7,6 +7,9 @@
     "test": "istanbul test --print both ./node_modules/mocha/bin/_mocha",
     "debug": "nodebug ./node_modules/mocha/bin/_mocha --debug-brk -- -t 500000"
   },
+  "bin": {
+    "nwb": "./bin/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/tivac/node-web-build.git"
@@ -23,15 +26,9 @@
   },
   "dependencies": {
     "optimist": "~0.6.0",
-    "wrench": "~1.5.1",
     "async": "~0.2.9",
     "duration": "~0.1.4",
-    "esprima": "~1.0.3",
-    "escodegen": "0.0.23",
-    "esmangle": "0.0.14",
-    "glob": "~3.2.1",
-    "lodash": "~1.3.1",
-    "clean-css": "~1.0.10",
-    "buffer-crc32": "~0.2.1"
+    "findup-sync": "~0.1.2",
+    "wrench": "~1.5.1"
   }
 }

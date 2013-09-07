@@ -1,19 +1,8 @@
 {
-    "root" : {
-        "demand"      : true,
-        "alias"       : "r",
-        "description" : "Input directory"
-    },
-    
-    "output" : {
-        "alias"       : "o",
-        "description" : "Output directory",
-        "default"     : "./output"
-    },
-    
     "tasks" : {
         "alias"       : "t",
-        "description" : "Custom tasks directory"
+        "description" : "tasks directories",
+        "default"     : [ ]
     },
     
     "quiet" : {
