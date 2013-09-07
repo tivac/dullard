@@ -8,17 +8,26 @@ var argv = require("optimist")
         .argv,
     
     Duration = require("duration"),
+    findup   = require("findup-sync"),
     
     Build = require("../lib/build.js"),
-    _build, _start;
+    
+    _start = new Date(),
+    
+    _build, _config;
 
-if(argv.tasks) {
+if(typeof argv.tasks === "string") {
     argv.tasks = argv.tasks.split(",");
 }
 
-_build = new Build(argv);
+_config = require(findup("_build.js*", { nocase : true }));
 
-_start = new Date();
+// TODO: merge _config (or _config()!) with argv before passing to new Build
+// TODO: figure out what should be in the config
+//          - tasks (dirs to load task modules from)
+//          - steps (tasks to run, in an order)
+//          - other misc stuff added to shared state object
+_build  = new Build(argv);
 
 _build.invoke(argv._, function(err) {
     if(err) {
