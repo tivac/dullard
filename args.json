@@ -1,12 +1,19 @@
 {
-    "tasks" : {
-        "alias"       : "t",
-        "description" : "tasks directories (supports multiple directories seperated by commas)",
+    "dirs" : {
+        "alias"       : "d",
+        "description" : "directories to load task files from",
         "default"     : [ ]
+    },
+    
+    "help" : {
+        "alias"       : "?",
+        "description" : "Show usage",
+        "boolean"     : true
     },
     
     "quiet" : {
         "alias"       : "q",
-        "description" : "Minimal output"
+        "description" : "Minimal output",
+        "default"     : false
     }
 }

@@ -2,10 +2,10 @@
 
 "use strict";
 
-var argv = require("optimist")
-        .usage("Optimize a site.\nUsage: $0 -r <dir> <task1> <task2> ... <taskN>")
-        .options(require("../args.json"))
-        .argv,
+var optimist = require("optimist")
+        .usage("Run a series of steps.\nUsage: $0 -d <dir>,...,<dirN> <step1> ... <stepN>")
+        .options(require("../args.json")),
+    argv     = optimist.argv,
     
     _        = require("lodash"),
     Duration = require("duration"),
@@ -17,6 +17,12 @@ var argv = require("optimist")
     
     _build, _config;
 
+if(argv.help) {
+    optimist.showHelp();
+    
+    return;
+}
+
 if(typeof argv.tasks === "string") {
     argv.tasks = argv.tasks.split(",");
 }
@@ -25,15 +31,12 @@ argv.steps = argv._;
 
 _config = findup("_build.js*", { nocase : true });
 
-console.log(_config);
+_config = _config ? require(_config) : {};
+_config = _.merge(_config, argv);
 
-// config file found
-if(_config) {
-    _config = require(_config);
-    _config = _.merge(_config, argv);
-}
+_config.cwd = process.cwd();
 
-_build = new Build(_config || argv);
+_build  = new Build(_config);
 
 _build.run(function(err) {
     if(err) {
