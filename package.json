@@ -1,6 +1,6 @@
 {
   "name": "node-web-build",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Automated web optimization, simple style.",
   "main": "./lib/build.js",
   "scripts": {
