@@ -1,8 +1,7 @@
 /*jshint node:true */
 "use strict";
 
-var path   = require("path"),
-    assert = require("assert"),
+var assert = require("assert"),
 
     Build = require("../lib/build.js");
 
