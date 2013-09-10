@@ -1,107 +1,161 @@
 /*jshint node:true */
 "use strict";
 
-var path   = require("path"),
-    assert = require("assert"),
+var assert = require("assert"),
 
     Build = require("../lib/build.js");
 
-describe("Node web build", function() {
-    describe("Build Object", function() {
+describe("node-web-build", function() {
+    describe("Build Class", function() {
         
         it("should be instantiable", function() {
-            assert(new Build({ root : "./specimens/simple/" }));
+            assert(new Build({}));
+            assert(new Build());
         });
         
-        it("should throw if root isn't defined", function() {
-            assert.throws(
-                function() {
-                    new Build();
-                }
-            );
-        });
-        
-        it("should set up defaults", function() {
-            var b = new Build({ root : "./test/specimens/simple" });
+        it("should provide useful properties", function() {
+            var b1 = new Build();
             
-            assert(b.tasks);
-            assert(b.config);
-            assert(b.config.dirs);
-            assert(b.config.tasks);
+            assert("tasks" in b1);
+            assert("steps" in b1);
+            assert("_config" in b1);
         });
         
-        it("should use the right defaults", function() {
-            var b    = new Build({ root : "./test/specimens/simple" }),
-                dirs = b.config.dirs,
-                __base = path.resolve(__dirname, "../");
+        it("should provide defaults from args.json", function() {
+            var b1 = new Build(),
+                b2 = new Build({ quiet : true });
             
-            assert.equal(dirs.root, path.join(__dirname, "specimens", "simple"));
-            assert.equal(dirs.dest, path.join(__base, "output"));
-            assert.equal(dirs.temp, path.join(__base, "temp", "simple"));
-            
-            assert.equal(dirs.tasks[0], path.join(__base, "tasks"));
+            assert(Array.isArray(b1._config.dirs));
+            assert(!b1._config.quiet);
+            assert(b2._config.quiet);
         });
         
-        it("should accept custom task dirs", function() {
-            var b = new Build({
-                    root  : "./test/specimens/simple",
-                    tasks : [
-                        "./test/specimens/tasks",
-                        "./test/specimens/tasks-two"
+        it("should load tasks from specified directories", function() {
+            var b1 = new Build({
+                    dirs : [
+                        "./test/specimens/tasks-a",
                     ]
                 });
             
-            assert.equal(
-                b.config.dirs.tasks[1],
-                path.join(__dirname, "specimens", "tasks")
-            );
-            
-            assert.equal(
-                b.config.dirs.tasks[2],
-                path.join(__dirname, "specimens", "tasks-two")
-            );
+            assert(Object.keys(b1.tasks).length);
         });
         
-        it("should load tasks from all task dirs", function() {
-            var b = new Build({
-                    root  : "./test/specimens/simple",
-                    tasks : [
-                        "./test/specimens/tasks",
-                        "./test/specimens/tasks-two"
+        it("should run steps", function() {
+            var b1 = new Build({
+                    steps : [
+                        function step1() {
+                            assert(true);
+                        }
                     ]
                 });
             
-            assert(b.tasks.copy);
-            assert(b.tasks.fooga);
-            assert(b.tasks.wooga);
+            b1.run();
         });
         
-        it("should invoke tasks", function(done) {
-            var b = new Build({ root  : "." });
+        it("should fail on unknown step names", function() {
+            var b1 = new Build({
+                    steps : [
+                        "fooga"
+                    ]
+                });
             
-            b.tasks.test = function(config) {};
-            
-            b.invoke([ "test" ], done);
-        });
-        
-        it("should error on invalid task names", function(done) {
-            var b = new Build({ root  : "." });
-            
-            b.invoke([ "test" ], function(err) {
+            b1.run(function(err) {
                 assert(err);
+            });
+        });
+        
+        it("should call completion callback", function() {
+            var b1 = new Build({
+                    steps : [
+                        function step1() {}
+                    ]
+                });
+            
+            b1.run(function() {
+                assert(true);
+            });
+        });
+        
+        it("should call completion callback with errors", function() {
+            var b1 = new Build({
+                    steps : [
+                        function step1() {
+                            return "error";
+                        }
+                    ]
+                });
+            
+            b1.run(function(err) {
+                assert(err);
+                assert.equal(err, "error");
+            });
+        });
+        
+        it("should run async steps in order", function(done) {
+            var b1 = new Build({
+                    steps : [
+                        function step1() {
+                            assert.equal(flag, undefined);
+                            flag = "1";
+                        },
+                        
+                        function step2(config, done) {
+                            assert.equal(flag, "1");
+                            
+                            process.nextTick(function() {
+                                flag = "2";
+                                
+                                done();
+                            });
+                        },
+                        
+                        function step3() {
+                            assert.equal(flag, "2");
+                            flag = "3";
+                        }
+                    ]
+                }),
+                flag;
+            
+            b1.run(function() {
+                assert.equal(flag, "3");
                 
                 done();
             });
         });
         
-        it("should run async tasks correctly", function(done) {
-            var b = new Build({ root  : "." });
+        it("should call completion callback with errors from async steps", function(done) {
+            var b1 = new Build({
+                    steps : [
+                        function (config, done) {
+                            process.nextTick(function() {
+                                done("error");
+                            });
+                        }
+                    ]
+                });
             
-            b.tasks.async = function(config, done) { done(); };
-            
-            b.invoke([ "async" ], function(err) {
+            b1.run(function(err) {
+                assert(err);
+                assert.equal(err, "error");
+                
                 done();
             });
+        });
+        
+        it("should let steps override the config object", function() {
+            var b1 = new Build({
+                    steps : [
+                        function (config, done) {
+                            done(null, { fooga : true });
+                        }
+                    ]
+                });
+            
+            b1.run();
+            
+            assert(b1._config.fooga);
+            assert(!("steps" in b1._config));
         });
     });
 });

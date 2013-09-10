@@ -1,23 +1,19 @@
 {
-    "root" : {
-        "demand"      : true,
-        "alias"       : "r",
-        "description" : "Input directory"
+    "dirs" : {
+        "alias"       : "d",
+        "description" : "directories to load task files from",
+        "default"     : [ ]
     },
     
-    "output" : {
-        "alias"       : "o",
-        "description" : "Output directory",
-        "default"     : "./output"
-    },
-    
-    "tasks" : {
-        "alias"       : "t",
-        "description" : "Custom tasks directory"
+    "help" : {
+        "alias"       : "?",
+        "description" : "Show usage",
+        "boolean"     : true
     },
     
     "quiet" : {
         "alias"       : "q",
-        "description" : "Minimal output"
+        "description" : "Minimal output",
+        "default"     : false
     }
 }

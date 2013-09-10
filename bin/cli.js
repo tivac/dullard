@@ -2,25 +2,44 @@
 
 "use strict";
 
-var argv = require("optimist")
-        .usage("Optimize a site.\nUsage: $0 -r <dir> <task1> <task2> ... <taskN>")
-        .options(require("../args.json"))
-        .argv,
+var pkg      = require("../package.json"),
+    optimist = require("optimist")
+        .usage(pkg.description + "\nUsage: $0 -d <dir>,...,<dirN> <step1> ... <stepN>")
+        .options(require("../args.json")),
+    argv     = optimist.argv,
     
+    _        = require("lodash"),
     Duration = require("duration"),
+    findup   = require("findup-sync"),
     
     Build = require("../lib/build.js"),
-    _build, _start;
+    
+    _start = new Date(),
+    
+    _build, _config;
 
-if(argv.tasks) {
+if(argv.help) {
+    optimist.showHelp();
+    
+    return;
+}
+
+if(typeof argv.tasks === "string") {
     argv.tasks = argv.tasks.split(",");
 }
 
-_build = new Build(argv);
+argv.steps = argv._;
 
-_start = new Date();
+_config = findup("dullfile.js*", { nocase : true });
 
-_build.invoke(argv._, function(err) {
+_config = _config ? require(_config) : {};
+_config = _.merge(_config, argv);
+
+_config.cwd = process.cwd();
+
+_build  = new Build(_config);
+
+_build.run(function(err) {
     if(err) {
         console.error("Build failed\n", err);
         process.exit(1);
