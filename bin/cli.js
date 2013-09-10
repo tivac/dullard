@@ -2,8 +2,9 @@
 
 "use strict";
 
-var optimist = require("optimist")
-        .usage("Run a series of steps.\nUsage: $0 -d <dir>,...,<dirN> <step1> ... <stepN>")
+var pkg      = require("../package.json"),
+    optimist = require("optimist")
+        .usage(pkg.description + "\nUsage: $0 -d <dir>,...,<dirN> <step1> ... <stepN>")
         .options(require("../args.json")),
     argv     = optimist.argv,
     
