@@ -30,7 +30,7 @@ if(typeof argv.tasks === "string") {
 
 argv.steps = argv._;
 
-_config = findup("_build.js*", { nocase : true });
+_config = findup("dullfile.js*", { nocase : true });
 
 _config = _config ? require(_config) : {};
 _config = _.merge(_config, argv);
