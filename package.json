@@ -1,22 +1,22 @@
 {
-  "name": "node-web-build",
+  "name": "dullard",
   "version": "0.0.3",
-  "description": "Automated web optimization, simple style.",
+  "description": "Let the computers do the boring stuff.",
   "main": "./lib/build.js",
   "scripts": {
     "test": "istanbul test --print both ./node_modules/mocha/bin/_mocha"
   },
   "bin": {
-    "nwb": "./bin/cli.js"
+    "dullard": "./bin/cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tivac/node-web-build.git"
+    "url": "https://github.com/tivac/dullard.git"
   },
   "author": "Pat Cavit <pcavit@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tivac/node-web-build/issues"
+    "url": "https://github.com/tivac/dullard/issues"
   },
   "devDependencies": {
     "mocha": "~1.11.0",
