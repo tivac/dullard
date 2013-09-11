@@ -21,13 +21,13 @@ Options:
 
 ## Config ##
 
-Dullard will look for a file named `dullfile.js` or `dullfile.json` in the current directory or any parent directories & merge it with the CLI options (CLI takes precendence). For now it'll stop after the first match, but eventually it'll merge all found results in the current branch of the directory tree with precedence being: `CLI -> Local -> Parent -> ... -> Root`.
+Dullard will look for a file named `dullfile.js` or `dullfile.json` in the current directory or any parent directories & merge it with the CLI options (CLI takes precendence). It will merge all found results in the current branch of the directory tree with precedence being: `CLI -> Local -> Parent -> ... -> Root`.
 
 ### Example Config ###
 
 JSON version
 
-```
+```javascript
 {
     "dirs" : [
         "../../../tasks-a"
@@ -41,7 +41,7 @@ JSON version
 
 JS version
 
-```
+```javascript
 /*jshint node:true */
 
 "use strict";
@@ -59,11 +59,13 @@ module.exports = {
 
 `dirs` is an array of directories to load tasks from. `steps` is an array of strings or functions. Strings should match the names of files in the task directories stripped of their extension.
 
+The config object will be passed as the first argument (`config` by convention) to [tasks](#tasks).
+
 ## Tasks ##
 
 Tasks are simple modules that should export a single function. Each task function gets passed two arguments, a shared config object for state in the task chain & an optional callback for async tasks. The callback takes two possible arguments, an error object and an optional object to replace the shared config object. If the task is synchronous any return value will be considered an error.
 
-```
+```javascript
 function exampleTaskSync(config) {
     ...
 }
