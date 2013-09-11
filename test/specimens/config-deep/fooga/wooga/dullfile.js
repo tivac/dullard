@@ -4,10 +4,13 @@
 
 module.exports = {
     "dirs" : [
-        "../../tasks-a"
+        "../../../tasks-c/"
     ],
     
     "steps" : [
-        "a"
-    ]
+        "c",
+        "c-async"
+    ],
+    
+    "wooga" : true
 };
