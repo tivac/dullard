@@ -1,8 +1,7 @@
 {
     "dirs" : {
         "alias"       : "d",
-        "description" : "directories to load task files from",
-        "default"     : [ ]
+        "description" : "directories to load task files from"
     },
     
     "help" : {
@@ -13,7 +12,6 @@
     
     "quiet" : {
         "alias"       : "q",
-        "description" : "Minimal output",
-        "default"     : false
+        "description" : "Minimal output"
     }
 }
