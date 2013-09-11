@@ -21,15 +21,6 @@ describe("node-web-build", function() {
             assert("_config" in b1);
         });
         
-        it("should provide defaults from args.json", function() {
-            var b1 = new Build(),
-                b2 = new Build({ quiet : true });
-            
-            assert(Array.isArray(b1._config.dirs));
-            assert(!b1._config.quiet);
-            assert(b2._config.quiet);
-        });
-        
         it("should load tasks from specified directories", function() {
             var b1 = new Build({
                     dirs : [
@@ -38,6 +29,12 @@ describe("node-web-build", function() {
                 });
             
             assert(Object.keys(b1.tasks).length);
+        });
+        
+        it("should handle no steps", function() {
+            (new Build()).run(function(err) {
+                assert(err);
+            });
         });
         
         it("should run steps", function() {
