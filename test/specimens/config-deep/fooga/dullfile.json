@@ -1,0 +1,11 @@
+{
+    "dirs" : [
+        "../../tasks-b/"
+    ],
+    "steps" : [
+        "b-async",
+        "b"
+    ],
+    
+    "fooga" : true
+}
