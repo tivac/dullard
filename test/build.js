@@ -31,6 +31,16 @@ describe("node-web-build", function() {
             assert(Object.keys(b1.tasks).length);
         });
         
+        it("should only load top-level .js files as tasks", function() {
+            var b1 = new Build({
+                    dirs : [
+                        "./test/specimens/tasks-a",
+                    ]
+                });
+
+            assert.equal(Object.keys(b1.tasks).length, 2);
+        });
+
         it("should handle no steps", function() {
             (new Build()).run(function(err) {
                 assert(err);
