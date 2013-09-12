@@ -2,7 +2,9 @@
 "use strict";
 
 var assert = require("assert"),
-
+    
+    _      = require("lodash"),
+    
     cli    = require("../lib/cli.js"),
     Build  = require("../lib/build.js"),
     
@@ -11,15 +13,28 @@ var assert = require("assert"),
     
     _build, _console;
 
-_build = function(fn) {
-    var b = fn || function() {};
-            
-    b.prototype = {
-        on  : function() {},
-        run : function() {}
-    };
+_build = function(fn, proto) {
+    var B;
     
-    return b;
+    if(typeof fn === "object") {
+        proto = fn;
+        fn    = null;
+    }
+    
+    B = fn || function() { Build.apply(this, Array.prototype.slice.call(arguments)); };
+    B.prototype = Object.create(Build.prototype);
+    B.prototype.constructor = B;
+    
+    _.extend(
+        B.prototype,
+        {
+            run : function() {},
+            on  : function() {}
+        },
+        proto || {}
+    );
+    
+    return B;
 };
 
 _console = function(log, error) {
@@ -43,6 +58,38 @@ describe("node-web-build", function() {
                     assert(false, "Should not have been called!");
                 }),
                 _console()
+            );
+        });
+        
+        it("should show available tasks (& not run)", function() {
+            var msgs = "";
+            
+            cli(
+                [].concat(_argv, "-l", "-d", "./test/specimens/tasks-a/"),
+                _build({
+                    run : function() {
+                        assert(false, "Should not have been called!");
+                    }
+                }),
+                _console(
+                    function(msg) {
+                        msgs += msg;
+                    }
+                )
+            );
+            
+            assert(msgs.indexOf("a-async") > -1);
+        });
+        
+        it("should complain if no tasks are available", function() {
+            cli(
+                [].concat(_argv, "-l"),
+                Build,
+                _console(
+                    function(msg) {
+                        assert(msg.indexOf("No tasks available") > -1);
+                    }
+                )
             );
         });
               
@@ -105,6 +152,16 @@ describe("node-web-build", function() {
             );
         });
         
+        it("should support multiple dirs passed on argv", function() {
+            cli(
+                [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
+                _build(function(config) {
+                    assert(config);
+                    
+                    assert.equal(config.dirs.length, 2);
+                })
+            );
+        });
         
         it("should mix configs & argv, with argv taking precedence", function() {
             process.chdir("./test/specimens/config-json/fooga/wooga");

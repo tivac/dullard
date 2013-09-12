@@ -2,6 +2,5 @@
 
 "use strict";
 
-module.exports = function(build) {
-    
-};
+module.exports = function() {};
+module.exports.description = "Task description";
