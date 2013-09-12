@@ -1,6 +1,6 @@
 {
   "name": "dullard",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Let the computers do the boring stuff.",
   "usage": "dullard -d <dir>,...,<dirN> <step1> ... <stepN>",
   "main": "./lib/build.js",
