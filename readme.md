@@ -4,8 +4,8 @@ Dullard
 Doing the same task repeatedly is boring. Let the computer do it instead.
 
 [![Build Status](https://travis-ci.org/tivac/dullard.png?branch=master)](https://travis-ci.org/tivac/dullard)
-[![Packages](https://david-dm.org/tivac/dullard/status.png)](https://david-dm.org/tivac/dullard/)
-[![Dev Packages](https://david-dm.org/tivac/dullard/dev-status.png)](https://david-dm.org/tivac/dullard/)
+[![NPM version](https://badge.fury.io/js/dullard.png)](http://badge.fury.io/js/dullard)
+[![Dependency Status](https://gemnasium.com/tivac/dullard.png)](https://gemnasium.com/tivac/dullard)
 
 ## Usage ##
 
