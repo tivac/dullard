@@ -27,6 +27,10 @@ _build = function(fn, proto) {
     
     _.extend(
         B.prototype,
+        {
+            run : function() {},
+            on  : function() {}
+        },
         proto || {}
     );
     
@@ -50,9 +54,9 @@ describe("node-web-build", function() {
         it("should show help (& not run)", function() {
             cli(
                 [].concat(_argv, "-?"),
-                function() {
+                _build(function() {
                     assert(false, "Should not have been called!");
-                },
+                }),
                 _console()
             );
         });
@@ -148,6 +152,16 @@ describe("node-web-build", function() {
             );
         });
         
+        it("should support multiple dirs passed on argv", function() {
+            cli(
+                [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
+                _build(function(config) {
+                    assert(config);
+                    
+                    assert.equal(config.dirs.length, 2);
+                })
+            );
+        });
         
         it("should mix configs & argv, with argv taking precedence", function() {
             process.chdir("./test/specimens/config-json/fooga/wooga");
