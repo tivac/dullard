@@ -103,7 +103,7 @@ describe("node-web-build", function() {
             );
         });
         
-        it("should find a local dullfile.js", function() {
+        it("should find a local .dullfile containing JS", function() {
             process.chdir("./test/specimens/config-js/fooga");
             
             cli(
@@ -118,7 +118,7 @@ describe("node-web-build", function() {
             );
         });
         
-        it("should find a local dullfile.json", function() {
+        it("should find a local .dullfile containing JSON", function() {
             process.chdir("./test/specimens/config-json/fooga/wooga");
             
             cli(
@@ -133,7 +133,7 @@ describe("node-web-build", function() {
             );
         });
         
-        it("should find all dullfile.js* in parent directories", function() {
+        it("should find all .dullfile files in parent directories", function() {
             process.chdir("./test/specimens/config-deep/fooga/wooga");
             
             cli(
