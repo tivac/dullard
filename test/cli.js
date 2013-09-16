@@ -39,12 +39,12 @@ _build = function(fn, proto) {
 
 _console = function(log, error) {
     return {
-        log   : log || function() {},
+        log   : log   || function() {},
         error : error || function() {}
     };
 };
 
-describe("node-web-build", function() {
+describe("Dullard", function() {
     describe("CLI", function() {
         
         afterEach(function() {
@@ -167,15 +167,26 @@ describe("node-web-build", function() {
             process.chdir("./test/specimens/config-json/fooga/wooga");
             
             cli(
-                [].concat(_argv, "-d=../../../tasks-b/", "wooga", "booga"),
+                [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
                 _build(function(config) {
                     assert(config);
                     
                     assert.equal(config.dirs.length, 2);
-                    assert.equal(config.steps.length, 2);
-                    
-                    assert.equal(config.steps[0], "wooga");
-                    assert.equal(config.steps[1], "booga");
+                }),
+                _console()
+            );
+        });
+        
+        it("should run steps passed in via argv", function() {
+            process.chdir("./test/specimens/config-json/fooga/wooga");
+            
+            cli(
+                [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
+                _build({
+                    run : function(steps) {
+                        assert.equal(steps[0], "wooga");
+                        assert.equal(steps[1], "booga");
+                    }
                 }),
                 _console()
             );
@@ -220,6 +231,49 @@ describe("node-web-build", function() {
                     assert(!("steps" in config));
                 }),
                 _console()
+            );
+        });
+        
+        it("should log build lifecycle events (no duration)", function(done) {
+            process.chdir("./test/specimens/config-js/fooga");
+            
+            cli(
+                _argv,
+                _build({
+                    run : function() {
+                        this.emit("log", { message : "fooga" });
+                    },
+                    on  : require("events").EventEmitter.prototype.on
+                }),
+                _console(
+                    function(msg) {
+                        assert(msg.indexOf("LOG:") > -1);
+                        
+                        done();
+                    }
+                )
+            );
+        });
+
+        it("should log build lifecycle events (duration)", function(done) {
+            process.chdir("./test/specimens/config-js/fooga");
+            
+            cli(
+                _argv,
+                _build({
+                    run : function() {
+                        this.emit("log", { duration : 1000, message : "fooga" });
+                    },
+                    on  : require("events").EventEmitter.prototype.on
+                }),
+                _console(
+                    function(msg) {
+                        assert(msg.indexOf("LOG:") > -1);
+                        assert(msg.indexOf(" in ") > -1);
+                        
+                        done();
+                    }
+                )
             );
         });
     });

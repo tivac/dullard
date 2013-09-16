@@ -5,7 +5,7 @@ var assert = require("assert"),
 
     Build = require("../lib/build.js");
 
-describe("node-web-build", function() {
+describe("Dullard", function() {
     describe("Build Class", function() {
         
         it("should be instantiable", function() {
@@ -47,16 +47,30 @@ describe("node-web-build", function() {
             });
         });
         
+        it("should support single-item steps", function() {
+            var b1 = new Build({
+                    steps : function step1() {
+                        step = true;
+                    }
+                }),
+                step;
+            
+            b1.run();
+            assert(step);
+        });
+        
         it("should run steps", function() {
             var b1 = new Build({
                     steps : [
                         function step1() {
-                            assert(true);
+                            step = true;
                         }
                     ]
-                });
+                }),
+                step;
             
             b1.run();
+            assert(step);
         });
         
         it("should fail on unknown step names", function() {
@@ -163,6 +177,101 @@ describe("node-web-build", function() {
             
             assert(b1._config.fooga);
             assert(!("steps" in b1._config));
+        });
+        
+        it("should run the \"default\" step collection when giving an object", function() {
+            var b1 = new Build({
+                    steps : {
+                        "default" : [
+                            function() {
+                                step = true;
+                            }
+                        ]
+                    }
+                }),
+                step;
+            
+            b1.run();
+            
+            assert(step);
+        });
+        
+        it("should support choosing a named step collection", function() {
+            var b1 = new Build({
+                    steps : {
+                        "fooga" : [
+                            function() {
+                                step = true;
+                            }
+                        ]
+                    }
+                }),
+                step;
+            
+            b1.run("fooga");
+            
+            assert(step);
+        });
+        
+        it("should support choosing a named step collection with a callback", function(done) {
+            var b1 = new Build({
+                    steps : {
+                        "fooga" : [
+                            function() {}
+                        ]
+                    }
+                });
+            
+            b1.run("fooga", function() {
+                assert(true);
+                
+                done();
+            });
+        });
+        
+        it("should let step collections appear in other step collections", function() {
+            var b1 = new Build({
+                    steps : {
+                        "default" : [
+                            "fooga"
+                        ],
+                        
+                        "fooga" : [
+                            function() {
+                                step = true;
+                            }
+                        ]
+                    }
+                }),
+                step;
+            
+            b1.run();
+            
+            assert(step);
+        });
+        
+        it("should run an array of steps passed to run()", function() {
+            var b1 = new Build({
+                    steps : {
+                        "default" : [
+                            "fooga"
+                        ],
+                        
+                        "fooga" : function() {
+                            fooga = true;
+                        },
+                        
+                        "booga" : function() {
+                            booga = true;
+                        }
+                    }
+                }),
+                fooga, booga;
+            
+            b1.run([ "fooga", "booga" ]);
+            
+            assert(fooga);
+            assert(booga);
         });
     });
 });
