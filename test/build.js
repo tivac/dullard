@@ -273,5 +273,15 @@ describe("Dullard", function() {
             assert(fooga);
             assert(booga);
         });
+        
+        it("should run a single task passed to run()", function() {
+            var b1 = new Build({
+                    dirs : [
+                        "./test/specimens/tasks-a"
+                    ]
+                });
+            
+            b1.run("a");
+        });
     });
 });
