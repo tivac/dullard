@@ -84,3 +84,9 @@ function exampleTaskFailureAsync(config, done) {
     done("Task Failed");
 }
 ```
+
+## FAQ ##
+
+### Q: What about file watching? ###
+
+__A__: Nothing built-in yet, still trying to figure out if I'm comfortable with cluttering up the `.dullfile`(s) with watcher config stuff. For now check out [this gist](https://gist.github.com/tivac/6591278).
