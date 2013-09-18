@@ -11,8 +11,15 @@ $RECYCLE.BIN/
 # Mac crap
 .DS_Store
 
+# Folders
 node_modules
 temp
 coverage
 output
 test
+
+# Random Stuff
+.gitattributes
+.jshintrc
+.npmignore
+.travis.yml
