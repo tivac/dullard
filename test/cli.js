@@ -176,6 +176,36 @@ describe("Dullard", function() {
                 _console()
             );
         });
+
+        it("should not mix multiple \"steps\" when they are arrays", function() {
+            process.chdir("./test/specimens/config-json/fooga/wooga");
+
+            cli(
+                _argv,
+                _build(function(config) {
+                    assert(config);
+                    
+                    assert(config.steps.length);
+                    assert.equal(config.steps[0], "fooga");
+                })
+            );
+        });
+
+        it("should mix multiple \"steps\" when they are objects", function() {
+            process.chdir("./test/specimens/config-objects/fooga");
+
+            cli(
+                _argv,
+                _build(function(config) {
+                    assert(config);
+                    
+                    assert(Object.keys(config.steps).length);
+                    assert.equal(config.steps["a-steps"][0], "a");
+                    assert.equal(config.steps["b-steps"][0], "b-async");
+                    assert.equal(config.steps["c-steps"][0], "c");
+                })
+            );
+        });
         
         it("should run steps passed in via argv", function() {
             process.chdir("./test/specimens/config-json/fooga/wooga");

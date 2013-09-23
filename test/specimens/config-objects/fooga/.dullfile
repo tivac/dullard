@@ -1,0 +1,11 @@
+{
+	"steps" : {
+		"b-steps" : [
+			"b-async"
+		],
+
+		"c-steps" : [
+			"c"
+		]
+	}
+}
