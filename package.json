@@ -1,6 +1,6 @@
 {
   "name": "dullard",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Let the computers do the boring stuff.",
   "usage": "dullard -d <dir>,...,<dirN> <step1> ... <stepN>",
   "bin": "./bin/cli.js",
@@ -24,11 +24,11 @@
   "dependencies": {
     "optimist": "~0.6.0",
     "async": "~0.2.9",
-    "lodash": "~2.0.0",
+    "lodash": "~2.1.0",
     "uppity": "~0.1.0",
     "humanize-duration": "~0.2.0",
     "glob": "~3.2.6",
-    "jsonminify": "~0.1.2",
+    "jsonminify": "~0.2.1",
     "npmlog": "~0.0.4"
   },
   "engines": {
