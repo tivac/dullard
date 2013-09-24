@@ -14,9 +14,13 @@ Let the computers do the boring stuff.
 Usage: dullard -d <dir>,...,<dirN> <step1> ... <stepN>
 
 Options:
-  --dirs, -d   directories to load task files from  [default: []]
-  --help, -?   Show usage
-  --quiet, -q  Minimal output                       [default: false]
+  --help, -?     Show usage
+  --dirs, -d     directories to load task files from
+  --list, -l     List available tasks
+  --loglevel     Chattiness, one of: silly, verbose, info, warn, error, & silent  [default: "info"]
+  --quiet, -q    Minimal output
+  --silent       No output until something goes awry
+  --verbose, -v  Verbose logging
 ```
 
 ## Config ##
@@ -51,13 +55,24 @@ module.exports = {
         "../../tasks-a"
     ],
     
-    "steps" : [
-        "fooga"
-    ]
+    "steps" : {
+        main : [
+            "fooga"
+        ],
+        
+        finish : [
+            "wooga"
+        ],
+        
+        default : [
+            "main",
+            "finish"
+        ]
+    }
 };
 ```
 
-`dirs` is an array of directories to load tasks from. `steps` is an array of strings or functions. Strings should match the names of files in the task directories stripped of their extension.
+`dirs` is an array of directories to load tasks from. `steps` is one of two options: 1) an array of strings/functions or 2) an object containing named step collections that are each an array of strings/fucntions. Strings should match either the names of files in the task directories stripped of their extension or the name of a step collection.
 
 The config object will be passed as the first argument (`config` by convention) to [tasks](#tasks).
 
@@ -66,6 +81,7 @@ The config object will be passed as the first argument (`config` by convention) 
 Tasks are simple modules that should export a single function. Each task function gets passed two arguments, a shared config object for state in the task chain & an optional callback for async tasks. The callback takes two possible arguments, an error object and an optional object to replace the shared config object. If the task is synchronous any return value will be considered an error.
 
 ```javascript
+// Passing tasks
 function exampleTaskSync(config) {
     ...
 }
@@ -76,6 +92,7 @@ function exampleTaskAsync(config, done) {
     process.nextTick(done);
 }
 
+// Failing tasks
 function exampleTaskFailureSync(config) {
     return "Task failed";
 }
