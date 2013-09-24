@@ -73,6 +73,45 @@ describe("Dullard", function() {
             assert(step);
         });
         
+        it("should pass a config object to steps", function() {
+            var b1 = new Build({
+                    steps : function step1(config) {
+                        assert(config);
+                    }
+                });
+            
+            b1.run();
+        });
+        
+        it("should put a `log` method on the config object", function() {
+            var b1 = new Build({
+                    steps : function step1(config) {
+                        assert(config);
+                        assert(config.log);
+                        assert.equal(typeof config.log, "function");
+                    }
+                });
+            
+            b1.run();
+        });
+        
+        it("should have a functioning `log` method on the config object", function() {
+            var b1 = new Build({
+                    steps : function step1(config) {
+                        config.log("fooga");
+                    }
+                }),
+                result = "";
+            
+            b1.on("log", function(args) {
+                result += args.message;
+            });
+            
+            b1.run();
+            
+            assert(result.indexOf("fooga") > -1);
+        });
+        
         it("should fail on unknown step names", function() {
             var b1 = new Build({
                     steps : [
@@ -179,7 +218,7 @@ describe("Dullard", function() {
             assert(!("steps" in b1._config));
         });
         
-        it("should run the \"default\" step collection when giving an object", function() {
+        it("should run the \"default\" step collection when given an object", function() {
             var b1 = new Build({
                     steps : {
                         "default" : [
