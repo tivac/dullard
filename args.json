@@ -1,13 +1,23 @@
 {
+    "help" : {
+        "alias"       : "?",
+        "description" : "Show usage",
+        "boolean"     : true
+    },
+    
     "dirs" : {
         "alias"       : "d",
         "description" : "directories to load task files from"
     },
     
-    "help" : {
-        "alias"       : "?",
-        "description" : "Show usage",
-        "boolean"     : true
+    "list" : {
+        "alias"       : "l",
+        "description" : "List available tasks"
+    },
+    
+    "loglevel"  : {
+        "description" : "Chattiness, one of: silly, verbose, info, warn, error, & silent",
+        "default"     : "info"
     },
     
     "quiet" : {
@@ -15,8 +25,12 @@
         "description" : "Minimal output"
     },
     
-    "list" : {
-        "alias"       : "l",
-        "description" : "List available tasks"
+    "silent" : {
+        "description" : "No output until something goes awry"
+    },
+    
+    "verbose" : {
+        "alias"       : "v",
+        "description" : "Verbose logging"
     }
 }

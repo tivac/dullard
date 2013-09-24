@@ -2,6 +2,7 @@
 "use strict";
 
 var assert = require("assert"),
+    stream = require("stream"),
     
     _      = require("lodash"),
     
@@ -11,7 +12,7 @@ var assert = require("assert"),
     _root = process.cwd(),
     _argv = [,,],
     
-    _build, _console;
+    _build, _stream;
 
 _build = function(fn, proto) {
     var B;
@@ -37,11 +38,12 @@ _build = function(fn, proto) {
     return B;
 };
 
-_console = function(log, error) {
-    return {
-        log   : log   || function() {},
-        error : error || function() {}
-    };
+_stream = function(write) {
+    var s = new stream.Stream();
+    
+    s.write = write || function() {};
+    
+    return s;
 };
 
 describe("Dullard", function() {
@@ -57,7 +59,7 @@ describe("Dullard", function() {
                 _build(function() {
                     assert(false, "Should not have been called!");
                 }),
-                _console()
+                _stream()
             );
         });
         
@@ -71,7 +73,7 @@ describe("Dullard", function() {
                         assert(false, "Should not have been called!");
                     }
                 }),
-                _console(
+                _stream(
                     function(msg) {
                         msgs += msg;
                     }
@@ -82,12 +84,30 @@ describe("Dullard", function() {
         });
         
         it("should complain if no tasks are available", function() {
+            var result = "";
+            
             cli(
                 [].concat(_argv, "-l"),
                 Build,
-                _console(
+                _stream(
                     function(msg) {
-                        assert(msg.indexOf("No tasks available") > -1);
+                        result += msg;
+                    }
+                )
+            );
+            
+            assert(result.indexOf("No tasks available") > -1);
+        });
+        
+        it("shouldn't say anything when loglevel is \"silent\"", function() {
+            cli(
+                [].concat(_argv, "--silent"),
+                Build,
+                _stream(
+                    function(msg) {
+                        //assert(false, "Should not have been called");
+                        
+                        console.log(msg);
                     }
                 )
             );
@@ -99,7 +119,7 @@ describe("Dullard", function() {
                 _build(function(config) {
                     assert(config);
                 }),
-                _console()
+                _stream()
             );
         });
         
@@ -114,7 +134,7 @@ describe("Dullard", function() {
                     assert(config.dirs.length);
                     assert(config.steps.length);
                 }),
-                _console()
+                _stream()
             );
         });
         
@@ -129,7 +149,7 @@ describe("Dullard", function() {
                     assert(config.dirs.length);
                     assert(config.steps.length);
                 }),
-                _console()
+                _stream()
             );
         });
         
@@ -148,7 +168,7 @@ describe("Dullard", function() {
                     assert.equal(config.dirs.length, 3);
                     assert(config.steps.length, 2);
                 }),
-                _console()
+                _stream()
             );
         });
         
@@ -173,7 +193,7 @@ describe("Dullard", function() {
                     
                     assert.equal(config.dirs.length, 2);
                 }),
-                _console()
+                _stream()
             );
         });
 
@@ -218,7 +238,7 @@ describe("Dullard", function() {
                         assert.equal(steps[1], "booga");
                     }
                 }),
-                _console()
+                _stream()
             );
         });
         
@@ -226,7 +246,7 @@ describe("Dullard", function() {
             cli(
                 [].concat(_argv, "fooga"),
                 Build,
-                _console(null, function(msg) {
+                _stream(null, function(msg) {
                     assert(msg);
                 })
             );
@@ -238,7 +258,7 @@ describe("Dullard", function() {
             cli(
                 [].concat(_argv, "--quiet"),
                 Build,
-                _console(
+                _stream(
                     function(error) {
                         assert.ifError(error, "Should not have been called");
                     },
@@ -260,51 +280,55 @@ describe("Dullard", function() {
                     assert.equal(config.dirs.length, 0);
                     assert(!("steps" in config));
                 }),
-                _console()
+                _stream()
             );
         });
         
-        it("should log build lifecycle events (no duration)", function(done) {
+        it("should log build lifecycle events (no duration)", function() {
+            var result = "";
+            
             process.chdir("./test/specimens/config-js/fooga");
             
             cli(
                 _argv,
                 _build({
                     run : function() {
-                        this.emit("log", { message : "fooga" });
+                        this.emit("log", { level : "info", message : "fooga" });
                     },
                     on  : require("events").EventEmitter.prototype.on
                 }),
-                _console(
+                _stream(
                     function(msg) {
-                        assert(msg.indexOf("LOG:") > -1);
-                        
-                        done();
+                        result += msg;
                     }
                 )
             );
+            
+            assert(result.indexOf("fooga") > -1);
         });
 
-        it("should log build lifecycle events (duration)", function(done) {
+        it("should log build lifecycle events (duration)", function() {
+            var result = "";
+            
             process.chdir("./test/specimens/config-js/fooga");
             
             cli(
                 _argv,
                 _build({
                     run : function() {
-                        this.emit("log", { duration : 1000, message : "fooga" });
+                        this.emit("log", { level : "info", duration : 1000, message : "fooga" });
                     },
                     on  : require("events").EventEmitter.prototype.on
                 }),
-                _console(
+                _stream(
                     function(msg) {
-                        assert(msg.indexOf("LOG:") > -1);
-                        assert(msg.indexOf(" in ") > -1);
-                        
-                        done();
+                        result += msg;
                     }
                 )
             );
+            
+            assert(result.indexOf("fooga") > -1);
+            assert(result.indexOf(" in ") > -1);
         });
     });
 });

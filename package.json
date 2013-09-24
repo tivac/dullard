@@ -3,12 +3,10 @@
   "version": "0.2.2",
   "description": "Let the computers do the boring stuff.",
   "usage": "dullard -d <dir>,...,<dirN> <step1> ... <stepN>",
+  "bin": "./bin/cli.js",
   "main": "./lib/build.js",
   "scripts": {
     "test": "istanbul test --print both ./node_modules/mocha/bin/_mocha"
-  },
-  "bin": {
-    "dullard": "./bin/cli.js"
   },
   "repository": {
     "type": "git",
@@ -30,7 +28,8 @@
     "uppity": "~0.1.0",
     "humanize-duration": "~0.2.0",
     "glob": "~3.2.6",
-    "jsonminify": "~0.1.2"
+    "jsonminify": "~0.1.2",
+    "npmlog": "~0.0.4"
   },
   "engines": {
     "node": ">=0.10"
