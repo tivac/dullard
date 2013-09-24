@@ -1,5 +1,11 @@
 {
-	"steps" : {
+	"dirs" : [
+        "../../tasks-a",
+        "../../tasks-b",
+        "../../tasks-c"
+    ],
+    
+    "steps" : {
 		"b-steps" : [
 			"b-async"
 		],

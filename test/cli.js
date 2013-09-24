@@ -105,12 +105,26 @@ describe("Dullard", function() {
                 Build,
                 _stream(
                     function(msg) {
-                        //assert(false, "Should not have been called");
-                        
-                        console.log(msg);
+                        assert(false, "Should not have been called");
                     }
                 )
             );
+        });
+        
+        it("should be chatty in verbose mode", function() {
+            var result = "";
+            
+            process.chdir("./test/specimens/config-json/fooga/wooga");
+            
+            cli(
+                [].concat(_argv, "--verbose"),
+                Build,
+                _stream(function(msg) {
+                    result += msg;
+                })
+            );
+            
+            assert(/^verb/.test(result));
         });
               
         it("should create a config object", function() {
@@ -206,7 +220,7 @@ describe("Dullard", function() {
                     assert(config);
                     
                     assert(config.steps.length);
-                    assert.equal(config.steps[0], "fooga");
+                    assert.equal(config.steps[0], "a-async");
                 })
             );
         });
@@ -248,13 +262,17 @@ describe("Dullard", function() {
         });
         
         it("should complain when a build fails", function() {
+            var result = "";
+            
             cli(
                 [].concat(_argv, "fooga"),
                 Build,
-                _stream(null, function(msg) {
-                    assert(msg);
+                _stream(function(msg) {
+                    result += msg;
                 })
             );
+            
+            assert(result.indexOf("Build failed") > -1);
         });
         
         it("should respect --quiet", function() {
@@ -289,7 +307,7 @@ describe("Dullard", function() {
             );
         });
         
-        it("should log build lifecycle events (no duration)", function() {
+        it("should log build lifecycle events", function() {
             var result = "";
             
             process.chdir("./test/specimens/config-js/fooga");
@@ -310,30 +328,6 @@ describe("Dullard", function() {
             );
             
             assert(result.indexOf("fooga") > -1);
-        });
-
-        it("should log build lifecycle events (duration)", function() {
-            var result = "";
-            
-            process.chdir("./test/specimens/config-js/fooga");
-            
-            cli(
-                _argv,
-                _build({
-                    run : function() {
-                        this.emit("log", { level : "info", duration : 1000, message : "fooga" });
-                    },
-                    on  : require("events").EventEmitter.prototype.on
-                }),
-                _stream(
-                    function(msg) {
-                        result += msg;
-                    }
-                )
-            );
-            
-            assert(result.indexOf("fooga") > -1);
-            assert(result.indexOf(" in ") > -1);
         });
     });
 });
