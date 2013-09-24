@@ -200,8 +200,13 @@ describe("Dullard", function() {
                     assert(config);
                     
                     assert(Object.keys(config.steps).length);
+                    assert.equal(config.steps["a-steps"].length, 1);
                     assert.equal(config.steps["a-steps"][0], "a");
+                    
+                    assert.equal(config.steps["b-steps"].length, 1);
                     assert.equal(config.steps["b-steps"][0], "b-async");
+                    
+                    assert.equal(config.steps["a-steps"].length, 1);
                     assert.equal(config.steps["c-steps"][0], "c");
                 })
             );
