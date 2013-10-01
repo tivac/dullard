@@ -1,12 +1,12 @@
 {
-	"steps" : {
-		"a-steps" : [
-			"a"
-		],
+    "steps" : {
+        "a-steps" : [
+            "a"
+        ],
 
-		"b-steps" : [
-			"b",
+        "b-steps" : [
+            "b",
             "b-async"
-		]
-	}
+        ]
+    }
 }

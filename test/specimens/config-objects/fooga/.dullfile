@@ -1,17 +1,17 @@
 {
-	"dirs" : [
+    "dirs" : [
         "../../tasks-a",
         "../../tasks-b",
         "../../tasks-c"
     ],
     
     "steps" : {
-		"b-steps" : [
-			"b-async"
-		],
+        "b-steps" : [
+            "b-async"
+        ],
 
-		"c-steps" : [
-			"c"
-		]
-	}
+        "c-steps" : [
+            "c"
+        ]
+    }
 }
