@@ -114,7 +114,7 @@ describe("Dullard", function() {
         it("should be chatty in verbose mode", function() {
             var result = "";
             
-            process.chdir("./test/specimens/config-json/fooga/wooga");
+            process.chdir("./test/specimens/config-json");
             
             cli(
                 [].concat(_argv, "--verbose"),
@@ -138,7 +138,7 @@ describe("Dullard", function() {
         });
         
         it("should find a local .dullfile containing JS", function() {
-            process.chdir("./test/specimens/config-js/fooga");
+            process.chdir("./test/specimens/config-js");
             
             cli(
                 _argv,
@@ -153,7 +153,7 @@ describe("Dullard", function() {
         });
         
         it("should find a local .dullfile containing JSON", function() {
-            process.chdir("./test/specimens/config-json/fooga/wooga");
+            process.chdir("./test/specimens/config-json");
             
             cli(
                 _argv,
@@ -198,7 +198,7 @@ describe("Dullard", function() {
         });
         
         it("should mix configs & argv, with argv taking precedence", function() {
-            process.chdir("./test/specimens/config-json/fooga/wooga");
+            process.chdir("./test/specimens/config-json");
             
             cli(
                 [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
@@ -212,7 +212,7 @@ describe("Dullard", function() {
         });
 
         it("should not mix multiple \"steps\" when they are arrays", function() {
-            process.chdir("./test/specimens/config-json/fooga/wooga");
+            process.chdir("./test/specimens/config-deep/fooga/wooga");
 
             cli(
                 _argv,
@@ -220,7 +220,8 @@ describe("Dullard", function() {
                     assert(config);
                     
                     assert(config.steps.length);
-                    assert.equal(config.steps[0], "a-async");
+                    assert.equal(config.steps[0], "c");
+                    assert.equal(config.steps[1], "c-async");
                 })
             );
         });
@@ -247,7 +248,7 @@ describe("Dullard", function() {
         });
         
         it("should run steps passed in via argv", function() {
-            process.chdir("./test/specimens/config-json/fooga/wooga");
+            process.chdir("./test/specimens/config-json");
             
             cli(
                 [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
@@ -276,7 +277,7 @@ describe("Dullard", function() {
         });
         
         it("should respect --quiet", function() {
-            process.chdir("./test/specimens/config-js/fooga");
+            process.chdir("./test/specimens/config-js");
             
             cli(
                 [].concat(_argv, "--quiet"),
@@ -310,7 +311,7 @@ describe("Dullard", function() {
         it("should log build lifecycle events", function() {
             var result = "";
             
-            process.chdir("./test/specimens/config-js/fooga");
+            process.chdir("./test/specimens/config-js");
             
             cli(
                 _argv,
