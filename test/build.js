@@ -322,5 +322,19 @@ describe("Dullard", function() {
             
             b1.run("a");
         });
+        
+        it("shouldn't confuse steps with Array.prototype methods (Issue #18)", function() {
+            var b1 = new Build({
+                    dirs : [
+                        "./test/specimens/tasks-other"
+                    ],
+                    
+                    steps : [
+                        "filter"
+                    ]
+                });
+            
+            b1.run();
+        });
     });
 });
