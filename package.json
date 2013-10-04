@@ -24,7 +24,7 @@
   "dependencies": {
     "optimist": "~0.6.0",
     "async": "~0.2.9",
-    "lodash": "~2.1.0",
+    "lodash": "~2.2.0",
     "uppity": "~0.1.0",
     "humanize-duration": "~0.2.0",
     "glob": "~3.2.6",
