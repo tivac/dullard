@@ -3,4 +3,4 @@
 
 "use strict";
 
-require("../lib/cli.js")(process.argv, require("../lib/build.js"), process.stderr);
+require("../lib/cli.js")(process.argv, require("../lib/build.js"), process.stderr, process);

@@ -12,7 +12,7 @@ var assert = require("assert"),
     _root = process.cwd(),
     _argv = [,,],
     
-    _build, _stream;
+    _build, _stream, _process;
 
 _build = function(fn, proto) {
     var B;
@@ -44,6 +44,16 @@ _stream = function(write) {
     s.write = write || function() {};
     
     return s;
+};
+
+_process = function(exit) {
+    return {
+        cwd : process.cwd,
+        on  : function(ev, fn) {
+            fn();
+        },
+        exit : exit || function() {}
+    };
 };
 
 describe("Dullard", function() {
@@ -93,7 +103,10 @@ describe("Dullard", function() {
                     function(msg) {
                         result += msg;
                     }
-                )
+                ),
+                _process(function(code) {
+                    assert.equal(code, 1);
+                })
             );
             
             assert(result.indexOf("No tasks available") > -1);
@@ -107,7 +120,8 @@ describe("Dullard", function() {
                     function(msg) {
                         assert(false, "Should not have been called");
                     }
-                )
+                ),
+                _process()
             );
         });
         
@@ -121,7 +135,8 @@ describe("Dullard", function() {
                 Build,
                 _stream(function(msg) {
                     result += msg;
-                })
+                }),
+                _process()
             );
             
             assert(/^verb/.test(result));
@@ -270,6 +285,9 @@ describe("Dullard", function() {
                 Build,
                 _stream(function(msg) {
                     result += msg;
+                }),
+                _process(function(code) {
+                    assert.equal(code, 1);
                 })
             );
             
