@@ -25,7 +25,7 @@ Options:
 
 ## Config ##
 
-Dullard will look for a file named `dullfile.js` or `dullfile.json` in the current directory or any parent directories & merge it with the CLI options (CLI takes precendence). It will merge all found results in the current branch of the directory tree with precedence being: `CLI -> Local -> Parent -> ... -> Root`.
+Dullard will look for a file named `.dullfile` in the current directory or any parent directories & merge it with the CLI options (CLI takes precendence). It will merge all found results in the current branch of the directory tree with precedence being: `CLI > Local > Parent > ... > Root`.
 
 ### Example Config ###
 
@@ -47,7 +47,6 @@ JS version
 
 ```javascript
 /*jshint node:true */
-
 "use strict";
 
 module.exports = {
@@ -72,7 +71,7 @@ module.exports = {
 };
 ```
 
-`dirs` is an array of directories to load tasks from. `steps` is one of two options: 1) an array of strings/functions or 2) an object containing named step collections that are each an array of strings/fucntions. Strings should match either the names of files in the task directories stripped of their extension or the name of a step collection.
+`dirs` is an array of directories to load tasks from. `steps` is one of two options: 1) an array of strings/functions or 2) an object containing named step collections that are each an array of strings/functions. Strings should match either the names of files in the task directories stripped of their extension or the name of a step collection.
 
 The config object will be passed as the first argument (`config` by convention) to [tasks](#tasks).
 
@@ -101,6 +100,17 @@ function exampleTaskFailureAsync(config, done) {
     done("Task Failed");
 }
 ```
+
+## Install ##
+
+1. `npm i -g dullard`
+
+## Develop ##
+
+1. `git clone git://github.com/tivac/dullard.git`
+1. `npm i`
+1. Make changes
+1. `npm test`
 
 ## FAQ ##
 
