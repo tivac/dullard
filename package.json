@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "mocha": "~1.15.1",
-    "istanbul": "~0.1.44"
+    "istanbul": "~0.2.0"
   },
   "dependencies": {
     "optimist": "~0.6.0",
