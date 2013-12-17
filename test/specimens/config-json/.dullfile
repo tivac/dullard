@@ -1,4 +1,8 @@
 {
+    "nooga" : {
+        "looga" : 5
+    },
+    
     "dirs" : [
         "../tasks-b"
     ],
