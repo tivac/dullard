@@ -75,6 +75,38 @@ module.exports = {
 
 The config object will be passed as the first argument (`config` by convention) to [tasks](#tasks).
 
+### Customizing Config Values ###
+
+Dullard tries hard to accept whatever & turn it into something useful. To this end the results of parsing the CLI with [`optimist`](https://github.com/substack/node-optimist) are merged into the config object after all the `.dullfile`s. This allows you to run builds with environment-specific settings easily, as you can override any settings via CLI args.
+
+For example, given the following `.dullfile` and CLI args
+
+```javascript
+{
+    "env" : "dev",
+    ...
+}
+```
+
+invoking dullard using the command `dullard --env=live` will set the `env` value to `"live"` instead of `"dev"`.
+
+Thanks to `optimist`'s ability to handle [dot-notation](https://github.com/substack/node-optimist#dot-notation) for arguments you can also set nested object arguments.
+
+`dullard --env=live --cdn.static=http://www.cdn.com` with the same `.dullfile` as above gives you a `config` object like this
+
+```javascript
+{
+    "env" : "dev",
+    "cdn" : {
+        "static" : "http://www.cdn.com"
+    }
+    ...
+}
+```
+
+#### Warning ####
+This only works for values that are __not__ one of Dullard's [CLI options](#usage).
+
 ## Tasks ##
 
 Tasks are simple modules that should export a single function. Each task function gets passed two arguments, a shared config object for state in the task chain & an optional callback for async tasks. The callback takes two possible arguments, an error object and an optional object to replace the shared config object. If the task is synchronous any return value will be considered an error.
