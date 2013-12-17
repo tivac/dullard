@@ -225,6 +225,25 @@ describe("Dullard", function() {
                 _stream()
             );
         });
+        
+        it("should mix configs & argv, setting arbitrary config values", function() {
+            process.chdir("./test/specimens/config-json");
+            
+            cli(
+                [].concat(_argv, "--fooga=true", "--wooga=hello", "--booga.wooga.googa=1", "--nooga.yooga=1"),
+                _build(function(config) {
+                    assert(config);
+                    
+                    assert.equal(config.fooga, "true");
+                    assert.equal(config.wooga, "hello");
+                    assert("googa" in config.booga.wooga);
+                    assert(config.booga.wooga.googa, 1);
+                    assert("yooga" in config.nooga);
+                    assert("looga" in config.nooga);
+                }),
+                _stream()
+            );
+        });
 
         it("should not mix multiple \"steps\" when they are arrays", function() {
             process.chdir("./test/specimens/config-deep/fooga/wooga");
