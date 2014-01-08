@@ -3,7 +3,6 @@ Dullard
 [![Build Status](https://travis-ci.org/tivac/dullard.png?branch=master)](https://travis-ci.org/tivac/dullard)
 [![NPM version](https://badge.fury.io/js/dullard.png)](http://badge.fury.io/js/dullard)
 [![Dependency Status](https://gemnasium.com/tivac/dullard.png)](https://gemnasium.com/tivac/dullard)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/tivac/dullard/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 Doing the same task repeatedly is boring. Let the computer do it instead.
 
