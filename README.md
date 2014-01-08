@@ -133,6 +133,10 @@ function exampleTaskFailureAsync(config, done) {
 }
 ```
 
+### Logging in a task ###
+
+Dullard makes a `log` function available to tasks via `config.log`, this is a reference to [`npmlog.log()`](https://github.com/npm/npmlog#basic-usage) and you may use it accordingly. It respects loglevel values passed via the CLI, either via `--loglevel=<level>` or the shorthand `--verbose` argument.
+
 ## Install ##
 
 1. `npm i -g dullard`
