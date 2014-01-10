@@ -18,7 +18,7 @@
     "url": "https://github.com/tivac/dullard/issues"
   },
   "devDependencies": {
-    "mocha": "~1.16.2",
+    "mocha": "~1.17.0",
     "istanbul": "~0.2.0"
   },
   "dependencies": {
