@@ -97,19 +97,26 @@ describe("Dullard", function() {
         
         it("should have a functioning `log` method on the config object", function() {
             var b1 = new Build({
-                    steps : function step1(config) {
-                        config.log("fooga");
-                    }
+                    steps : [
+                        function step1(config) {
+                            config.log("fooga");
+                        },
+                        function step2(config) {
+                            config.log("info", "booga %s", "wooga")
+                        }
+                    ]
                 }),
-                result = "";
-            
+                result = [];
+                
             b1.on("log", function(args) {
-                result += args.message;
+                result = result.concat(args.body);
             });
             
             b1.run();
             
             assert(result.indexOf("fooga") > -1);
+            assert(result.indexOf("booga %s") > -1);
+            assert(result.indexOf("wooga") > -1);
         });
         
         it("should fail on unknown step names", function() {

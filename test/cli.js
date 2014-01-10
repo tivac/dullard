@@ -346,7 +346,7 @@ describe("Dullard", function() {
         });
         
         it("should log build lifecycle events", function() {
-            var result = "";
+            var result = [];
             
             process.chdir("./test/specimens/config-js");
             
@@ -354,18 +354,20 @@ describe("Dullard", function() {
                 _argv,
                 _build({
                     run : function() {
-                        this.emit("log", { level : "info", message : "fooga" });
+                        this.emit("log", { level : "info", body : [ "fooga" ] });
+                        this.emit("log", { level : "info", body : [ "booga %s", "wooga" ]})
                     },
                     on  : require("events").EventEmitter.prototype.on
                 }),
                 _stream(
                     function(msg) {
-                        result += msg;
+                        result = result.concat(msg);
                     }
                 )
             );
             
-            assert(result.indexOf("fooga") > -1);
+            assert(result.indexOf(" fooga\n") > -1);
+            assert(result.indexOf(" booga wooga\n") > -1);
         });
     });
 });
