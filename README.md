@@ -26,7 +26,7 @@ Options:
 
 ## Config ##
 
-Dullard will look for a file named `.dullfile` in the current directory or any parent directories & merge it with the CLI options (CLI takes precendence). It will merge all found results in the current branch of the directory tree with precedence being: `CLI > Local > Parent > ... > Root`.
+Dullard will look for a file named `.dullfile` in the current directory or any parent directories & merge it with the CLI options. It will merge all found results in the current branch of the directory tree with precedence being: `CLI > Local > Parent > ... > Root`.
 
 ### Example Config ###
 
