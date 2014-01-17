@@ -698,7 +698,10 @@ module.exports = {
         Option: excludeFiles
         Disables style checking for specified paths.
     */
-    "excludeFiles": [ "node_modules/**", "external/**" ],
+    "excludeFiles": [
+        "node_modules/**",
+        "coverage/**"
+    ],
 
     /*
         Option: additionalRules
