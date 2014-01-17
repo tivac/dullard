@@ -102,7 +102,7 @@ describe("Dullard", function() {
                             config.log("fooga");
                         },
                         function step2(config) {
-                            config.log("info", "booga %s", "wooga")
+                            config.log("info", "booga %s", "wooga");
                         }
                     ]
                 }),
