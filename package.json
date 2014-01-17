@@ -6,7 +6,7 @@
   "bin": "./bin/cli.js",
   "main": "./lib/build.js",
   "scripts": {
-    "test": "istanbul test --print both ./node_modules/mocha/bin/_mocha"
+    "test": "node ./node_modules/jshint/bin/jshint . && node ./node_modules/jscs/bin/jscs -c ./.jscsrc lib/ && istanbul test --print both ./node_modules/mocha/bin/_mocha"
   },
   "repository": {
     "type": "git",
@@ -19,7 +19,9 @@
   },
   "devDependencies": {
     "mocha": "~1.17.0",
-    "istanbul": "~0.2.0"
+    "istanbul": "~0.2.0",
+    "jscs": "~1.2.3",
+    "jshint": "~2.4.1"
   },
   "dependencies": {
     "optimist": "~0.6.0",
