@@ -329,19 +329,15 @@ describe("Dullard", function() {
             
             b1.run("a");
         });
-        
-        it("shouldn't confuse steps with Array.prototype methods (Issue #18)", function() {
+
+        it("should supporting running the same task multiple times", function() {
             var b1 = new Build({
                     dirs : [
-                        "./test/specimens/tasks-other"
-                    ],
-                    
-                    steps : [
-                        "filter"
+                        "./test/specimens/tasks-a"
                     ]
                 });
-            
-            b1.run();
+
+            b1.run([ "a", "a" ]);
         });
     });
 });
