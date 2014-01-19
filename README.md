@@ -6,7 +6,10 @@ Dullard
 [![devDependency Status](https://david-dm.org/tivac/dullard/dev-status.png?theme=shields.io)](https://david-dm.org/tivac/dullard#info=devDependencies)
 
 
-Doing the same task repeatedly is boring. Let the computer do it instead.
+> "I have made this longer than usual because I have not had time to make it shorter." - Blaise Pascal
+
+
+Dullard is a simple NodeJS-powered task runner. It exists because doing the same thing repeatedly is boring. Much better to let the computer do it instead.
 
 ## Usage ##
 
