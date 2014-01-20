@@ -6,7 +6,10 @@
   "bin": "./bin/cli.js",
   "main": "./lib/build.js",
   "scripts": {
-    "test": "node ./node_modules/jshint/bin/jshint . && node ./node_modules/jscs/bin/jscs -c ./.jscsrc lib/ && istanbul test --print both ./node_modules/mocha/bin/_mocha"
+    "test": "npm run-script jscs && npm run-script jshint && npm run-script istanbul",
+    "jshint": "jshint .",
+    "jscs": "jscs -c ./.jscsrc lib/",
+    "istanbul": "istanbul test --print both ./node_modules/mocha/bin/_mocha"
   },
   "repository": {
     "type": "git",
