@@ -6,15 +6,15 @@ var assert = require("assert"),
     
     _      = require("lodash"),
     
-    cli    = require("../lib/cli.js"),
-    Build  = require("../lib/build.js"),
+    cli     = require("../lib/cli"),
+    Dullard = require("../lib/dullard"),
     
     _root = process.cwd(),
     _argv = [,,],
     
-    _build, _stream, _process;
+    _dullard, _stream, _process;
 
-_build = function(fn, proto) {
+_dullard = function(fn, proto) {
     var B;
     
     if(typeof fn === "object") {
@@ -22,8 +22,8 @@ _build = function(fn, proto) {
         fn    = null;
     }
     
-    B = fn || function() { Build.apply(this, Array.prototype.slice.call(arguments)); };
-    B.prototype = Object.create(Build.prototype);
+    B = fn || function() { Dullard.apply(this, Array.prototype.slice.call(arguments)); };
+    B.prototype = Object.create(Dullard.prototype);
     B.prototype.constructor = B;
     
     _.extend(
@@ -66,7 +66,7 @@ describe("Dullard", function() {
         it("should show help (& not run)", function() {
             cli({
                 argv   : [].concat(_argv, "-?"),
-                Build  : _build(function() {
+                Dullard  : _dullard(function() {
                         assert(false, "Should not have been called!");
                     }),
                 stream : _stream()
@@ -78,7 +78,7 @@ describe("Dullard", function() {
             
             cli({
                 argv : [].concat(_argv, "-l", "-d", "./test/specimens/tasks-a/"),
-                Build : _build({
+                Dullard : _dullard({
                     run : function() {
                         assert(false, "Should not have been called!");
                     }
@@ -98,7 +98,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : [].concat(_argv, "-l"),
-                Build : Build,
+                Dullard : Dullard,
                 stream : _stream(
                     function(msg) {
                         result += msg;
@@ -115,7 +115,7 @@ describe("Dullard", function() {
         it("shouldn't say anything when loglevel is \"silent\"", function() {
             cli({
                 argv : [].concat(_argv, "--silent"),
-                Build : Build,
+                Dullard : Dullard,
                 stream : _stream(
                     function(msg) {
                         assert(false, "Should not have been called");
@@ -132,7 +132,7 @@ describe("Dullard", function() {
             
             cli({
                 argv : [].concat(_argv, "--verbose"),
-                Build : Build,
+                Dullard : Dullard,
                 stream : _stream(function(msg) {
                     result += msg;
                 }),
@@ -145,7 +145,7 @@ describe("Dullard", function() {
         it("should create a config object", function() {
             cli({
                 argv  : _argv,
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                 }),
                 stream : _stream()
@@ -157,7 +157,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : _argv,
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert(config.dirs.length);
@@ -172,7 +172,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : _argv,
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert(config.dirs.length);
@@ -187,7 +187,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : _argv,
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert(config.root);
@@ -204,7 +204,7 @@ describe("Dullard", function() {
         it("should support multiple dirs passed on argv", function() {
             cli({
                 argv  : [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert.equal(config.dirs.length, 2);
@@ -217,7 +217,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert.equal(config.dirs.length, 2);
@@ -231,7 +231,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : [].concat(_argv, "--fooga=true", "--wooga=hello", "--booga.wooga.googa=1", "--nooga.yooga=1"),
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert.equal(config.fooga, "true");
@@ -250,7 +250,7 @@ describe("Dullard", function() {
 
             cli({
                 argv  : _argv,
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert(config.steps.length);
@@ -265,7 +265,7 @@ describe("Dullard", function() {
 
             cli({
                 argv  : _argv,
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert(Object.keys(config.steps).length);
@@ -286,7 +286,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
-                Build : _build({
+                Dullard : _dullard({
                     run : function(steps) {
                         assert.equal(steps[0], "wooga");
                         assert.equal(steps[1], "booga");
@@ -296,12 +296,12 @@ describe("Dullard", function() {
             });
         });
         
-        it("should complain when a build fails", function() {
+        it("should complain when a dullard fails", function() {
             var result = "";
             
             cli({
                 argv : [].concat(_argv, "fooga"),
-                Build : Build,
+                Dullard : Dullard,
                 stream : _stream(function(msg) {
                     result += msg;
                 }),
@@ -318,7 +318,7 @@ describe("Dullard", function() {
             
             cli({
                 argv : [].concat(_argv, "--quiet"),
-                Build : Build,
+                Dullard : Dullard,
                 stream : _stream(
                     function(error) {
                         assert.ifError(error, "Should not have been called");
@@ -335,7 +335,7 @@ describe("Dullard", function() {
             
             cli({
                 argv  : _argv,
-                Build : _build(function(config) {
+                Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert.equal(config.dirs.length, 0);
@@ -345,14 +345,14 @@ describe("Dullard", function() {
             });
         });
         
-        it("should log build lifecycle events", function() {
+        it("should log dullard lifecycle events", function() {
             var result = [];
             
             process.chdir("./test/specimens/config-js");
             
             cli({
                 argv  : _argv,
-                Build : _build({
+                Dullard : _dullard({
                     run : function() {
                         this.emit("log", { level : "info", body : [ "fooga" ] });
                         this.emit("log", { level : "info", body : [ "booga %s", "wooga" ]});

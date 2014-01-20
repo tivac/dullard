@@ -3,64 +3,64 @@
 
 var assert = require("assert"),
 
-    Build = require("../lib/build.js");
+    Dullard = require("../lib/dullard");
 
 describe("Dullard", function() {
-    describe("Build Class", function() {
+    describe("Main Class", function() {
         
         it("should be instantiable", function() {
-            assert(new Build({}));
-            assert(new Build());
+            assert(new Dullard({}));
+            assert(new Dullard());
         });
         
         it("should provide useful properties", function() {
-            var b1 = new Build();
+            var d1 = new Dullard();
             
-            assert("tasks" in b1);
-            assert("steps" in b1);
-            assert("_config" in b1);
+            assert("tasks" in d1);
+            assert("steps" in d1);
+            assert("_config" in d1);
         });
         
         it("should load tasks from specified directories", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     dirs : [
                         "./test/specimens/tasks-a",
                     ]
                 });
             
-            assert(Object.keys(b1.tasks).length);
+            assert(Object.keys(d1.tasks).length);
         });
         
         it("should only load top-level .js files as tasks", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     dirs : [
                         "./test/specimens/tasks-a",
                     ]
                 });
 
-            assert.equal(Object.keys(b1.tasks).length, 2);
+            assert.equal(Object.keys(d1.tasks).length, 2);
         });
 
         it("should handle no steps", function() {
-            (new Build()).run(function(err) {
+            (new Dullard()).run(function(err) {
                 assert(err);
             });
         });
         
         it("should support single-item steps", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : function step1() {
                         step = true;
                     }
                 }),
                 step;
             
-            b1.run();
+            d1.run();
             assert(step);
         });
         
         it("should run steps", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         function step1() {
                             step = true;
@@ -69,22 +69,22 @@ describe("Dullard", function() {
                 }),
                 step;
             
-            b1.run();
+            d1.run();
             assert(step);
         });
         
         it("should pass a config object to steps", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : function step1(config) {
                         assert(config);
                     }
                 });
             
-            b1.run();
+            d1.run();
         });
         
         it("should put a `log` method on the config object", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : function step1(config) {
                         assert(config);
                         assert(config.log);
@@ -92,11 +92,11 @@ describe("Dullard", function() {
                     }
                 });
             
-            b1.run();
+            d1.run();
         });
         
         it("should have a functioning `log` method on the config object", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         function step1(config) {
                             config.log("fooga");
@@ -108,11 +108,11 @@ describe("Dullard", function() {
                 }),
                 result = [];
                 
-            b1.on("log", function(args) {
+            d1.on("log", function(args) {
                 result = result.concat(args.body);
             });
             
-            b1.run();
+            d1.run();
             
             assert(result.indexOf("fooga") > -1);
             assert(result.indexOf("booga %s") > -1);
@@ -120,31 +120,31 @@ describe("Dullard", function() {
         });
         
         it("should fail on unknown step names", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         "fooga"
                     ]
                 });
             
-            b1.run(function(err) {
+            d1.run(function(err) {
                 assert(err);
             });
         });
         
         it("should call completion callback", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         function step1() {}
                     ]
                 });
             
-            b1.run(function() {
+            d1.run(function() {
                 assert(true);
             });
         });
         
         it("should call completion callback with errors", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         function step1() {
                             return "error";
@@ -152,14 +152,14 @@ describe("Dullard", function() {
                     ]
                 });
             
-            b1.run(function(err) {
+            d1.run(function(err) {
                 assert(err);
                 assert.equal(err, "error");
             });
         });
         
         it("should run async steps in order", function(done) {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         function step1() {
                             assert.equal(flag, undefined);
@@ -184,7 +184,7 @@ describe("Dullard", function() {
                 }),
                 flag;
             
-            b1.run(function() {
+            d1.run(function() {
                 assert.equal(flag, "3");
                 
                 done();
@@ -192,7 +192,7 @@ describe("Dullard", function() {
         });
         
         it("should call completion callback with errors from async steps", function(done) {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         function (config, done) {
                             process.nextTick(function() {
@@ -202,7 +202,7 @@ describe("Dullard", function() {
                     ]
                 });
             
-            b1.run(function(err) {
+            d1.run(function(err) {
                 assert(err);
                 assert.equal(err, "error");
                 
@@ -211,7 +211,7 @@ describe("Dullard", function() {
         });
         
         it("should let steps override the config object", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : [
                         function (config, done) {
                             done(null, { fooga : true });
@@ -219,14 +219,14 @@ describe("Dullard", function() {
                     ]
                 });
             
-            b1.run();
+            d1.run();
             
-            assert(b1._config.fooga);
-            assert(!("steps" in b1._config));
+            assert(d1._config.fooga);
+            assert(!("steps" in d1._config));
         });
         
         it("should run the \"default\" step collection when given an object", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : {
                         "default" : [
                             function() {
@@ -237,13 +237,13 @@ describe("Dullard", function() {
                 }),
                 step;
             
-            b1.run();
+            d1.run();
             
             assert(step);
         });
         
         it("should support choosing a named step collection", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : {
                         "fooga" : [
                             function() {
@@ -254,13 +254,13 @@ describe("Dullard", function() {
                 }),
                 step;
             
-            b1.run("fooga");
+            d1.run("fooga");
             
             assert(step);
         });
         
         it("should support choosing a named step collection with a callback", function(done) {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : {
                         "fooga" : [
                             function() {}
@@ -268,7 +268,7 @@ describe("Dullard", function() {
                     }
                 });
             
-            b1.run("fooga", function() {
+            d1.run("fooga", function() {
                 assert(true);
                 
                 done();
@@ -276,7 +276,7 @@ describe("Dullard", function() {
         });
         
         it("should let step collections appear in other step collections", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : {
                         "default" : [
                             "fooga"
@@ -291,13 +291,13 @@ describe("Dullard", function() {
                 }),
                 step;
             
-            b1.run();
+            d1.run();
             
             assert(step);
         });
         
         it("should run an array of steps passed to run()", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     steps : {
                         "default" : [
                             "fooga"
@@ -314,30 +314,30 @@ describe("Dullard", function() {
                 }),
                 fooga, booga;
             
-            b1.run([ "fooga", "booga" ]);
+            d1.run([ "fooga", "booga" ]);
             
             assert(fooga);
             assert(booga);
         });
         
         it("should run a single task passed to run()", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     dirs : [
                         "./test/specimens/tasks-a"
                     ]
                 });
             
-            b1.run("a");
+            d1.run("a");
         });
 
         it("should supporting running the same task multiple times", function() {
-            var b1 = new Build({
+            var d1 = new Dullard({
                     dirs : [
                         "./test/specimens/tasks-a"
                     ]
                 });
 
-            b1.run([ "a", "a" ]);
+            d1.run([ "a", "a" ]);
         });
     });
 });

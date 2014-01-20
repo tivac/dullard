@@ -3,9 +3,9 @@
 
 "use strict";
 
-require("../lib/cli.js")({
+require("../lib/cli")({
     argv    : process.argv,
-    Build   : require("../lib/build.js"),
+    Dullard : require("../lib/dullard"),
     stream  : process.stderr,
     process : process
 });
