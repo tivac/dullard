@@ -1,12 +1,12 @@
 /*jshint node:true */
 "use strict";
 
-var Build = require("../lib/build.js");
+var Dullard = require("../lib/dullard");
 
 describe("Dullard", function() {
-    describe("Build Class", function() {
+    describe("Dullard Class", function() {
         it("shouldn't confuse steps with Array.prototype methods (Issue #18)", function() {
-            var b1 = new Build({
+            var b1 = new Dullard({
                     dirs : [
                         "./test/specimens/tasks-other"
                     ],
