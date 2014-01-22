@@ -15,22 +15,22 @@
         "description" : "List available tasks"
     },
     
-    "loglevel"  : {
-        "description" : "Chattiness, one of: silly, verbose, info, warn, error, & silent",
-        "default"     : "info"
-    },
-    
     "quiet" : {
         "alias"       : "q",
         "description" : "Minimal output"
     },
     
-    "silent" : {
-        "description" : "No output until something goes awry"
-    },
-    
     "verbose" : {
         "alias"       : "v",
         "description" : "Verbose logging"
+    },
+
+    "loglevel"  : {
+        "description" : "Chattiness, one of: silly, verbose, info, warn, error, & silent",
+        "default"     : "info"
+    },
+    
+    "silent" : {
+        "description" : "No output until something goes awry"
     }
 }
