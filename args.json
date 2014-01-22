@@ -4,6 +4,10 @@
         "description" : "Show usage",
         "boolean"     : true
     },
+
+    "version" : {
+        "boolean"     : true
+    },
     
     "dirs" : {
         "alias"       : "d",

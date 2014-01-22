@@ -69,7 +69,21 @@ describe("Dullard", function() {
                 Dullard  : _dullard(function() {
                         assert(false, "Should not have been called!");
                     }),
-                stream : _stream()
+                stream : _stream(function(help) {
+                    assert(help.indexOf("Options:") > -1);
+                })
+            });
+        });
+
+        it("should show version (& not run)", function() {
+            cli({
+                argv   : [].concat(_argv, "--version"),
+                Dullard  : _dullard(function() {
+                        assert(false, "Should not have been called!");
+                    }),
+                stream : _stream(function(version) {
+                    assert(version.indexOf("dullard") > -1);
+                })
             });
         });
         
