@@ -40,5 +40,21 @@ describe("Dullard", function() {
                 done();
             });
         });
+
+        it("should run errors from tasks using done() through util.format (Issue #35)", function(done) {
+            var d1 = new Dullard({
+                    steps : [
+                        function(config, cb) {
+                            cb("%s", "test");
+                        }
+                    ]
+                });
+
+            d1.run(function(error) {
+                assert.equal(error, "test");
+
+                done();
+            });
+        });
     });
 });
