@@ -65,11 +65,11 @@ describe("Dullard", function() {
         
         it("should show help (& not run)", function() {
             cli({
-                argv   : [].concat(_argv, "-?"),
-                Dullard  : _dullard(function() {
+                argv    : [].concat(_argv, "-?"),
+                Dullard : _dullard(function() {
                         assert(false, "Should not have been called!");
                     }),
-                stream : _stream(function(help) {
+                stream  : _stream(function(help) {
                     assert(help.indexOf("Options:") > -1);
                 })
             });
@@ -77,11 +77,11 @@ describe("Dullard", function() {
 
         it("should show version (& not run)", function() {
             cli({
-                argv   : [].concat(_argv, "--version"),
-                Dullard  : _dullard(function() {
+                argv    : [].concat(_argv, "--version"),
+                Dullard : _dullard(function() {
                         assert(false, "Should not have been called!");
                     }),
-                stream : _stream(function(version) {
+                stream  : _stream(function(version) {
                     assert(version.indexOf("dullard") > -1);
                 })
             });
@@ -91,13 +91,13 @@ describe("Dullard", function() {
             var msgs = "";
             
             cli({
-                argv : [].concat(_argv, "-l", "-d", "./test/specimens/tasks-a/"),
+                argv    : [].concat(_argv, "-l", "-d", "./test/specimens/tasks-a/"),
                 Dullard : _dullard({
                     run : function() {
                         assert(false, "Should not have been called!");
                     }
                 }),
-                stream : _stream(
+                stream  : _stream(
                     function(msg) {
                         msgs += msg;
                     }
@@ -111,9 +111,9 @@ describe("Dullard", function() {
             var result = "";
             
             cli({
-                argv  : [].concat(_argv, "-l"),
+                argv    : [].concat(_argv, "-l"),
                 Dullard : Dullard,
-                stream : _stream(
+                stream  : _stream(
                     function(msg) {
                         result += msg;
                     }
@@ -128,14 +128,14 @@ describe("Dullard", function() {
         
         it("shouldn't say anything when loglevel is \"silent\"", function() {
             cli({
-                argv : [].concat(_argv, "--silent"),
+                argv    : [].concat(_argv, "--silent"),
                 Dullard : Dullard,
-                stream : _stream(
+                process : _process(),
+                stream  : _stream(
                     function(msg) {
                         assert(false, "Should not have been called");
                     }
-                ),
-                process : _process()
+                )
             });
         });
         
@@ -145,12 +145,12 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli({
-                argv : [].concat(_argv, "--verbose"),
+                argv    : [].concat(_argv, "--verbose"),
                 Dullard : Dullard,
-                stream : _stream(function(msg) {
+                process : _process(),
+                stream  : _stream(function(msg) {
                     result += msg;
-                }),
-                process : _process()
+                })
             });
             
             assert(/^verb/.test(result));
@@ -158,11 +158,11 @@ describe("Dullard", function() {
               
         it("should create a config object", function() {
             cli({
-                argv  : _argv,
+                argv    : _argv,
+                stream  : _stream(),
                 Dullard : _dullard(function(config) {
                     assert(config);
-                }),
-                stream : _stream()
+                })
             });
         });
         
@@ -170,14 +170,14 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-js");
             
             cli({
-                argv  : _argv,
+                argv    : _argv,
+                stream  : _stream(),
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert(config.dirs.length);
                     assert(config.steps.length);
-                }),
-                stream : _stream()
+                })
             });
         });
         
@@ -185,14 +185,14 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli({
-                argv  : _argv,
+                argv    : _argv,
+                stream  : _stream(),
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert(config.dirs.length);
                     assert(config.steps.length);
-                }),
-                stream : _stream()
+                })
             });
         });
         
@@ -200,7 +200,8 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-deep/fooga/wooga");
             
             cli({
-                argv  : _argv,
+                argv    : _argv,
+                stream  : _stream(),
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
@@ -210,14 +211,13 @@ describe("Dullard", function() {
                     
                     assert.equal(config.dirs.length, 3);
                     assert(config.steps.length, 2);
-                }),
-                stream : _stream()
+                })
             });
         });
         
         it("should support multiple dirs passed on argv", function() {
             cli({
-                argv  : [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
+                argv    : [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
@@ -230,13 +230,13 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli({
-                argv  : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
+                argv    : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
+                stream : _stream(),
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert.equal(config.dirs.length, 2);
-                }),
-                stream : _stream()
+                })
             });
         });
         
@@ -244,7 +244,8 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli({
-                argv  : [].concat(_argv, "--fooga=true", "--wooga=hello", "--booga.wooga.googa=1", "--nooga.yooga=1"),
+                argv    : [].concat(_argv, "--fooga=true", "--wooga=hello", "--booga.wooga.googa=1", "--nooga.yooga=1"),
+                stream  : _stream(),
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
@@ -254,8 +255,7 @@ describe("Dullard", function() {
                     assert(config.booga.wooga.googa, 1);
                     assert("yooga" in config.nooga);
                     assert("looga" in config.nooga);
-                }),
-                stream : _stream()
+                })
             });
         });
 
@@ -263,7 +263,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-deep/fooga/wooga");
 
             cli({
-                argv  : _argv,
+                argv    : _argv,
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
@@ -278,7 +278,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-objects/fooga");
 
             cli({
-                argv  : _argv,
+                argv    : _argv,
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
@@ -300,13 +300,13 @@ describe("Dullard", function() {
             
             cli({
                 argv  : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
+                stream : _stream(),
                 Dullard : _dullard({
                     run : function(steps) {
                         assert.equal(steps[0], "wooga");
                         assert.equal(steps[1], "booga");
                     }
-                }),
-                stream : _stream()
+                })
             });
         });
         
@@ -314,9 +314,9 @@ describe("Dullard", function() {
             var result = "";
             
             cli({
-                argv : [].concat(_argv, "fooga"),
+                argv    : [].concat(_argv, "fooga"),
                 Dullard : Dullard,
-                stream : _stream(function(msg) {
+                stream  : _stream(function(msg) {
                     result += msg;
                 }),
                 process : _process(function(code) {
@@ -331,14 +331,11 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-js");
             
             cli({
-                argv : [].concat(_argv, "--quiet"),
+                argv    : [].concat(_argv, "--quiet"),
                 Dullard : Dullard,
-                stream : _stream(
+                stream  : _stream(
                     function(error) {
-                        assert.ifError(error, "Should not have been called");
-                    },
-                    function(error) {
-                        assert.ifError(error, "Should not have been called");
+                        assert(!error, "Should not have been called");
                     }
                 )
             });
@@ -348,14 +345,14 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-blank");
             
             cli({
-                argv  : _argv,
+                argv    : _argv,
+                stream  : _stream(),
                 Dullard : _dullard(function(config) {
                     assert(config);
                     
                     assert.equal(config.dirs.length, 0);
                     assert(!("steps" in config));
-                }),
-                stream : _stream()
+                })
             });
         });
         
@@ -365,7 +362,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-js");
             
             cli({
-                argv  : _argv,
+                argv    : _argv,
                 Dullard : _dullard({
                     run : function() {
                         this.emit("log", { level : "info", body : [ "fooga" ] });
@@ -373,7 +370,7 @@ describe("Dullard", function() {
                     },
                     on  : require("events").EventEmitter.prototype.on
                 }),
-                stream : _stream(
+                stream  : _stream(
                     function(msg) {
                         result = result.concat(msg);
                     }
