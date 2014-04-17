@@ -1,11 +1,14 @@
 #!/usr/bin/env node
-/*jshint node:true */
-
 "use strict";
 
-require("../lib/cli")({
+var Cli = require("../lib/cli"),
+    cli;
+
+cli = new Cli({
     argv    : process.argv,
     Dullard : require("../lib/dullard"),
     stream  : process.stderr,
     process : process
 });
+
+cli.run();
