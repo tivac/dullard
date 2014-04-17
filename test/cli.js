@@ -1,60 +1,18 @@
 /*jshint node:true */
 "use strict";
 
-var assert = require("assert"),
-    stream = require("stream"),
+var path   = require("path"),
+    assert = require("assert"),
     
-    _      = require("lodash"),
+    cli      = require("../lib/cli"),
+    Dullard  = require("../lib/dullard"),
     
-    cli     = require("../lib/cli"),
-    Dullard = require("../lib/dullard"),
+    _dullard = require("./lib/_dullard"),
+    _stream  = require("./lib/_stream"),
+    _process = require("./lib/_process"),
     
     _root = process.cwd(),
-    _argv = [,,],
-    
-    _dullard, _stream, _process;
-
-_dullard = function(fn, proto) {
-    var B;
-    
-    if(typeof fn === "object") {
-        proto = fn;
-        fn    = null;
-    }
-    
-    B = fn || function() { Dullard.apply(this, Array.prototype.slice.call(arguments)); };
-    B.prototype = Object.create(Dullard.prototype);
-    B.prototype.constructor = B;
-    
-    _.extend(
-        B.prototype,
-        {
-            run : function() {},
-            on  : function() {}
-        },
-        proto || {}
-    );
-    
-    return B;
-};
-
-_stream = function(write) {
-    var s = new stream.Stream();
-    
-    s.write = write || function() {};
-    
-    return s;
-};
-
-_process = function(exit) {
-    return {
-        cwd : process.cwd,
-        on  : function(ev, fn) {
-            fn();
-        },
-        exit : exit || function() {}
-    };
-};
+    _argv = [,,];
 
 describe("Dullard", function() {
     describe("CLI", function() {
@@ -132,7 +90,7 @@ describe("Dullard", function() {
                 Dullard : Dullard,
                 process : _process(),
                 stream  : _stream(
-                    function(msg) {
+                    function() {
                         assert(false, "Should not have been called");
                     }
                 )
@@ -160,8 +118,10 @@ describe("Dullard", function() {
             cli({
                 argv    : _argv,
                 stream  : _stream(),
-                Dullard : _dullard(function(config) {
-                    assert(config);
+                Dullard : _dullard({
+                    addConfig : function(config) {
+                        assert(config);
+                    }
                 })
             });
         });
@@ -172,11 +132,14 @@ describe("Dullard", function() {
             cli({
                 argv    : _argv,
                 stream  : _stream(),
-                Dullard : _dullard(function(config) {
-                    assert(config);
-                    
-                    assert(config.dirs.length);
-                    assert(config.steps.length);
+                Dullard : _dullard({
+                    addConfig : function(config) {
+                        assert(config);
+                        
+                        if(typeof config === "string") {
+                            assert(config.indexOf(path.join("config-js", ".dullfile")) > -1);
+                        }
+                    }
                 })
             });
         });
@@ -187,11 +150,14 @@ describe("Dullard", function() {
             cli({
                 argv    : _argv,
                 stream  : _stream(),
-                Dullard : _dullard(function(config) {
-                    assert(config);
-                    
-                    assert(config.dirs.length);
-                    assert(config.steps.length);
+                Dullard : _dullard({
+                    addConfig : function(config) {
+                        assert(config);
+                        
+                        if(typeof config === "string") {
+                            assert(config.indexOf(path.join("config-json", ".dullfile")) > -1);
+                        }
+                    }
                 })
             });
         });
