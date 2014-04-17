@@ -123,21 +123,9 @@ describe("Dullard", function() {
             assert(/^verb/.test(result));
         });
               
-        it("should create a config object", function() {
-            var cli = new Cli({
-                    argv    : _argv,
-                    Dullard : _dullard({
-                        addConfig : function(config) {
-                            assert(config);
-                        }
-                    })
-                });
-
-            cli.run();
-        });
-        
         it("should find a local .dullfile containing JS", function() {
-            var cli;
+            var configs = [],
+                cli;
 
             process.chdir("./test/specimens/config-js");
             
@@ -145,20 +133,28 @@ describe("Dullard", function() {
                 argv    : _argv,
                 Dullard : _dullard({
                     addConfig : function(config) {
-                        assert(config);
-                        
-                        if(typeof config === "string") {
-                            assert(config.indexOf(path.join("config-js", ".dullfile")) > -1);
-                        }
+                        configs.push(config);
                     }
                 })
             });
 
             cli.run();
+
+            configs
+                .filter(function(config) {
+                    return typeof config === "string";
+                })
+                .forEach(function(config) {
+                    assert(config);
+
+                    assert(typeof config === "string");
+                    assert(config.indexOf(path.join("config-js", ".dullfile")) > -1);
+                });
         });
         
         it("should find a local .dullfile containing JSON", function() {
-            var cli;
+            var configs = [],
+                cli;
 
             process.chdir("./test/specimens/config-json");
             
@@ -166,16 +162,23 @@ describe("Dullard", function() {
                 argv    : _argv,
                 Dullard : _dullard({
                     addConfig : function(config) {
-                        assert(config);
-                        
-                        if(typeof config === "string") {
-                            assert(config.indexOf(path.join("config-json", ".dullfile")) > -1);
-                        }
+                        configs.push(config);
                     }
                 })
             });
 
             cli.run();
+
+            configs
+                .filter(function(config) {
+                    return typeof config === "string";
+                })
+                .forEach(function(config) {
+                    assert(config);
+
+                    assert(typeof config === "string");
+                    assert(config.indexOf(path.join("config-json", ".dullfile")) > -1);
+                });
         });
         
         it("should find all .dullfile files in parent directories", function() {
@@ -214,30 +217,18 @@ describe("Dullard", function() {
             assert.equal(result._config.dirs.length, 2);
         });
         
-        it("should mix configs & argv, with argv taking precedence", function() {
+        it("should allow setting arbitrary config values from argv", function() {
             var cli, result;
 
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
-                Dullard : Dullard
-            });
-
-            result = cli._dullard();
-
-            assert(result._config);
-                    
-            assert.equal(result._config.dirs.length, 2);
-        });
-        
-        it("should mix configs & argv, setting arbitrary config values", function() {
-            var cli, result;
-
-            process.chdir("./test/specimens/config-json");
-            
-            cli = new Cli({
-                argv    : [].concat(_argv, "--fooga=true", "--wooga=hello", "--booga.wooga.googa=1", "--nooga.yooga=1"),
+                argv    : [].concat(
+                    _argv,
+                    "--single=argv",
+                    "--nested.nested.argv=argv",
+                    "--nested.argv=argv"
+                ),
                 Dullard : Dullard
             });
 
@@ -247,56 +238,22 @@ describe("Dullard", function() {
             
             console.log(result._config); //TODO: REMOVE DEBUGGING
 
-            assert.equal(result._config.fooga, "true");
-            assert.equal(result._config.wooga, "hello");
+            assert.equal(result._config.fooga, "argv");
+            assert.equal(result._config.wooga, "argv");
             assert("googa" in result._config.booga.wooga);
-            assert(result._config.booga.wooga.googa, 1);
+            assert(result._config.booga.wooga.googa, "argv");
             assert("yooga" in result._config.nooga);
             assert("looga" in result._config.nooga);
         });
 
-        it("should not mix multiple \"steps\" when they are arrays", function() {
-            var cli;
 
-            process.chdir("./test/specimens/config-deep/fooga/wooga");
-
-            cli({
-                argv    : _argv,
-                Dullard : _dullard(function(config) {
-                    assert(config);
-                    
-                    assert(config.steps.length);
-                    assert.equal(config.steps[0], "c");
-                    assert.equal(config.steps[1], "c-async");
-                })
-            });
-        });
-
-        it("should mix multiple \"steps\" when they are objects", function() {
-            process.chdir("./test/specimens/config-objects/fooga");
-
-            cli({
-                argv    : _argv,
-                Dullard : _dullard(function(config) {
-                    assert(config);
-                    
-                    assert(Object.keys(config.steps).length);
-                    assert.equal(config.steps["a-steps"].length, 1);
-                    assert.equal(config.steps["a-steps"][0], "a");
-                    
-                    assert.equal(config.steps["b-steps"].length, 1);
-                    assert.equal(config.steps["b-steps"][0], "b-async");
-                    
-                    assert.equal(config.steps["a-steps"].length, 1);
-                    assert.equal(config.steps["c-steps"][0], "c");
-                })
-            });
-        });
         
         it("should run steps passed in via argv", function() {
+            var cli;
+
             process.chdir("./test/specimens/config-json");
             
-            cli({
+            cli = new Cli({
                 argv  : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
                 stream : _stream(),
                 Dullard : _dullard({
@@ -306,29 +263,34 @@ describe("Dullard", function() {
                     }
                 })
             });
+
+            cli.run();
         });
         
         it("should complain when a dullard fails", function() {
-            var result = "";
+            var result = "",
+                cli = new Cli({
+                    argv    : [].concat(_argv, "fooga"),
+                    Dullard : Dullard,
+                    stream  : _stream(function(msg) {
+                        result += msg;
+                    }),
+                    process : _process(function(code) {
+                        assert.equal(code, 1);
+                    })
+                });
             
-            cli({
-                argv    : [].concat(_argv, "fooga"),
-                Dullard : Dullard,
-                stream  : _stream(function(msg) {
-                    result += msg;
-                }),
-                process : _process(function(code) {
-                    assert.equal(code, 1);
-                })
-            });
-            
+            cli.run();
+
             assert(result.indexOf("Build failed") > -1);
         });
         
         it("should respect --quiet", function() {
+            var cli;
+
             process.chdir("./test/specimens/config-js");
             
-            cli({
+            cli = new Cli({
                 argv    : [].concat(_argv, "--quiet"),
                 Dullard : Dullard,
                 stream  : _stream(
@@ -337,12 +299,16 @@ describe("Dullard", function() {
                     }
                 )
             });
+
+            cli.run();
         });
         
         it("should handle mostly-empty configs", function() {
+            var cli;
+
             process.chdir("./test/specimens/config-blank");
             
-            cli({
+            cli = new Cli({
                 argv    : _argv,
                 stream  : _stream(),
                 Dullard : _dullard(function(config) {
@@ -352,14 +318,17 @@ describe("Dullard", function() {
                     assert(!("steps" in config));
                 })
             });
+
+            cli.run();
         });
         
         it("should log dullard lifecycle events", function() {
-            var result = [];
+            var result = [],
+                cli;
             
             process.chdir("./test/specimens/config-js");
             
-            cli({
+            cli = new Cli({
                 argv    : _argv,
                 Dullard : _dullard({
                     run : function() {
@@ -374,6 +343,8 @@ describe("Dullard", function() {
                     }
                 )
             });
+
+            cli.run();
             
             assert(result.indexOf(" fooga\n") > -1);
             assert(result.indexOf(" booga wooga\n") > -1);

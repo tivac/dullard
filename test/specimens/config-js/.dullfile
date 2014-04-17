@@ -9,5 +9,11 @@ module.exports = {
     
     steps : [
         "a"
-    ]
+    ],
+
+    nested : {
+        "config-js" : "config-js"
+    },
+
+    "config-js" : "config-js"
 };
