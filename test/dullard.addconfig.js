@@ -12,24 +12,25 @@ describe("Dullard", function() {
             var d = new Dullard();
 
             d.addConfig({
-                dirs  : [
+                dirs   : [
                     path.resolve(__dirname, "./specimens/tasks-a")
                 ],
 
-                fooga : 1,
-                wooga : {
-                    nooga : 1
+                object : "object",
+                nested : {
+                    object : "object"
                 }
             });
 
             assert.equal(Object.keys(d.tasks).length, 2);
             assert("a-async" in d.tasks);
-            assert("a" in d.tasks);
+            assert("a"       in d.tasks);
 
-            assert("fooga" in d._config);
-            assert("wooga" in d._config);
-            assert("nooga" in d._config.wooga);
-            assert.equal(d._config.wooga.nooga, 1);
+            assert("object" in d._config);
+            assert.equal(d._config.object, "object");
+            assert("nested" in d._config);
+            assert("object" in d._config.nested);
+            assert.equal(d._config.nested.object, "object");
 
             assert(d._config.dirs.length);
             assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-a")) > -1);
@@ -42,13 +43,15 @@ describe("Dullard", function() {
 
             assert.equal(Object.keys(d.tasks).length, 2);
             assert("b-async" in d.tasks);
-            assert("b" in d.tasks);
+            assert("b"       in d.tasks);
 
             assert.equal(d.steps.default[0], "a");
 
-            assert("nooga" in d._config);
-            assert("looga" in d._config.nooga);
-            assert.equal(d._config.nooga.looga, 5);
+            assert("config-json" in d._config);
+            assert.equal(d._config["config-json"], "config-json");
+            assert("nested" in d._config);
+            assert("config-json" in d._config.nested);
+            assert.equal(d._config.nested["config-json"], "config-json");
 
             assert(d._config.dirs.length);
             assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-b")) > -1);
@@ -62,59 +65,59 @@ describe("Dullard", function() {
 
             assert.equal(Object.keys(d.tasks).length, 4);
             assert("a-async" in d.tasks);
-            assert("a" in d.tasks);
+            assert("a"       in d.tasks);
             assert("b-async" in d.tasks);
-            assert("b" in d.tasks);
+            assert("b"       in d.tasks);
 
-            assert("booga" in d._config);
-            assert.equal(d._config.booga, "config-json");
+            assert("config-json" in d._config);
+            assert.equal(d._config["config-json"], "config-json");
             
-            assert("nooga" in d._config);
-            assert("looga" in d._config.nooga);
-            assert.equal(d._config.nooga.looga, "config-json");
-            assert.equal(d._config.nooga.tooga, "config-js");
+            assert("nested" in d._config);
+            assert("config-json" in d._config.nested);
+            assert("config-js" in d._config.nested);
+            assert.equal(d._config.nested["config-json"], "config-json");
+            assert.equal(d._config.nested["config-js"], "config-js");
 
             assert(d._config.dirs.length);
             assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-b")) > -1);
             assert(d._config.dirs[1].indexOf(path.join("specimens", "tasks-a")) > -1);
         });
 
-        it.skip("should not mix multiple \"steps\" when they are arrays", function() {
-            var cli;
+        it("should not mix multiple \"steps\" when they are arrays", function() {
+            var d = new Dullard();
 
-            process.chdir("./test/specimens/config-deep/fooga/wooga");
+            d.addConfig(path.resolve(__dirname, "./specimens/config-deep/.dullfile"));
+            d.addConfig(path.resolve(__dirname, "./specimens/config-deep/fooga/.dullfile"));
+            d.addConfig(path.resolve(__dirname, "./specimens/config-deep/fooga/wooga/.dullfile"));
 
-            cli({
-                argv    : _argv,
-                Dullard : _dullard(function(config) {
-                    assert(config);
-                    
-                    assert(config.steps.length);
-                    assert.equal(config.steps[0], "c");
-                    assert.equal(config.steps[1], "c-async");
-                })
-            });
+            assert.equal(Object.keys(d.tasks).length, 6);
+            assert("a-async" in d.tasks);
+            assert("a"       in d.tasks);
+            assert("b-async" in d.tasks);
+            assert("b"       in d.tasks);
+            assert("c-async" in d.tasks);
+            assert("c"       in d.tasks);
+
+            assert.equal(d._config.steps.default.length, 2);
+            assert.equal(d._config.steps.default[0], "c");
+            assert.equal(d._config.steps.default[1], "c-async");
         });
 
-        it.skip("should mix multiple \"steps\" when they are objects", function() {
-            process.chdir("./test/specimens/config-objects/fooga");
+        it("should mix multiple \"steps\" when they are objects", function() {
+            var d = new Dullard();
 
-            cli({
-                argv    : _argv,
-                Dullard : _dullard(function(config) {
-                    assert(config);
-                    
-                    assert(Object.keys(config.steps).length);
-                    assert.equal(config.steps["a-steps"].length, 1);
-                    assert.equal(config.steps["a-steps"][0], "a");
-                    
-                    assert.equal(config.steps["b-steps"].length, 1);
-                    assert.equal(config.steps["b-steps"][0], "b-async");
-                    
-                    assert.equal(config.steps["a-steps"].length, 1);
-                    assert.equal(config.steps["c-steps"][0], "c");
-                })
-            });
+            d.addConfig(path.resolve(__dirname, "./specimens/config-objects/.dullfile"));
+            d.addConfig(path.resolve(__dirname, "./specimens/config-objects/fooga/.dullfile"));
+
+            assert(Object.keys(d._config.steps).length);
+            assert.equal(d._config.steps["a-steps"].length, 1);
+            assert.equal(d._config.steps["a-steps"][0], "a");
+            
+            assert.equal(d._config.steps["b-steps"].length, 1);
+            assert.equal(d._config.steps["b-steps"][0], "b-async");
+            
+            assert.equal(d._config.steps["a-steps"].length, 1);
+            assert.equal(d._config.steps["c-steps"][0], "c");
         });
     });
 });

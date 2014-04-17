@@ -225,7 +225,7 @@ describe("Dullard", function() {
             cli = new Cli({
                 argv    : [].concat(
                     _argv,
-                    "--single=argv",
+                    "--argv=argv",
                     "--nested.nested.argv=argv",
                     "--nested.argv=argv"
                 ),
@@ -236,35 +236,38 @@ describe("Dullard", function() {
 
             assert(result._config);
             
-            console.log(result._config); //TODO: REMOVE DEBUGGING
+            assert.equal(result._config.argv, "argv");
+            
+            assert("nested" in result._config);
+            assert("argv" in result._config.nested);
+            assert.equal(result._config.nested.argv, "argv");
 
-            assert.equal(result._config.fooga, "argv");
-            assert.equal(result._config.wooga, "argv");
-            assert("googa" in result._config.booga.wooga);
-            assert(result._config.booga.wooga.googa, "argv");
-            assert("yooga" in result._config.nooga);
-            assert("looga" in result._config.nooga);
+            assert("config-json" in result._config.nested);
+            assert.equal(result._config.nested["config-json"], "config-json");
+
+            assert("nested" in result._config.nested);
+            assert("argv" in result._config.nested.nested);
+            assert.equal(result._config.nested.nested.argv, "argv");
         });
 
-
-        
         it("should run steps passed in via argv", function() {
-            var cli;
+            var cli, result;
 
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv  : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
-                stream : _stream(),
-                Dullard : _dullard({
-                    run : function(steps) {
-                        assert.equal(steps[0], "wooga");
-                        assert.equal(steps[1], "booga");
-                    }
-                })
+                argv    : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
+                Dullard : Dullard
             });
 
-            cli.run();
+            result = cli._dullard();
+
+            assert(result._config);
+            assert(result._config.steps);
+
+            assert.equal(result._config.steps.default.length, 2);
+            assert.equal(result._config.steps.default[0], "wooga");
+            assert.equal(result._config.steps.default[1], "booga");
         });
         
         it("should complain when a dullard fails", function() {
@@ -304,22 +307,22 @@ describe("Dullard", function() {
         });
         
         it("should handle mostly-empty configs", function() {
-            var cli;
+            var cli, result;
 
             process.chdir("./test/specimens/config-blank");
             
             cli = new Cli({
                 argv    : _argv,
-                stream  : _stream(),
-                Dullard : _dullard(function(config) {
-                    assert(config);
-                    
-                    assert.equal(config.dirs.length, 0);
-                    assert(!("steps" in config));
-                })
+                Dullard : Dullard
             });
 
-            cli.run();
+            result = cli._dullard();
+            
+            assert(result._config);
+            assert(result._config.steps);
+
+            assert.equal(Object.keys(result._config.steps).length, 0);
+            assert.equal(result._config.dirs.length, 0);
         });
         
         it("should log dullard lifecycle events", function() {
