@@ -21,26 +21,6 @@ describe("Dullard", function() {
             assert("_config" in d1);
         });
         
-        it("should load tasks from specified directories", function() {
-            var d1 = new Dullard({
-                    dirs : [
-                        "./test/specimens/tasks-a",
-                    ]
-                });
-            
-            assert(Object.keys(d1.tasks).length);
-        });
-        
-        it("should only load top-level .js files as tasks", function() {
-            var d1 = new Dullard({
-                    dirs : [
-                        "./test/specimens/tasks-a",
-                    ]
-                });
-
-            assert.equal(Object.keys(d1.tasks).length, 2);
-        });
-
         it("should handle no steps", function() {
             (new Dullard()).run(function(err) {
                 assert(err);
