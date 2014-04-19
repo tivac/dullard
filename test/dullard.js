@@ -46,6 +46,18 @@ describe("Dullard", function() {
                 assert(err);
             });
         });
+
+        it("should handle invalid steps", function() {
+            var d1 = new Dullard({
+                    steps : {
+                        default : null
+                    }
+                });
+
+            d1.run(function(err) {
+                assert(err);
+            });
+        });
         
         it("should support single-item steps", function() {
             var d1 = new Dullard({
