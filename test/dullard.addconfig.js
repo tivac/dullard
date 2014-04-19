@@ -119,5 +119,27 @@ describe("Dullard", function() {
             assert.equal(d._config.steps["a-steps"].length, 1);
             assert.equal(d._config.steps["c-steps"][0], "c");
         });
+
+        it("should load any additional configs defined in \"includes\"", function() {
+            var d = new Dullard();
+
+            d.addConfig(path.resolve(__dirname, "./specimens/config-include/.dullfile"));
+
+            assert.equal(Object.keys(d.tasks).length, 2);
+            assert("a-async" in d.tasks);
+            assert("a"       in d.tasks);
+
+            assert("config-include" in d._config);
+            assert.equal(d._config["config-include"], "config-include");
+            
+            assert("nested" in d._config);
+            assert("config-include" in d._config.nested);
+            assert("config-js" in d._config.nested);
+            assert.equal(d._config.nested["config-include"], "config-include");
+            assert.equal(d._config.nested["config-js"], "config-js");
+
+            assert(d._config.dirs.length);
+            assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-a")) > -1);
+        });
     });
 });
