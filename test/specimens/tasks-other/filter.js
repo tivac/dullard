@@ -1,6 +1,6 @@
 /*jshint node:true */
 "use strict";
 
-module.exports = function(config) {
+module.exports = function() {
     // No-op
 };

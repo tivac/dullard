@@ -1,7 +1,9 @@
 {
-    "nooga" : {
-        "looga" : 5
+    "nested" : {
+        "config-json" : "config-json"
     },
+
+    "config-json" : "config-json",
     
     "dirs" : [
         "../tasks-b"

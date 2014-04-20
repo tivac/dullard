@@ -23,7 +23,7 @@ describe("Dullard", function() {
 
         it("should use the task name as the log prefix (Issue #30)", function(done) {
             var d1 = new Dullard({
-                   dirs : [
+                    dirs : [
                         "./test/specimens/tasks-a",
                     ]
                 }),

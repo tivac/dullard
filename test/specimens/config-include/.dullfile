@@ -1,0 +1,11 @@
+{
+    "includes" : [
+        "../config-js/.dullfile"
+    ],
+
+    "nested" : {
+        "config-include" : "config-include"
+    },
+
+    "config-include" : "config-include"
+}

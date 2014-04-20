@@ -58,5 +58,18 @@
     "validthis"     : false,     // true: Tolerate using this in a non-constructor function
 
     // Legacy
-    "onevar"        : true     // true: Allow only one `var` statement per function
+    "onevar"        : true,     // true: Allow only one `var` statement per function
+    
+    // Environments
+    "node"          : true,
+    
+    // Predefined functions
+    "predef" : [
+        "describe",
+        "it",
+        "before",
+        "beforeEach",
+        "after",
+        "afterEach"
+    ]
 }
