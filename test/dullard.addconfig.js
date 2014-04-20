@@ -145,7 +145,6 @@ describe("Dullard", function() {
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
             var d = new Dullard();
             
-            debugger;
             d.addConfig({
                 includes : [
                     "./test/specimens/config-js/.dullfile"
