@@ -141,5 +141,19 @@ describe("Dullard", function() {
             assert(d._config.dirs.length);
             assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-a")) > -1);
         });
+        
+        it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
+            var d = new Dullard();
+            
+            debugger;
+            d.addConfig({
+                includes : [
+                    "./test/specimens/config-js/.dullfile"
+                ]
+            });
+            
+            assert("config-js" in d._config);
+            assert.equal(d._config["config-js"], "config-js");
+        });
     });
 });
