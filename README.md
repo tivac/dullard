@@ -15,7 +15,13 @@ Dullard is a simple NodeJS-powered task runner. It exists because doing the same
 
 - [Usage](#usage)
 - [Config](#config)
-    - [Example Config](#example-config)
+    - [Examples](#examples)
+        - [JSON](#json)
+        - [Javascript](#javascript)
+    - [Properties](#properties)
+        - [dirs](#dirs)
+        - [steps](#steps)
+        - [includes](#includes)
     - [Customizing Config Values](#customizing-config-values)
 - [Tasks](#tasks)
     - [Logging in a task](#logging-in-a-task)
@@ -47,9 +53,9 @@ Options:
 
 Dullard will look for a file named `.dullfile` in the current directory or any parent directories & merge it with the CLI options. It will merge all found results in the current branch of the directory tree with precedence being: `CLI > Local > Parent > ... > Root`.
 
-### Example Config ###
+### Examples ###
 
-JSON version
+#### JSON ####
 
 ```javascript
 {
@@ -63,12 +69,9 @@ JSON version
 }
 ```
 
-JS version
+#### Javascript ####
 
 ```javascript
-/*jshint node:true */
-"use strict";
-
 module.exports = {
     "dirs" : [
         "../../tasks-a"
@@ -91,9 +94,30 @@ module.exports = {
 };
 ```
 
-`dirs` is an array of directories to load tasks from. `steps` is one of two options: 1) an array of strings/functions or 2) an object containing named step collections that are each an array of strings/functions. Strings should match either the names of files in the task directories stripped of their extension or the name of a step collection.
+### Properties ###
 
-The config object will be passed as the first argument (`config` by convention) to [tasks](#tasks).
+#### dirs ####
+`dirs` is an array of directories to load tasks from. Paths are relative to the `.dullfile`.
+
+#### steps ####
+`steps` defines the order of build steps to run. It supports two different formats.
+
+* an array of strings/functions
+* an object containing named step collections that are each an array of strings/functions.
+
+Task names are the names of files in the task directories stripped of their extension or the name of a step collection.
+
+#### includes ###
+`includes` is an array of paths to other `.dullfile`s that will be included & merged into the existing config. Paths are relative to the `.dullfile`.
+
+```javascript
+{
+    ...
+    "includes" : [
+        "../fooga/wooga/.dullfile"
+    ]
+}
+```
 
 ### Customizing Config Values ###
 
