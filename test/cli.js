@@ -251,23 +251,24 @@ describe("Dullard", function() {
         });
 
         it("should run steps passed in via argv", function() {
-            var cli, result;
+            var result = "",
+                cli;
 
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(_argv, "-d", "../../../tasks-b/", "wooga", "booga"),
-                Dullard : Dullard
+                argv    : [].concat(_argv, "-d", "../tasks-a", "b", "a"),
+                Dullard : Dullard,
+                stream  : _stream(function(msg) {
+                    result += msg;
+                }),
+                process : _process()
             });
 
-            result = cli._dullard();
+            cli.run();
 
-            assert(result._config);
-            assert(result._config.steps);
-
-            assert.equal(result._config.steps.default.length, 2);
-            assert.equal(result._config.steps.default[0], "wooga");
-            assert.equal(result._config.steps.default[1], "booga");
+            assert(result.indexOf("b complete") > -1);
+            assert(result.indexOf("a complete") > -1);
         });
         
         it("should complain when a dullard fails", function() {
