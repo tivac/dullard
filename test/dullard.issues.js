@@ -56,5 +56,9 @@ describe("Dullard", function() {
                 done();
             });
         });
+
+        it("shouldn't override the default step with argv values (Issue #40)", function() {
+            // See "should run steps passed in via argv" in cli.js for test that excercises this
+        });
     });
 });

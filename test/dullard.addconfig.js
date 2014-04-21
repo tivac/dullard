@@ -45,7 +45,7 @@ describe("Dullard", function() {
             assert("b-async" in d.tasks);
             assert("b"       in d.tasks);
 
-            assert.equal(d.steps.default[0], "a");
+            assert.equal(d.steps.default[0], "b");
 
             assert("config-json" in d._config);
             assert.equal(d._config["config-json"], "config-json");
