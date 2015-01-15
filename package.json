@@ -6,7 +6,7 @@
   "bin": "./bin/cli.js",
   "main": "./lib/build.js",
   "scripts": {
-    "test": "npm run-script jscs && npm run-script jshint && npm run-script istanbul",
+    "test": "npm run-script jshint && npm run-script istanbul",
     "jshint": "jshint .",
     "jscs": "jscs -c ./.jscsrc lib/",
     "istanbul": "istanbul test --print both ./node_modules/mocha/bin/_mocha",
