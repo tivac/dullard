@@ -30,6 +30,12 @@
         "description" : "Verbose logging",
         "boolean"     : true
     },
+    
+    "silly" : {
+        "alias"       : "s",
+        "description" : "Silly logging",
+        "boolean"     : true
+    },
 
     "loglevel"  : {
         "description" : "Chattiness, one of: silly, verbose, info, warn, error, & silent",

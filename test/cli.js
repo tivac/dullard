@@ -122,6 +122,28 @@ describe("Dullard", function() {
             
             assert(/^verb/m.test(result));
         });
+        
+        it("should be annoying in silly mode", function() {
+            var result = "",
+                cli;
+            
+            process.chdir("./test/specimens/config-json");
+            
+            cli = new Cli({
+                argv    : [].concat(_argv, "--silly"),
+                Dullard : Dullard,
+                process : _process(),
+                stream  : _stream(function(msg) {
+                    result += msg;
+                })
+            });
+            
+            cli.run();
+            
+            console.log(result);
+            
+            assert(/^sill/m.test(result));
+        });
               
         it("should find a local .dullfile containing JS", function() {
             var configs = [],
