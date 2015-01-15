@@ -1,5 +1,4 @@
 {
-    "disallowAnonymousFunctions" : true,
     "disallowEmptyBlocks" : true,
     "disallowKeywordsOnNewLine" : [ "else" ],
     "disallowKeywords" : [ "with", "eval" ],
@@ -45,7 +44,6 @@
     "requireSpacesInsideObjectBrackets" : "all",
     "safeContextKeyword" : [ "self" ],
     "validateIndentation" : 4,
-    "validateLineBreaks" : "LF",
     "validateParameterSeparator" : ", ",
     "validateQuoteMarks" : "\"",
     
