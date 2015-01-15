@@ -21,12 +21,14 @@
     
     "quiet" : {
         "alias"       : "q",
-        "description" : "Minimal output"
+        "description" : "Minimal output",
+        "boolean"     : true
     },
     
     "verbose" : {
         "alias"       : "v",
-        "description" : "Verbose logging"
+        "description" : "Verbose logging",
+        "boolean"     : true
     },
 
     "loglevel"  : {
