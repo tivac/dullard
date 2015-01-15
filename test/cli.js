@@ -120,7 +120,7 @@ describe("Dullard", function() {
             
             cli.run();
             
-            assert(/^verb/.test(result));
+            assert(/^verb/m.test(result));
         });
               
         it("should find a local .dullfile containing JS", function() {
@@ -352,6 +352,49 @@ describe("Dullard", function() {
             
             assert(result.indexOf(" fooga\n") > -1);
             assert(result.indexOf(" booga wooga\n") > -1);
+        });
+        
+        it("should pretend to execute in test mode", function() {
+            var result = "",
+                cli;
+            
+            process.chdir("./test/specimens/config-json");
+            
+            cli = new Cli({
+                argv    : [].concat(_argv, "--test"),
+                Dullard : Dullard,
+                process : _process(),
+                stream  : _stream(function(msg) {
+                    result += msg;
+                })
+            });
+            
+            cli.run();
+            
+            assert(/^WARN TEST RUN/m.test(result));
+            assert(/faked in/.test(result));
+        });
+        
+        it("should pretend to execute CLI tasks in test mode", function() {
+            var result = "",
+                cli;
+            
+            process.chdir("./test/specimens/config-json");
+            
+            cli = new Cli({
+                argv    : [].concat(_argv, "--test", "b", "b-async"),
+                Dullard : Dullard,
+                process : _process(),
+                stream  : _stream(function(msg) {
+                    result += msg;
+                })
+            });
+            
+            cli.run();
+            
+            assert(/^WARN TEST RUN/m.test(result));
+            assert(/b faked in/.test(result));
+            assert(/b-async faked in/.test(result));
         });
     });
 });

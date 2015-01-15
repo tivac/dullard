@@ -38,5 +38,11 @@
     
     "silent" : {
         "description" : "No output until something goes awry"
+    },
+    
+    "test" : {
+        "alias"       : "t",
+        "description" : "Show the tasks that would have been run",
+        "boolean"     : true
     }
 }
