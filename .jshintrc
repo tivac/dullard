@@ -62,14 +62,5 @@
     
     // Environments
     "node"          : true,
-    
-    // Predefined functions
-    "predef" : [
-        "describe",
-        "it",
-        "before",
-        "beforeEach",
-        "after",
-        "afterEach"
-    ]
+    "mocha"         : true
 }
