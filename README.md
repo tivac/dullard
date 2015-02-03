@@ -1,9 +1,11 @@
 Dullard
 =======
-[![Build Status](https://travis-ci.org/tivac/dullard.png?branch=master)](https://travis-ci.org/tivac/dullard)
-[![NPM version](https://badge.fury.io/js/dullard.png)](http://badge.fury.io/js/dullard)
-[![Dependency Status](https://david-dm.org/tivac/dullard.png?theme=shields.io)](https://david-dm.org/tivac/dullard)
-[![devDependency Status](https://david-dm.org/tivac/dullard/dev-status.png?theme=shields.io)](https://david-dm.org/tivac/dullard#info=devDependencies)
+[![Build Status](https://img.shields.io/travis/tivac/dullard.svg)](https://travis-ci.org/tivac/dullard)
+[![NPM Version](https://img.shields.io/npm/v/dullard.svg)](https://www.npmjs.com/package/dullard)
+[![NPM Downloads](https://img.shields.io/npm/dm/dullard.svg)](https://www.npmjs.com/package/dullard)
+[![NPM License](https://img.shields.io/npm/l/dullard.svg)](https://www.npmjs.com/package/dullard)
+[![Dependency Status](https://img.shields.io/david/tivac/dullard.svg)](https://david-dm.org/tivac/dullard)
+[![devDependency Status](https://img.shields.io/david/dev/tivac/dullard.svg)](https://david-dm.org/tivac/dullard#info=devDependencies)
 
 
 > "I have made this longer than usual because I have not had time to make it shorter." - Blaise Pascal
