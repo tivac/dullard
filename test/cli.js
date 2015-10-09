@@ -272,14 +272,14 @@ describe("Dullard", function() {
             assert.equal(result._config.nested.nested.argv, "argv");
         });
 
-        it.only("should run steps passed in via argv", function() {
+        it("should run steps passed in via argv", function() {
             var result = "",
                 cli;
 
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(_argv, "-d", "../tasks-a", "b", "a"),
+                argv    : [].concat(_argv, "-d", "../tasks-a,../tasks-b", "b", "a"),
                 Dullard : Dullard,
                 stream  : _stream(function(msg) {
                     result += msg;
