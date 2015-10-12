@@ -87,7 +87,7 @@ describe("Dullard", function() {
             d1.run();
         });
         
-        it("should have a functioning `log` method on the config object", function() {
+        it("should have a functioning `log` method on the config object", function(done) {
             var d1 = new Dullard({
                     steps : [
                         function step1(config) {
@@ -104,11 +104,13 @@ describe("Dullard", function() {
                 result = result.concat(args.body);
             });
             
-            d1.run();
-            
-            assert(result.indexOf("fooga") > -1);
-            assert(result.indexOf("booga %s") > -1);
-            assert(result.indexOf("wooga") > -1);
+            d1.run(function() {
+                assert(result.indexOf("fooga") > -1);
+                assert(result.indexOf("booga %s") > -1);
+                assert(result.indexOf("wooga") > -1);
+
+                done();
+            });
         });
         
         it("should fail on unknown step names", function() {
@@ -274,7 +276,7 @@ describe("Dullard", function() {
                             "fooga"
                         ],
                         
-                        "fooga" : [
+                        fooga : [
                             function() {
                                 step = true;
                             }
@@ -288,28 +290,30 @@ describe("Dullard", function() {
             assert(step);
         });
         
-        it("should run an array of steps passed to run()", function() {
+        it("should run an array of steps passed to run()", function(done) {
             var d1 = new Dullard({
                     steps : {
                         "default" : [
                             "fooga"
                         ],
                         
-                        "fooga" : function() {
+                        fooga : function() {
                             fooga = true;
                         },
                         
-                        "booga" : function() {
+                        booga : function() {
                             booga = true;
                         }
                     }
                 }),
                 fooga, booga;
             
-            d1.run([ "fooga", "booga" ]);
-            
-            assert(fooga);
-            assert(booga);
+            d1.run([ "fooga", "booga" ], function() {
+                assert(fooga);
+                assert(booga);
+
+                done();
+            });
         });
         
         it("should run a single task passed to run()", function() {

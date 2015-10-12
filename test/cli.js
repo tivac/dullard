@@ -1,4 +1,4 @@
-/*jshint node:true */
+/* eslint no-sparse-arrays: 0 */
 "use strict";
 
 var path   = require("path"),
@@ -27,7 +27,7 @@ describe("Dullard", function() {
                     Dullard : _dullard(function() {
                             assert(false, "Should not have been called!");
                         }),
-                    stream  : _stream(function(help) {
+                    stream : _stream(function(help) {
                         assert(help.indexOf("Options:") > -1);
                     })
                 });
@@ -41,7 +41,7 @@ describe("Dullard", function() {
                     Dullard : _dullard(function() {
                             assert(false, "Should not have been called!");
                         }),
-                    stream  : _stream(function(version) {
+                    stream : _stream(function(version) {
                         assert(version.indexOf("dullard") > -1);
                     })
                 });
@@ -58,7 +58,7 @@ describe("Dullard", function() {
                             assert(false, "Should not have been called!");
                         }
                     }),
-                    stream  : _stream(
+                    stream : _stream(
                         function(msg) {
                             msgs += msg;
                         }
@@ -139,8 +139,6 @@ describe("Dullard", function() {
             });
             
             cli.run();
-            
-            console.log(result);
             
             assert(/^sill/m.test(result));
         });
@@ -245,7 +243,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(
+                argv : [].concat(
                     _argv,
                     "--argv=argv",
                     "--nested.nested.argv=argv",
@@ -279,7 +277,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(_argv, "-d", "../tasks-a", "b", "a"),
+                argv    : [].concat(_argv, "-d", "../tasks-a", "a"),
                 Dullard : Dullard,
                 stream  : _stream(function(msg) {
                     result += msg;
@@ -289,7 +287,6 @@ describe("Dullard", function() {
 
             cli.run();
 
-            assert(result.indexOf("b complete") > -1);
             assert(result.indexOf("a complete") > -1);
         });
         
@@ -357,13 +354,13 @@ describe("Dullard", function() {
             cli = new Cli({
                 argv    : _argv,
                 Dullard : _dullard({
+                    on  : require("events").EventEmitter.prototype.on,
                     run : function() {
                         this.emit("log", { level : "info", body : [ "fooga" ] });
                         this.emit("log", { level : "info", body : [ "booga %s", "wooga" ]});
-                    },
-                    on  : require("events").EventEmitter.prototype.on
+                    }
                 }),
-                stream  : _stream(
+                stream : _stream(
                     function(msg) {
                         result = result.concat(msg);
                     }
@@ -404,7 +401,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(_argv, "--test", "b", "b-async"),
+                argv    : [].concat(_argv, "--test", "b"),
                 Dullard : Dullard,
                 process : _process(),
                 stream  : _stream(function(msg) {
@@ -416,7 +413,6 @@ describe("Dullard", function() {
             
             assert(/^WARN TEST RUN/m.test(result));
             assert(/b faked in/.test(result));
-            assert(/b-async faked in/.test(result));
         });
     });
 });

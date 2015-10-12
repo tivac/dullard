@@ -12,7 +12,7 @@ describe("Dullard", function() {
             var d = new Dullard();
 
             d.addConfig({
-                dirs   : [
+                dirs : [
                     path.resolve(__dirname, "./specimens/tasks-a")
                 ],
 
@@ -24,7 +24,7 @@ describe("Dullard", function() {
 
             assert.equal(Object.keys(d.tasks).length, 2);
             assert("a-async" in d.tasks);
-            assert("a"       in d.tasks);
+            assert("a" in d.tasks);
 
             assert("object" in d._config);
             assert.equal(d._config.object, "object");
@@ -43,7 +43,7 @@ describe("Dullard", function() {
 
             assert.equal(Object.keys(d.tasks).length, 2);
             assert("b-async" in d.tasks);
-            assert("b"       in d.tasks);
+            assert("b" in d.tasks);
 
             assert.equal(d.steps.default[0], "b");
 
@@ -65,9 +65,9 @@ describe("Dullard", function() {
 
             assert.equal(Object.keys(d.tasks).length, 4);
             assert("a-async" in d.tasks);
-            assert("a"       in d.tasks);
+            assert("a" in d.tasks);
             assert("b-async" in d.tasks);
-            assert("b"       in d.tasks);
+            assert("b" in d.tasks);
 
             assert("config-json" in d._config);
             assert.equal(d._config["config-json"], "config-json");
@@ -92,11 +92,11 @@ describe("Dullard", function() {
 
             assert.equal(Object.keys(d.tasks).length, 6);
             assert("a-async" in d.tasks);
-            assert("a"       in d.tasks);
+            assert("a" in d.tasks);
             assert("b-async" in d.tasks);
-            assert("b"       in d.tasks);
+            assert("b" in d.tasks);
             assert("c-async" in d.tasks);
-            assert("c"       in d.tasks);
+            assert("c" in d.tasks);
 
             assert.equal(d._config.steps.default.length, 2);
             assert.equal(d._config.steps.default[0], "c");
@@ -127,7 +127,7 @@ describe("Dullard", function() {
 
             assert.equal(Object.keys(d.tasks).length, 2);
             assert("a-async" in d.tasks);
-            assert("a"       in d.tasks);
+            assert("a" in d.tasks);
 
             assert("config-include" in d._config);
             assert.equal(d._config["config-include"], "config-include");
@@ -145,8 +145,7 @@ describe("Dullard", function() {
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
             var d = new Dullard();
             
-            d.addConfig({
-                includes : [
+            d.addConfig({ includes : [
                     "./test/specimens/config-js/.dullfile"
                 ]
             });
