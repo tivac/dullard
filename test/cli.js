@@ -140,8 +140,6 @@ describe("Dullard", function() {
             
             cli.run();
             
-            console.log(result);
-            
             assert(/^sill/m.test(result));
         });
               
@@ -279,7 +277,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(_argv, "-d", "../tasks-a,../tasks-b", "b", "a"),
+                argv    : [].concat(_argv, "-d", "../tasks-a", "a"),
                 Dullard : Dullard,
                 stream  : _stream(function(msg) {
                     result += msg;
@@ -289,9 +287,6 @@ describe("Dullard", function() {
 
             cli.run();
 
-            console.log(result);
-
-            assert(result.indexOf("b complete") > -1);
             assert(result.indexOf("a complete") > -1);
         });
         
@@ -406,7 +401,7 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-json");
             
             cli = new Cli({
-                argv    : [].concat(_argv, "--test", "b", "b-async"),
+                argv    : [].concat(_argv, "--test", "b"),
                 Dullard : Dullard,
                 process : _process(),
                 stream  : _stream(function(msg) {
@@ -418,7 +413,6 @@ describe("Dullard", function() {
             
             assert(/^WARN TEST RUN/m.test(result));
             assert(/b faked in/.test(result));
-            assert(/b-async faked in/.test(result));
         });
     });
 });
