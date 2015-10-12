@@ -1,6 +1,6 @@
 {
   "name": "dullard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Let the computers do the boring stuff.",
   "usage": "dullard -d <dir>,...,<dirN> <step1> ... <stepN>",
   "bin": "./bin/cli.js",
