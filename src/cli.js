@@ -45,15 +45,13 @@ Cli.prototype = {
     _dullard : function() {
         var dullard = new this.Dullard();
 
-        uppity(".dullfile", {
-            nocase : true
-        })
-            .reverse()
-            .forEach(function(file) {
-                log.verbose("cli", "Adding config: %s", file);
+        uppity(".dullfile", { nocase : true })
+        .reverse()
+        .forEach(function(file) {
+            log.verbose("cli", "Adding config: %s", file);
 
-                dullard.addConfig(file);
-            });
+            dullard.addConfig(file);
+        });
             
         if(this.args.dirs) {
             this.args.dirs = this.args.dirs.split(",");

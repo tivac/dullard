@@ -2,11 +2,10 @@
 
 var assert = require("assert"),
 
-    Dullard = require("../lib/dullard");
+    Dullard = require("../src/dullard");
 
 describe("Dullard", function() {
     describe("._findTasks()", function() {
-        
         it("should load tasks from specified directories", function() {
             var d1 = new Dullard();
             

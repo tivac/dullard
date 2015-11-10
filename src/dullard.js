@@ -36,25 +36,25 @@ _.extend(Build.prototype, {
     
     _loadConfig : function(file) {
         var base = path.dirname(file),
-            contents;
+            contents, obj;
 
         contents = fs.readFileSync(file, "utf8");
 
         // try reading config file as JSON first, fall back to JS
         try {
             contents = strip(contents);
-            file     = JSON.parse(contents);
+            obj      = JSON.parse(contents);
         } catch(e) {
-            file = require(file);
+            obj = require(file);
         }
 
-        if(file.dirs) {
-            file.dirs = file.dirs.map(function(dir) {
+        if(obj.dirs) {
+            obj.dirs = obj.dirs.map(function(dir) {
                 return path.resolve(base, dir);
             });
         }
 
-        return file;
+        return obj;
     },
     
     // Find all *.js files at the same level as the dir, then use them to define tasks
@@ -75,10 +75,8 @@ _.extend(Build.prototype, {
     },
     
     // Fire a logging event, generally caught by CLI module & logged
-    _log : function(level, message) {
-        if(!message) {
-            level = "info";
-        }
+    _log : function(lvl, message) {
+        var level = message ? lvl : "info";
 
         this.emit("log", {
             level : level,
@@ -96,7 +94,7 @@ _.extend(Build.prototype, {
         }
 
         if(!(name in this.tasks)) {
-            return;
+            return false;
         }
 
         // Task is already loaded
@@ -132,7 +130,7 @@ _.extend(Build.prototype, {
 
         this._current = name.toString();
 
-        this._log("verbose", "started");
+        this._log("started");
         
         // Only run the task if we aren't in test mode
         if(!this._test) {
@@ -161,7 +159,7 @@ _.extend(Build.prototype, {
         if(task.length < 2 || this._test) {
             this._log("info", "%s in %s", this._test ? "faked" : "complete", time(Date.now() - start));
 
-            done(result);
+            return done(result);
         }
     },
 
@@ -206,7 +204,7 @@ _.extend(Build.prototype, {
 
         // Support calling w/ only a callback
         if(typeof steps === "function") {
-            done = steps;
+            done  = steps;
             steps = null;
         }
 
@@ -221,7 +219,7 @@ _.extend(Build.prototype, {
             this._log("build complete in " + time(Date.now() - start));
 
             if(typeof done === "function") {
-                done(error);
+                return done(error);
             }
         }.bind(this));
     },
@@ -258,7 +256,7 @@ _.extend(Build.prototype, {
             // object format we use internally
             if(typeof config.steps !== "object" || Array.isArray(config.steps)) {
                 config.steps = {
-                    "default" : config.steps
+                    default : config.steps
                 };
             }
         } else {
@@ -270,6 +268,7 @@ _.extend(Build.prototype, {
         this._config = _.merge(
             this._config,
             _.omit(config, "dirs"),
+            
             // Disable lodash's default array merging behavior,
             // see https://github.com/tivac/dullard/issues/15
             function disableMerging(a, b) {

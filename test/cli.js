@@ -1,22 +1,20 @@
-/* eslint no-sparse-arrays: 0 */
 "use strict";
 
 var path   = require("path"),
     assert = require("assert"),
     
-    Cli      = require("../lib/cli"),
-    Dullard  = require("../lib/dullard"),
+    Cli      = require("../src/cli"),
+    Dullard  = require("../src/dullard"),
     
-    _dullard = require("./lib/_dullard"),
-    _stream  = require("./lib/_stream"),
-    _process = require("./lib/_process"),
+    _dullard = require("./src/_dullard"),
+    _stream  = require("./src/_stream"),
+    _process = require("./src/_process"),
     
     _root = process.cwd(),
-    _argv = [ , , ];
+    _argv = [ "false", "false" ];
 
 describe("Dullard", function() {
     describe("CLI", function() {
-        
         afterEach(function() {
             process.chdir(_root);
         });
@@ -25,8 +23,9 @@ describe("Dullard", function() {
             var cli = new Cli({
                     argv    : [].concat(_argv, "-?"),
                     Dullard : _dullard(function() {
-                            assert(false, "Should not have been called!");
-                        }),
+                        assert(false, "Should not have been called!");
+                    }),
+                    
                     stream : _stream(function(help) {
                         assert(help.indexOf("Options:") > -1);
                     })
@@ -39,8 +38,9 @@ describe("Dullard", function() {
             var cli = new Cli({
                     argv    : [].concat(_argv, "--version"),
                     Dullard : _dullard(function() {
-                            assert(false, "Should not have been called!");
-                        }),
+                        assert(false, "Should not have been called!");
+                    }),
+
                     stream : _stream(function(version) {
                         assert(version.indexOf("dullard") > -1);
                     })
@@ -58,6 +58,7 @@ describe("Dullard", function() {
                             assert(false, "Should not have been called!");
                         }
                     }),
+                    
                     stream : _stream(
                         function(msg) {
                             msgs += msg;
@@ -102,6 +103,27 @@ describe("Dullard", function() {
 
             cli.run();
         });
+
+        it("should log when a task starts and stops", function() {
+            var result = "",
+                cli;
+            
+            process.chdir("./test/specimens/config-json");
+            
+            cli = new Cli({
+                argv    : _argv,
+                Dullard : Dullard,
+                process : _process(),
+                stream  : _stream(function(msg) {
+                    result += msg;
+                })
+            });
+            
+            cli.run();
+            
+            assert(/^info b started$/m.test(result));
+            assert(/^info b complete in/m.test(result));
+        });
         
         it("should be chatty in verbose mode", function() {
             var result = "",
@@ -139,7 +161,7 @@ describe("Dullard", function() {
             });
             
             cli.run();
-            
+
             assert(/^sill/m.test(result));
         });
               
@@ -279,10 +301,10 @@ describe("Dullard", function() {
             cli = new Cli({
                 argv    : [].concat(_argv, "-d", "../tasks-a", "a"),
                 Dullard : Dullard,
+                process : _process(),
                 stream  : _stream(function(msg) {
                     result += msg;
-                }),
-                process : _process()
+                })
             });
 
             cli.run();
@@ -298,6 +320,7 @@ describe("Dullard", function() {
                     stream  : _stream(function(msg) {
                         result += msg;
                     }),
+                    
                     process : _process(function(code) {
                         assert.equal(code, 1);
                     })
@@ -357,7 +380,7 @@ describe("Dullard", function() {
                     on  : require("events").EventEmitter.prototype.on,
                     run : function() {
                         this.emit("log", { level : "info", body : [ "fooga" ] });
-                        this.emit("log", { level : "info", body : [ "booga %s", "wooga" ]});
+                        this.emit("log", { level : "info", body : [ "booga %s", "wooga" ] });
                     }
                 }),
                 stream : _stream(

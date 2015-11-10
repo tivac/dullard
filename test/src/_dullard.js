@@ -2,9 +2,9 @@
 
 var _ = require("lodash"),
     
-    Dullard = require("../../lib/dullard");
+    Dullard = require("../../src/dullard");
 
-module.exports = function _dullard(fn, proto) {
+module.exports = function(fn, proto) {
     var B;
     
     if(typeof fn === "object") {
@@ -12,7 +12,10 @@ module.exports = function _dullard(fn, proto) {
         fn    = null;
     }
     
-    B = fn || function() { Dullard.apply(this, Array.prototype.slice.call(arguments)); };
+    B = fn || function() {
+        Dullard.apply(this, Array.prototype.slice.call(arguments));
+    };
+
     B.prototype = Object.create(Dullard.prototype);
     B.prototype.constructor = B;
     
@@ -20,7 +23,8 @@ module.exports = function _dullard(fn, proto) {
         B.prototype,
         {
             run : function() {},
-            on  : function() {}
+            
+            on : function() {}
         },
         proto || {}
     );

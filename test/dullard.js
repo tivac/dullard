@@ -1,13 +1,11 @@
-/*jshint node:true */
 "use strict";
 
 var assert = require("assert"),
 
-    Dullard = require("../lib/dullard");
+    Dullard = require("../src/dullard");
 
 describe("Dullard", function() {
     describe("Main Class", function() {
-        
         it("should be instantiable", function() {
             assert(new Dullard({}));
             assert(new Dullard());
@@ -40,26 +38,28 @@ describe("Dullard", function() {
         });
         
         it("should support single-item steps", function() {
-            var d1 = new Dullard({
-                    steps : function step1() {
+            var step = false,
+
+                d1 = new Dullard({
+                    steps : function() {
                         step = true;
                     }
-                }),
-                step;
+                });
             
             d1.run();
             assert(step);
         });
         
         it("should run steps", function() {
-            var d1 = new Dullard({
+            var step = false,
+
+                d1 = new Dullard({
                     steps : [
                         function step1() {
                             step = true;
                         }
                     ]
-                }),
-                step;
+                });
             
             d1.run();
             assert(step);
@@ -67,7 +67,7 @@ describe("Dullard", function() {
         
         it("should pass a config object to steps", function() {
             var d1 = new Dullard({
-                    steps : function step1(config) {
+                    steps : function(config) {
                         assert(config);
                     }
                 });
@@ -77,7 +77,7 @@ describe("Dullard", function() {
         
         it("should put a `log` method on the config object", function() {
             var d1 = new Dullard({
-                    steps : function step1(config) {
+                    steps : function(config) {
                         assert(config);
                         assert(config.log);
                         assert.equal(typeof config.log, "function");
@@ -93,6 +93,7 @@ describe("Dullard", function() {
                         function step1(config) {
                             config.log("fooga");
                         },
+
                         function step2(config) {
                             config.log("info", "booga %s", "wooga");
                         }
@@ -153,20 +154,21 @@ describe("Dullard", function() {
         });
         
         it("should run async steps in order", function(done) {
-            var d1 = new Dullard({
+            var flag = false,
+                d1 = new Dullard({
                     steps : [
                         function step1() {
-                            assert.equal(flag, undefined);
+                            assert.equal(flag, false);
                             flag = "1";
                         },
                         
-                        function step2(config, done) {
+                        function step2(config, cb) {
                             assert.equal(flag, "1");
                             
                             process.nextTick(function() {
                                 flag = "2";
                                 
-                                done();
+                                cb();
                             });
                         },
                         
@@ -175,8 +177,7 @@ describe("Dullard", function() {
                             flag = "3";
                         }
                     ]
-                }),
-                flag;
+                });
             
             d1.run(function() {
                 assert.equal(flag, "3");
@@ -188,9 +189,9 @@ describe("Dullard", function() {
         it("should call completion callback with errors from async steps", function(done) {
             var d1 = new Dullard({
                     steps : [
-                        function (config, done) {
+                        function(config, cb) {
                             process.nextTick(function() {
-                                done("error");
+                                cb("error");
                             });
                         }
                     ]
@@ -207,7 +208,7 @@ describe("Dullard", function() {
         it("should let steps override the config object", function() {
             var d1 = new Dullard({
                     steps : [
-                        function (config, done) {
+                        function(config, done) {
                             done(null, { fooga : true });
                         }
                     ]
@@ -220,16 +221,17 @@ describe("Dullard", function() {
         });
         
         it("should run the \"default\" step collection when given an object", function() {
-            var d1 = new Dullard({
+            var step = false,
+                
+                d1 = new Dullard({
                     steps : {
-                        "default" : [
+                        default : [
                             function() {
                                 step = true;
                             }
                         ]
                     }
-                }),
-                step;
+                });
             
             d1.run();
             
@@ -237,16 +239,17 @@ describe("Dullard", function() {
         });
         
         it("should support choosing a named step collection", function() {
-            var d1 = new Dullard({
+            var step = false,
+                
+                d1 = new Dullard({
                     steps : {
-                        "fooga" : [
+                        fooga : [
                             function() {
                                 step = true;
                             }
                         ]
                     }
-                }),
-                step;
+                });
             
             d1.run("fooga");
             
@@ -256,7 +259,7 @@ describe("Dullard", function() {
         it("should support choosing a named step collection with a callback", function(done) {
             var d1 = new Dullard({
                     steps : {
-                        "fooga" : [
+                        fooga : [
                             function() {}
                         ]
                     }
@@ -270,9 +273,11 @@ describe("Dullard", function() {
         });
         
         it("should let step collections appear in other step collections", function() {
-            var d1 = new Dullard({
+            var step = false,
+                
+                d1 = new Dullard({
                     steps : {
-                        "default" : [
+                        default : [
                             "fooga"
                         ],
                         
@@ -282,8 +287,7 @@ describe("Dullard", function() {
                             }
                         ]
                     }
-                }),
-                step;
+                });
             
             d1.run();
             
@@ -291,9 +295,12 @@ describe("Dullard", function() {
         });
         
         it("should run an array of steps passed to run()", function(done) {
-            var d1 = new Dullard({
+            var fooga = false,
+                booga = true,
+
+                d1 = new Dullard({
                     steps : {
-                        "default" : [
+                        default : [
                             "fooga"
                         ],
                         
@@ -305,8 +312,7 @@ describe("Dullard", function() {
                             booga = true;
                         }
                     }
-                }),
-                fooga, booga;
+                });
             
             d1.run([ "fooga", "booga" ], function() {
                 assert(fooga);

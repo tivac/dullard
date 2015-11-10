@@ -8,7 +8,7 @@
   "scripts": {
     "test": "npm run lint && npm run jscs && npm run istanbul",
     "lint": "eslint .",
-    "jscs": "jscs -c ./.jscsrc lib/",
+    "jscs": "jscs .",
     "istanbul": "istanbul test --print both ./node_modules/mocha/bin/_mocha",
     "mocha": "mocha"
   },
@@ -22,9 +22,12 @@
     "url": "https://github.com/tivac/dullard/issues"
   },
   "devDependencies": {
-    "eslint": "^1.7.2",
     "istanbul": "^0.4.0",
-    "jscs": "^2.3.0",
+    "eslint": "^1.9.0",
+    "eslint-config-arenanet": "^1.0.1",
+    "istanbul": "^0.4.0",
+    "jscs": "^2.5.1",
+    "jscs-preset-arenanet": "^1.0.0",
     "mocha": "^2.1.0"
   },
   "dependencies": {
@@ -38,55 +41,13 @@
     "uppity": "~0.1.1"
   },
   "eslintConfig": {
+    "extends": "arenanet",
     "env": {
-      "node": true
+      "node": true,
+      "mocha": true
     },
     "rules": {
-      "curly": 2,
-      "dot-notation": 2,
-      "eol-last": 0,
-      "key-spacing": [
-        2,
-        {
-          "beforeColon": true,
-          "afterColon": true,
-          "align": "colon"
-        }
-      ],
-      "no-caller": 2,
-      "no-constant-condition": 2,
-      "no-dupe-args": 2,
-      "no-dupe-keys": 2,
-      "no-duplicate-case": 2,
-      "no-empty": 2,
-      "no-eval": 2,
-      "no-ex-assign": 2,
-      "no-extend-native": 2,
-      "no-extra-parens": 0,
-      "no-extra-semi": 2,
-      "no-floating-decimal": 2,
-      "no-func-assign": 2,
-      "no-implied-eval": 2,
-      "no-inner-declarations": 2,
-      "no-mixed-requires": 0,
-      "no-multi-spaces": [
-        2,
-        {
-          "exceptions": {
-            "VariableDeclarator": true,
-            "AssignmentExpression": true
-          }
-        }
-      ],
-      "no-negated-in-lhs": 2,
-      "no-new": 0,
-      "no-obj-calls": 2,
-      "no-sparse-arrays": 2,
-      "no-trailing-spaces": 0,
-      "no-underscore-dangle": 0,
-      "no-unreachable": 2,
-      "use-isnan": 2,
-      "valid-typeof": 2
+      "no-param-reassign": 0
     }
   }
 }
