@@ -3,11 +3,10 @@
 var path   = require("path"),
     assert = require("assert"),
 
-    Dullard = require("../lib/dullard");
+    Dullard = require("../src/dullard");
 
 describe("Dullard", function() {
     describe(".addConfig()", function() {
-        
         it("should add an object into its config", function() {
             var d = new Dullard();
 

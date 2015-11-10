@@ -1,9 +1,8 @@
-/*jshint node:true */
 "use strict";
 
 var assert  = require("assert"),
 
-    Dullard = require("../lib/dullard");
+    Dullard = require("../src/dullard");
 
 describe("Dullard", function() {
     describe("Dullard Class", function() {
@@ -24,7 +23,7 @@ describe("Dullard", function() {
         it("should use the task name as the log prefix (Issue #30)", function(done) {
             var d1 = new Dullard({
                     dirs : [
-                        "./test/specimens/tasks-a",
+                        "./test/specimens/tasks-a"
                     ]
                 }),
                 prefixes = [];

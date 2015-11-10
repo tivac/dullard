@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 "use strict";
 
-var Cli = require("../lib/cli"),
+var Cli = require("../src/cli"),
     cli;
 
 cli = new Cli({
     argv    : process.argv,
-    Dullard : require("../lib/dullard"),
+    Dullard : require("../src/dullard"),
     stream  : process.stderr,
     process : process
 });
