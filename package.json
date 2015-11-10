@@ -1,6 +1,6 @@
 {
   "name": "dullard",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Let the computers do the boring stuff.",
   "usage": "dullard -d <dir>,...,<dirN> <step1> ... <stepN>",
   "bin": "./bin/cli.js",
@@ -25,7 +25,6 @@
     "istanbul": "^0.4.0",
     "eslint": "^1.9.0",
     "eslint-config-arenanet": "^1.0.1",
-    "istanbul": "^0.4.0",
     "jscs": "^2.5.1",
     "jscs-preset-arenanet": "^1.0.0",
     "mocha": "^2.1.0"
