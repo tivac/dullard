@@ -36,7 +36,7 @@
     "lodash": "~3.10.1",
     "npmlog": "^2.0.0",
     "optimist": "^0.6.1",
-    "strip-json-comments": "^1.0.2",
+    "strip-json-comments": "^2.0.0",
     "uppity": "~0.1.1"
   },
   "eslintConfig": {
