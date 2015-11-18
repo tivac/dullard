@@ -1,7 +1,5 @@
-Dullard
+Dullard [![NPM Version](https://img.shields.io/npm/v/dullard.svg)](https://www.npmjs.com/package/dullard)[![NPM License](https://img.shields.io/npm/l/dullard.svg)](https://www.npmjs.com/package/dullard)
 =======
-[![NPM Version](https://img.shields.io/npm/v/dullard.svg)](https://www.npmjs.com/package/dullard)
-[![NPM License](https://img.shields.io/npm/l/dullard.svg)](https://www.npmjs.com/package/dullard)
 [![NPM Downloads](https://img.shields.io/npm/dm/dullard.svg)](https://www.npmjs.com/package/dullard)
 [![Build Status](https://img.shields.io/travis/tivac/dullard.svg)](https://travis-ci.org/tivac/dullard)
 [![Dependency Status](https://img.shields.io/david/tivac/dullard.svg)](https://david-dm.org/tivac/dullard)
