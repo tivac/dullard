@@ -1,7 +1,7 @@
 {
-    "preset" : "preset-arenanet",
+    "preset" : "arenanet",
     "excludeFiles" : [
         "coverage/**",
-        "node_modules/**"
+        "test/specimens/**"
     ]
 }
