@@ -26,7 +26,7 @@
     "eslint": "^1.9.0",
     "eslint-config-arenanet": "^1.0.1",
     "jscs": "^2.5.1",
-    "jscs-preset-arenanet": "^1.0.0",
+    "jscs-preset-arenanet": "^1.0.2",
     "mocha": "^2.1.0"
   },
   "dependencies": {
