@@ -22,7 +22,7 @@
     "url": "https://github.com/tivac/dullard/issues"
   },
   "devDependencies": {
-    "eslint": "^2.0.0",
+    "eslint": "^2.1.0",
     "eslint-config-arenanet": "^2.0.2",
     "istanbul": "^0.4.0",
     "jscs": "^2.10.0",
