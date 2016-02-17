@@ -1,6 +1,6 @@
 "use strict";
 
-var _ = require("lodash"),
+var assign = require("lodash.assign"),
     
     Dullard = require("../../src/dullard");
 
@@ -19,7 +19,7 @@ module.exports = function(fn, proto) {
     B.prototype = Object.create(Dullard.prototype);
     B.prototype.constructor = B;
     
-    _.extend(
+    assign(
         B.prototype,
         {
             run : function() {},

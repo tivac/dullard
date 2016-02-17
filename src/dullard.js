@@ -5,7 +5,9 @@ var fs     = require("fs"),
     util   = require("util"),
     events = require("events"),
 
-    _      = require("lodash"),
+    assign = require("lodash.assign"),
+    merge  = require("lodash.mergewith"),
+    omit   = require("lodash.omit"),
     async  = require("async"),
     glob   = require("glob"),
     time   = require("humanize-duration"),
@@ -31,7 +33,7 @@ Build = function(config) {
 
 Build.prototype = Object.create(events.EventEmitter.prototype);
 
-_.extend(Build.prototype, {
+assign(Build.prototype, {
     constructor : Build,
     
     _loadConfig : function(file) {
@@ -265,9 +267,9 @@ _.extend(Build.prototype, {
         
         // Merge this config into existing config
         // Ignoring keys we treated specially up above
-        this._config = _.merge(
+        this._config = merge(
             this._config,
-            _.omit(config, "dirs"),
+            omit(config, "dirs"),
             
             // Disable lodash's default array merging behavior,
             // see https://github.com/tivac/dullard/issues/15
