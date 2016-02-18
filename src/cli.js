@@ -75,7 +75,7 @@ Cli.prototype = {
 
         this.stream.write("Available Tasks:\n");
 
-        Object.keys(dullard.tasks)
+        return Object.keys(dullard.tasks)
             .sort()
             .forEach(function(name) {
                 var task   = dullard.tasks[name],
@@ -139,7 +139,7 @@ Cli.prototype = {
             return this._test(dullard);
         }
 
-        dullard.run(this.args._.length ? this.args._ : null, function(error) {
+        return dullard.run(this.args._.length ? this.args._ : null, function(error) {
             if(!error) {
                 return;
             }
