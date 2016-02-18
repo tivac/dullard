@@ -152,7 +152,7 @@ assign(Build.prototype, {
 
                 self._log("complete in " + time(Date.now() - start));
 
-                done();
+                return done();
             });
         }
 
@@ -163,6 +163,9 @@ assign(Build.prototype, {
 
             return done(result);
         }
+        
+        // Async test, so just chill
+        return true;
     },
 
     _runSteps : function(name, done) {
@@ -189,7 +192,7 @@ assign(Build.prototype, {
         this._current = name;
         this._log("verbose", "%s steps:\n\t%s", this._test ? "Pretending to run" : "Running", steps.join("\n\t"));
 
-        async.eachSeries(
+        return async.eachSeries(
             steps,
             this._runTask.bind(this),
             function(err) {
@@ -220,9 +223,7 @@ assign(Build.prototype, {
         this._runSteps(steps, function(error) {
             this._log("build complete in " + time(Date.now() - start));
 
-            if(typeof done === "function") {
-                return done(error);
-            }
+            return (typeof done === "function") ? done(error) : true;
         }.bind(this));
     },
     
