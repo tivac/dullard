@@ -107,7 +107,7 @@ describe("Dullard", function() {
 
             d.addConfig(path.resolve(__dirname, "./specimens/config-objects/.dullfile"));
             d.addConfig(path.resolve(__dirname, "./specimens/config-objects/fooga/.dullfile"));
-
+            
             assert(Object.keys(d._config.steps).length);
             assert.equal(d._config.steps["a-steps"].length, 1);
             assert.equal(d._config.steps["a-steps"][0], "a");
