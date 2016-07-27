@@ -27,7 +27,7 @@
     "mocha": "^2.1.0"
   },
   "dependencies": {
-    "async": "^2.0.0",
+    "async": "^2.0.1",
     "glob": "^7.0.0",
     "humanize-duration": "^3.3.0",
     "lodash.assign": "^4.0.3",
