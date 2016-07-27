@@ -31,7 +31,7 @@
     "glob": "^7.0.0",
     "humanize-duration": "^3.3.0",
     "lodash.assign": "^4.0.3",
-    "lodash.mergewith": "^4.3.0",
+    "lodash.mergewith": "^4.5.0",
     "lodash.omit": "^4.1.0",
     "npmlog": "^2.0.0",
     "optimist": "^0.6.1",
