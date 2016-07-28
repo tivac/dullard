@@ -30,7 +30,7 @@
     "async": "^2.0.1",
     "glob": "^7.0.0",
     "humanize-duration": "^3.9.1",
-    "lodash.assign": "^4.0.3",
+    "lodash.assign": "^4.1.0",
     "lodash.mergewith": "^4.5.0",
     "lodash.omit": "^4.1.0",
     "npmlog": "^2.0.0",
