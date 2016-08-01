@@ -24,7 +24,7 @@
     "eslint": "^3.2.0",
     "eslint-config-arenanet": "^3.0.0",
     "istanbul": "^0.4.0",
-    "mocha": "^2.1.0"
+    "mocha": "^3.0.0"
   },
   "dependencies": {
     "async": "^2.0.1",
