@@ -140,6 +140,17 @@ describe("Dullard", function() {
             assert(d._config.dirs.length);
             assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-a")) > -1);
         });
+
+        it("should merge default tasks", function() {
+            var d = new Dullard();
+
+            d.addConfig(path.resolve(__dirname, "./specimens/config-include2/.dullfile"));
+
+            console.log(d.steps.default.length); // 1
+            console.log(d.steps.default); // ["basic"]
+
+            assert.equal(d.steps.default.length, 2);
+        });
         
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
             var d = new Dullard();
