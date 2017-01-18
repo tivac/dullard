@@ -2,6 +2,7 @@
     "steps" : {
         "default" : [
             "included-default"
-        ]
+        ],
+        "thang" : "thang"
     }
 }

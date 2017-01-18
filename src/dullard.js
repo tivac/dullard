@@ -268,9 +268,10 @@ assign(Build.prototype, {
         
         // Merge this config into existing config
         // Ignoring keys we treated specially up above
+
         this._config = merge(
-            this._config,
             omit(config, "dirs"),
+            this._config,
             
             // Disable lodash's default array merging behavior,
             // see https://github.com/tivac/dullard/issues/15

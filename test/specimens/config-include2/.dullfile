@@ -1,8 +1,9 @@
 {
     "steps" : {
         "default" : [
-            "specific-default"
-        ]
+            "original-default"
+        ],
+        "thing" : "thing"
     },
     "includes" : [
         "./default-include/.dullfile"
