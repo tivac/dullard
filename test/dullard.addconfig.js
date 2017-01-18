@@ -149,8 +149,8 @@ describe("Dullard", function() {
             console.log(d.steps.default.length); // 1
             console.log(d.steps.default);        // [ "included-default" ]
 
-            assert.equal(d.steps.default.length, 2);
-            assert.equal(d.steps.default, [ "included-default", "specific-default" ]);
+            assert.equal(d.steps.default.length, 1);
+            assert.equal(d.steps.default, [ "specific-default" ]);
         });
         
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
