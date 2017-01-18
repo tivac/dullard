@@ -70,7 +70,7 @@ describe("Dullard", function() {
 
             assert("config-json" in d._config);
             assert.equal(d._config["config-json"], "config-json");
-
+            
             assert("nested" in d._config);
             assert("config-json" in d._config.nested);
             assert("config-js" in d._config.nested);
@@ -107,14 +107,14 @@ describe("Dullard", function() {
 
             d.addConfig(path.resolve(__dirname, "./specimens/config-objects/.dullfile"));
             d.addConfig(path.resolve(__dirname, "./specimens/config-objects/fooga/.dullfile"));
-
+            
             assert(Object.keys(d._config.steps).length);
             assert.equal(d._config.steps["a-steps"].length, 1);
             assert.equal(d._config.steps["a-steps"][0], "a");
-
+            
             assert.equal(d._config.steps["b-steps"].length, 2);
             assert.equal(d._config.steps["b-steps"][0], "b");
-
+            
             assert.equal(d._config.steps["a-steps"].length, 1);
             assert.equal(d._config.steps["c-steps"][0], "c");
         });
@@ -130,7 +130,7 @@ describe("Dullard", function() {
 
             assert("config-include" in d._config);
             assert.equal(d._config["config-include"], "config-include");
-
+            
             assert("nested" in d._config);
             assert("config-include" in d._config.nested);
             assert("config-js" in d._config.nested);
@@ -140,7 +140,7 @@ describe("Dullard", function() {
             assert(d._config.dirs.length);
             assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-a")) > -1);
         });
-
+        
         it("should not overwrite default tasks", function() {
             var d = new Dullard();
 
@@ -156,12 +156,12 @@ describe("Dullard", function() {
 
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
             var d = new Dullard();
-
+            
             d.addConfig({ includes : [
                     "./test/specimens/config-js/.dullfile"
                 ]
             });
-
+            
             assert("config-js" in d._config);
             assert.equal(d._config["config-js"], "config-js");
         });

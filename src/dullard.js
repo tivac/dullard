@@ -268,7 +268,6 @@ assign(Build.prototype, {
         
         // Merge this config into existing config
         // Ignoring keys we treated specially up above
-
         this._config = merge(
             omit(config, "dirs"),
             this._config,
