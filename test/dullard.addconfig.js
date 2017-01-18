@@ -144,23 +144,21 @@ describe("Dullard", function() {
         it("should not overwrite default tasks", function() {
             var d = new Dullard();
 
-            d.addConfig(path.resolve(__dirname, "./specimens/config-include2/.dullfile"));
+            d.addConfig(path.resolve(__dirname, "./specimens/config-default/.dullfile"));
 
-            assert(d.steps.thing);
-            assert(d.steps.thang);
+            assert("included-step" in d.steps);
+            assert("original-step" in d.steps);
 
             assert.equal(d.steps.default.length, 1);
             assert.equal(d.steps.default[0], "original-default");
-            // assert.equal(d.steps.default, [ "original-default" ]);
         });
 
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
             var d = new Dullard();
             
             d.addConfig({ includes : [
-                    "./test/specimens/config-js/.dullfile"
-                ]
-            });
+                "./test/specimens/config-js/.dullfile"
+            ] });
             
             assert("config-js" in d._config);
             assert.equal(d._config["config-js"], "config-js");

@@ -3,6 +3,7 @@
         "default" : [
             "included-default"
         ],
-        "thang" : "thang"
+
+        "included-step" : "included-step"
     }
 }

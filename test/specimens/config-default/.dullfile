@@ -3,9 +3,11 @@
         "default" : [
             "original-default"
         ],
-        "thing" : "thing"
+
+        "original-step" : "original-step"
     },
+
     "includes" : [
-        "./default-include/.dullfile"
+        "./include/.dullfile"
     ]
 }
