@@ -147,9 +147,10 @@ describe("Dullard", function() {
             d.addConfig(path.resolve(__dirname, "./specimens/config-include2/.dullfile"));
 
             console.log(d.steps.default.length); // 1
-            console.log(d.steps.default); // ["basic"]
+            console.log(d.steps.default);        // [ "included-default" ]
 
             assert.equal(d.steps.default.length, 2);
+            assert.equal(d.steps.default, [ "included-default", "specific-default" ]);
         });
         
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
