@@ -15,7 +15,8 @@ $RECYCLE.BIN/
 .DS_Store
 
 # Folders
-node_modules
-temp
-coverage
-output
+node_modules/
+temp/
+coverage/
+output/
+.vscode/
