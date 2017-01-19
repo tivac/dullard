@@ -265,23 +265,10 @@ assign(Build.prototype, {
         } else {
             config.steps = {};
         }
-        
-        // Merge this config into existing config
-        // Ignoring keys we treated specially up above
-        this._config = merge(
-            omit(config, "dirs"),
-            this._config,
-            
-            // Disable lodash's default array merging behavior,
-            // see https://github.com/tivac/dullard/issues/15
-            function disableMerging(a, b) {
-                return Array.isArray(b) ? b : undefined;
-            }
-        );
-
-        this.steps = this._config.steps;
 
         // Supporting merging in other .dullfiles
+        // needs to happen before this config gets merged to preserve expected
+        // merging order
         if(config.includes) {
             if(file) {
                 cwd = path.dirname(file);
@@ -291,6 +278,21 @@ assign(Build.prototype, {
                 self.addConfig(path.resolve(cwd, include));
             });
         }
+        
+        // Merge this config into existing config
+        // Ignoring keys we treated specially up above
+        this._config = merge(
+            this._config,
+            omit(config, "dirs", "includes"),
+            
+            // Disable lodash's default array merging behavior,
+            // see https://github.com/tivac/dullard/issues/15
+            function disableMerging(a, b) {
+                return Array.isArray(b) ? b : undefined;
+            }
+        );
+
+        this.steps = this._config.steps;
     }
 });
 
