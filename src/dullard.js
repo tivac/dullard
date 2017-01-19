@@ -127,7 +127,7 @@ assign(Build.prototype, {
         task = this._loadTask(name);
 
         if(!task) {
-            return done("Unknown task: " + name);
+            return done(`Unknown task: ${name}`);
         }
 
         this._current = name.toString();
@@ -150,7 +150,7 @@ assign(Build.prototype, {
                     self._config = config;
                 }
 
-                self._log("complete in " + time(Date.now() - start));
+                self._log(`complete in ${time(Date.now() - start)}`);
 
                 return done();
             });
@@ -221,7 +221,7 @@ assign(Build.prototype, {
         this._log("verbose", "Build starting");
 
         this._runSteps(steps, function(error) {
-            this._log("build complete in " + time(Date.now() - start));
+            this._log(`build complete in ${time(Date.now() - start)}`);
 
             return (typeof done === "function") ? done(error) : true;
         }.bind(this));
@@ -234,6 +234,7 @@ assign(Build.prototype, {
     },
     
     addConfig : function(config) {
+        /* eslint max-statements:["error", 18] */
         var self = this,
             file, cwd;
         

@@ -88,11 +88,11 @@ Cli.prototype = {
                     // just ignore the error, since it doesn't really matter
                 }
 
-                self.stream.write("\"" + name + "\"\n");
-                self.stream.write("    source: " + task.source + "\n");
+                self.stream.write(`"${name}"\n`);
+                self.stream.write(`    source: ${task.source}\n`);
 
                 if(task.description) {
-                    self.stream.write("    desc  : " + task.description + "\n");
+                    self.stream.write(`    desc  : ${task.description}\n`);
                 }
 
                 self.stream.write("\n");
