@@ -1,10 +1,19 @@
 sudo: false
 language: node_js
+
 node_js:
-  - "node"
-  - "5"
-  - "4"
+- node
+- '6'
 
 cache:
   directories:
-    - node_modules
+  - node_modules
+
+deploy:
+  provider: npm
+  email: npm@patcavit.com
+  api_key:
+    secure: AonVVKOyAqeWySGFVIxCCl69F5dDWjz53/dadVboskmbBddyRdz2fIUTtIqsDGg4XWHm2f20JgYPd41IOAtMAGlhhgvHEqsHpJ3B2mrJKsZnZAw4Yas3JSffDeL8AH05Ey0k8f3JlEHpeCMNKaXLcq1nJc3EtopzQHHRnjY/fTs=
+  on:
+    tags: true
+    repo: tivac/dullard
