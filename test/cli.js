@@ -292,6 +292,34 @@ describe("Dullard", function() {
             assert.equal(result._config.nested.nested.argv, "argv");
         });
 
+        it("should let argv config values override everything else", function() {
+            var cli, result;
+
+            process.chdir("./test/specimens/config-include");
+            
+            cli = new Cli({
+                argv : [].concat(
+                    _argv,
+                    "--argv=argv",
+                    "--nested.config-js=argv"
+                ),
+                Dullard : Dullard
+            });
+
+            result = cli._dullard();
+
+            assert(result._config);
+            
+            assert.equal(result._config.argv, "argv");
+            assert.equal(result._config["config-js"], "config-js");
+            assert.equal(result._config["config-include"], "config-include");
+            
+            assert.deepEqual(result._config.nested, {
+                "config-js"      : "argv",
+                "config-include" : "config-include"
+            });
+        });
+
         it("should run steps passed in via argv", function() {
             var result = "",
                 cli;
