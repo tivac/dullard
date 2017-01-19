@@ -1,0 +1,9 @@
+{
+    "steps" : {
+        "default" : [
+            "included-default"
+        ],
+
+        "included-step" : "included-step"
+    }
+}

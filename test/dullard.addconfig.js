@@ -98,8 +98,8 @@ describe("Dullard", function() {
             assert("c" in d.tasks);
 
             assert.equal(d._config.steps.default.length, 2);
-            assert.equal(d._config.steps.default[0], "c");
-            assert.equal(d._config.steps.default[1], "c-async");
+            assert.equal(d._config.steps.default[0], "a");
+            assert.equal(d._config.steps.default[1], "a-async");
         });
 
         it("should mix multiple \"steps\" when they are objects", function() {
@@ -112,8 +112,8 @@ describe("Dullard", function() {
             assert.equal(d._config.steps["a-steps"].length, 1);
             assert.equal(d._config.steps["a-steps"][0], "a");
             
-            assert.equal(d._config.steps["b-steps"].length, 1);
-            assert.equal(d._config.steps["b-steps"][0], "b-async");
+            assert.equal(d._config.steps["b-steps"].length, 2);
+            assert.equal(d._config.steps["b-steps"][0], "b");
             
             assert.equal(d._config.steps["a-steps"].length, 1);
             assert.equal(d._config.steps["c-steps"][0], "c");
@@ -141,13 +141,24 @@ describe("Dullard", function() {
             assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-a")) > -1);
         });
         
+        it("should not overwrite default tasks", function() {
+            var d = new Dullard();
+
+            d.addConfig(path.resolve(__dirname, "./specimens/config-default/.dullfile"));
+
+            assert("included-step" in d.steps);
+            assert("original-step" in d.steps);
+
+            assert.equal(d.steps.default.length, 1);
+            assert.equal(d.steps.default[0], "original-default");
+        });
+
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
             var d = new Dullard();
             
             d.addConfig({ includes : [
-                    "./test/specimens/config-js/.dullfile"
-                ]
-            });
+                "./test/specimens/config-js/.dullfile"
+            ] });
             
             assert("config-js" in d._config);
             assert.equal(d._config["config-js"], "config-js");

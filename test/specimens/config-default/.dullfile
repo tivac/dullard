@@ -1,0 +1,13 @@
+{
+    "steps" : {
+        "default" : [
+            "original-default"
+        ],
+
+        "original-step" : "original-step"
+    },
+
+    "includes" : [
+        "./include/.dullfile"
+    ]
+}
