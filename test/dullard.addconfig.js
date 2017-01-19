@@ -88,7 +88,7 @@ describe("Dullard", function() {
             d.addConfig(path.resolve(__dirname, "./specimens/config-deep/.dullfile"));
             d.addConfig(path.resolve(__dirname, "./specimens/config-deep/fooga/.dullfile"));
             d.addConfig(path.resolve(__dirname, "./specimens/config-deep/fooga/wooga/.dullfile"));
-
+            
             assert.equal(Object.keys(d.tasks).length, 6);
             assert("a-async" in d.tasks);
             assert("a" in d.tasks);
@@ -97,9 +97,9 @@ describe("Dullard", function() {
             assert("c-async" in d.tasks);
             assert("c" in d.tasks);
 
-            assert.equal(d._config.steps.default.length, 2);
-            assert.equal(d._config.steps.default[0], "a");
-            assert.equal(d._config.steps.default[1], "a-async");
+            assert.deepEqual(d._config.steps, {
+                default : [ "c", "c-async" ]
+            });
         });
 
         it("should mix multiple \"steps\" when they are objects", function() {
@@ -108,15 +108,11 @@ describe("Dullard", function() {
             d.addConfig(path.resolve(__dirname, "./specimens/config-objects/.dullfile"));
             d.addConfig(path.resolve(__dirname, "./specimens/config-objects/fooga/.dullfile"));
             
-            assert(Object.keys(d._config.steps).length);
-            assert.equal(d._config.steps["a-steps"].length, 1);
-            assert.equal(d._config.steps["a-steps"][0], "a");
-            
-            assert.equal(d._config.steps["b-steps"].length, 2);
-            assert.equal(d._config.steps["b-steps"][0], "b");
-            
-            assert.equal(d._config.steps["a-steps"].length, 1);
-            assert.equal(d._config.steps["c-steps"][0], "c");
+            assert.deepEqual(d._config.steps, {
+                "a-steps" : [ "a" ],
+                "b-steps" : [ "b-async" ],
+                "c-steps" : [ "c" ]
+            });
         });
 
         it("should load any additional configs defined in \"includes\"", function() {
