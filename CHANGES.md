@@ -1,5 +1,9 @@
 # Changes
 
+## 2.0.0
+
+- fix: Correct merge order precedence (#109)
+
 ## 1.1.1
 
 - fix: correct merge order for included config files (#107) (Kevin Cameron)
