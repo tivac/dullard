@@ -1,0 +1,15 @@
+{
+    "dirs" : [
+        "./tasks"
+    ],
+    
+    "includes" : [
+        "../config-js/.dullfile"
+    ],
+
+    "nested" : {
+        "config-dirs" : "config-dirs"
+    },
+
+    "config-dirs" : "config-dirs"
+}
