@@ -35,7 +35,6 @@
     "validate-commit-msg": "^2.8.2"
   },
   "dependencies": {
-    "async": "^2.0.1",
     "glob": "^7.0.0",
     "humanize-duration": "^3.9.1",
     "is-promise": "^2.1.0",
