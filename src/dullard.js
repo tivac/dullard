@@ -7,10 +7,11 @@ var fs     = require("fs"),
 
     merge  = require("lodash.mergewith"),
     omit   = require("lodash.omit"),
-    async  = require("async"),
+    series = require("p-each-series"),
     glob   = require("glob"),
     time   = require("humanize-duration"),
     strip  = require("strip-json-comments"),
+    check  = require("is-promise"),
 
     Build;
 
@@ -65,7 +66,8 @@ Object.assign(Build.prototype, {
         glob.sync("*.js", {
             cwd      : dir,
             maxDepth : 1
-        }).forEach(function(file) {
+        })
+        .forEach(function(file) {
             var full = path.join(dir, file),
                 name = path.basename(file, path.extname(file));
 
@@ -112,7 +114,7 @@ Object.assign(Build.prototype, {
         return this.tasks[name];
     },
 
-    _runTask : function(name, done) {
+    _runTask : function(name) {
         var self  = this,
             start = Date.now(),
             task,
@@ -120,54 +122,63 @@ Object.assign(Build.prototype, {
 
         // Support aliases by recursing down the rabbit hole
         if(this.steps && name in this.steps) {
-            return this._runSteps(name, done);
+            return this._runSteps(name);
         }
 
         task = this._loadTask(name);
 
         if(!task) {
-            return done(`Unknown task: ${name}`);
+            throw new Error(`Unknown task: ${name}`);
         }
 
         this._current = name.toString();
 
         this._log("started");
         
-        // Only run the task if we aren't in test mode
-        if(!this._test) {
-            // Wrap the callback fn to support async tasks returning an updated config
-            // Store the result so that sync steps can error out by returning a value
-            result = task(this._config, function(err, config) {
+        // Early-out in testing mode
+        if(this._test) {
+            return this._log("info", `faked in ${time(Date.now() - start)}`);
+        }
+
+        // No callback fn, so either sync or a promise
+        if(task.length < 2) {
+            result = task(this._config);
+
+            // Handle non-promise return values
+            return (check(result) ?
+                result :
+                new Promise((resolve, reject) => (typeof result !== "undefined" ? reject(result) : resolve()))
+            )
+            .then(() => this._log("info", `complete in ${time(Date.now() - start)}`));
+        }
+
+        // Wrap the callback fn to support async tasks returning an updated config
+        // Store the result so that sync steps can error out by returning a value
+        return new Promise((resolve, reject) =>
+            // Since callbacks can pass back format strings + values this **MUST** remain
+            // a full-fat function, we need access to arguments :(
+            task(this._config, function(err, config) {
                 if(err) {
                     // Handle formatted strings coming back
-                    return done(
+                    return reject(
                         util.format.apply(null, Array.prototype.slice.apply(arguments))
                     );
                 }
 
                 if(config) {
+                    self._config.log("warn", "Overwriting the config value via callback will be deprecated soon");
+                    
                     self._config = config;
                 }
 
                 self._log(`complete in ${time(Date.now() - start)}`);
 
-                return done();
-            });
-        }
-
-        // Non-async tasks only take one argument, the config instance
-        // If we're testing then it doesn't matter, the task never ran
-        if(task.length < 2 || this._test) {
-            this._log("info", "%s in %s", this._test ? "faked" : "complete", time(Date.now() - start));
-
-            return done(result);
-        }
-        
-        // Async test, so just chill
-        return true;
+                return resolve();
+            })
+        );
     },
 
-    _runSteps : function(name, done) {
+    _runSteps : function(name) {
         var steps;
 
         if(this.steps && (name in this.steps)) {
@@ -179,7 +190,7 @@ Object.assign(Build.prototype, {
         }
 
         if(!steps) {
-            return done("No steps defined");
+            return new Promise((resolve, reject) => reject("No steps defined"));
         }
 
         if(!Array.isArray(steps)) {
@@ -191,15 +202,11 @@ Object.assign(Build.prototype, {
         this._current = name;
         this._log("verbose", "%s steps:\n\t%s", this._test ? "Pretending to run" : "Running", steps.join("\n\t"));
 
-        return async.eachSeries(
+        return series(
             steps,
-            this._runTask.bind(this),
-            function(err) {
-                this._current = null;
-
-                done(err);
-            }.bind(this)
-        );
+            this._runTask.bind(this)
+        )
+        .then(() => (this._current = null));
     },
 
     // Public API
@@ -219,17 +226,31 @@ Object.assign(Build.prototype, {
 
         this._log("verbose", "Build starting");
 
-        this._runSteps(steps, function(error) {
-            this._log(`build complete in ${time(Date.now() - start)}`);
+        return this._runSteps(steps)
+            .then(() => {
+                this._log(`build complete in ${time(Date.now() - start)}`);
 
-            return (typeof done === "function") ? done(error) : true;
-        }.bind(this));
+                if(typeof done === "function") {
+                    return done();
+                }
+                
+                return true;
+            })
+            .catch((error) => {
+                this._log(`build complete in ${time(Date.now() - start)}`);
+
+                if(typeof done === "function") {
+                    return done(error);
+                }
+
+                return error;
+            });
     },
     
     test : function(steps, done) {
         this._test = true;
         
-        this.run(steps, done);
+        return this.run(steps, done);
     },
     
     addConfig : function(config) {

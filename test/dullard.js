@@ -46,8 +46,7 @@ describe("Dullard", function() {
                     }
                 });
             
-            d1.run();
-            assert(step);
+            return d1.run().then(() => assert(step));
         });
         
         it("should run steps", function() {
@@ -61,8 +60,7 @@ describe("Dullard", function() {
                     ]
                 });
             
-            d1.run();
-            assert(step);
+            return d1.run().then(() => assert(step));
         });
         
         it("should pass a config object to steps", function() {
@@ -72,7 +70,7 @@ describe("Dullard", function() {
                     }
                 });
             
-            d1.run();
+            return d1.run();
         });
         
         it("should put a `log` method on the config object", function() {
@@ -84,10 +82,10 @@ describe("Dullard", function() {
                     }
                 });
             
-            d1.run();
+            return d1.run();
         });
         
-        it("should have a functioning `log` method on the config object", function(done) {
+        it("should have a functioning `log` method on the config object", function() {
             var d1 = new Dullard({
                     steps : [
                         function step1(config) {
@@ -105,12 +103,10 @@ describe("Dullard", function() {
                 result = result.concat(args.body);
             });
             
-            d1.run(function() {
+            return d1.run().then(function() {
                 assert(result.indexOf("fooga") > -1);
                 assert(result.indexOf("booga %s") > -1);
                 assert(result.indexOf("wooga") > -1);
-
-                done();
             });
         });
         
@@ -126,7 +122,7 @@ describe("Dullard", function() {
             });
         });
         
-        it("should call completion callback", function() {
+        it("should call completion callback", function(done) {
             var d1 = new Dullard({
                     steps : [
                         function step1() {}
@@ -135,10 +131,12 @@ describe("Dullard", function() {
             
             d1.run(function() {
                 assert(true);
+
+                done();
             });
         });
         
-        it("should call completion callback with errors", function() {
+        it("should call completion callback with errors", function(done) {
             var d1 = new Dullard({
                     steps : [
                         function step1() {
@@ -150,6 +148,8 @@ describe("Dullard", function() {
             d1.run(function(err) {
                 assert(err);
                 assert.equal(err, "error");
+
+                done();
             });
         });
         
@@ -204,23 +204,22 @@ describe("Dullard", function() {
                 done();
             });
         });
-        
+
         it("should let steps override the config object", function() {
             var d1 = new Dullard({
                     steps : [
                         function(config, done) {
-                            done(null, { fooga : true });
+                            done(null, Object.assign(config, { fooga : true }));
                         }
                     ]
                 });
             
-            d1.run();
-            
-            assert(d1._config.fooga);
-            assert(!("steps" in d1._config));
+            return d1.run().then(() =>
+                assert(d1._config.fooga)
+            );
         });
         
-        it("should run the \"default\" step collection when given an object", function() {
+        it(`should run the "default" step collection when given an object`, function() {
             var step = false,
                 
                 d1 = new Dullard({
@@ -233,9 +232,7 @@ describe("Dullard", function() {
                     }
                 });
             
-            d1.run();
-            
-            assert(step);
+            return d1.run().then(() => assert(step));
         });
         
         it("should support choosing a named step collection", function() {
@@ -251,9 +248,7 @@ describe("Dullard", function() {
                     }
                 });
             
-            d1.run("fooga");
-            
-            assert(step);
+            return d1.run("fooga").then(() => assert(step));
         });
         
         it("should support choosing a named step collection with a callback", function(done) {
@@ -289,12 +284,10 @@ describe("Dullard", function() {
                     }
                 });
             
-            d1.run();
-            
-            assert(step);
+            return d1.run().then(() => assert(step));
         });
         
-        it("should run an array of steps passed to run()", function(done) {
+        it("should run an array of steps passed to run()", function() {
             var fooga = false,
                 booga = true,
 
@@ -314,11 +307,9 @@ describe("Dullard", function() {
                     }
                 });
             
-            d1.run([ "fooga", "booga" ], function() {
+            return d1.run([ "fooga", "booga" ]).then(() => {
                 assert(fooga);
                 assert(booga);
-
-                done();
             });
         });
         
@@ -340,6 +331,76 @@ describe("Dullard", function() {
                 });
 
             d1.run([ "a", "a" ]);
+        });
+
+        describe("Promise Support", function() {
+            it("should support tasks returning a promise", function() {
+                var d1 = new Dullard({
+                        steps : [
+                            () => new Promise((resolve, reject) =>
+                                setTimeout(resolve, 10)
+                            )
+                        ]
+                    });
+                
+                return d1.run().then(() => assert(true));
+            });
+
+            it("should support running promise tasks in order", function() {
+                var order = [],
+
+                    d1 = new Dullard({
+                        steps : [
+                            () => new Promise((resolve, reject) =>
+                                setTimeout(() => {
+                                    order.push(1);
+                                    
+                                    resolve();
+                                }, 10)
+                            ),
+
+                            () => new Promise((resolve, reject) =>
+                                setTimeout(() => {
+                                    order.push(2);
+                                    
+                                    resolve();
+                                }, 10)
+                            )
+                        ]
+                    });
+                
+                return d1.run().then(() =>
+                    assert.deepEqual(order, [ 1, 2 ])
+                );
+            });
+            
+            it("should return a rejected promise if a task returns a rejected promise", function() {
+                var d1 = new Dullard({
+                        steps : [
+                            () => new Promise((resolve, reject) => reject("error"))
+                        ]
+                    });
+                
+                return d1.run().catch((err) => {
+                    assert(err);
+                    assert.equal(err, "error");
+                });
+            });
+
+            it("should return a rejected promise if a sync task fails", function() {
+                var d1 = new Dullard({
+                        steps : [
+                            function() {
+                                return "error";
+                            }
+                        ]
+                    });
+                
+                return d1.run().catch((err) => {
+                    assert(err);
+                    assert.equal(err, "error");
+                });
+            });
         });
     });
 });

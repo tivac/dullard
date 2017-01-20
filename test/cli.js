@@ -119,10 +119,10 @@ describe("Dullard", function() {
                 })
             });
             
-            cli.run();
-            
-            assert(/^info b started$/m.test(result));
-            assert(/^info b complete in/m.test(result));
+            return cli.run().then(() => {
+                assert(/^info b started$/m.test(result));
+                assert(/^info b complete in/m.test(result));
+            });
         });
         
         it("should be chatty in verbose mode", function() {
@@ -140,9 +140,9 @@ describe("Dullard", function() {
                 })
             });
             
-            cli.run();
-            
-            assert(/^verb/m.test(result));
+            return cli.run().then(() =>
+                assert(/^verb/m.test(result))
+            );
         });
         
         it("should be annoying in silly mode", function() {
@@ -160,9 +160,9 @@ describe("Dullard", function() {
                 })
             });
             
-            cli.run();
-
-            assert(/^sill/m.test(result));
+            return cli.run().then(() =>
+                assert(/^sill/m.test(result))
+            );
         });
               
         it("should find a local .dullfile containing JS", function() {
@@ -335,9 +335,9 @@ describe("Dullard", function() {
                 })
             });
 
-            cli.run();
-
-            assert(result.indexOf("a complete") > -1);
+            return cli.run().then(() =>
+                assert(result.indexOf("a complete") > -1)
+            );
         });
         
         it("should complain when a dullard fails", function() {
@@ -354,9 +354,9 @@ describe("Dullard", function() {
                     })
                 });
             
-            cli.run();
-
-            assert(result.indexOf("Build failed") > -1);
+            return cli.run().then(() =>
+                assert(result.indexOf("Build failed") > -1)
+            );
         });
         
         it("should respect --quiet", function() {
@@ -439,10 +439,10 @@ describe("Dullard", function() {
                 })
             });
             
-            cli.run();
-            
-            assert(/^WARN TEST RUN/m.test(result));
-            assert(/faked in/.test(result));
+            return cli.run().then(() => {
+                assert(/^WARN TEST RUN/m.test(result));
+                assert(/faked in/.test(result));
+            });
         });
         
         it("should pretend to execute CLI tasks in test mode", function() {
@@ -460,10 +460,10 @@ describe("Dullard", function() {
                 })
             });
             
-            cli.run();
-            
-            assert(/^WARN TEST RUN/m.test(result));
-            assert(/b faked in/.test(result));
+            return cli.run().then(() => {
+                assert(/^WARN TEST RUN/m.test(result));
+                assert(/b faked in/.test(result));
+            });
         });
     });
 });

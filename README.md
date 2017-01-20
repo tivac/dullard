@@ -22,6 +22,8 @@ Dullard is a simple NodeJS-powered task runner. It exists because doing the same
         - [includes](#includes)
     - [Customizing Config Values](#customizing-config-values)
 - [Tasks](#tasks)
+    - [Sync Tasks](#sync-tasks)
+    - [Async Tasks](#async-tasks)
     - [Logging in a task](#logging-in-a-task)
 - [Install](#install)
 - [Develop](#develop)
@@ -31,20 +33,22 @@ Dullard is a simple NodeJS-powered task runner. It exists because doing the same
 ## Usage ##
 
 ```
->dullard --help
-dullard v0.4.3
-    Let the computers do the boring stuff.
+$ dullard --help
+    
+  Let the computers do the boring stuff.
 
-Usage: dullard -d <dir>,...,<dirN> <step1> ... <stepN>
-
-Options:
-  --help, -?     Show usage
-  --dirs, -d     directories to load task files from
-  --list, -l     List available tasks
-  --quiet, -q    Minimal output
-  --verbose, -v  Verbose logging
-  --loglevel     Chattiness, one of: silly, verbose, info, warn, error, & silent  [default: "info"]
-  --silent       No output until something goes awry
+  Options:
+    --help, -?     Show usage
+    --dirs, -d     directories to load task files from
+    --list, -l     List available tasks
+    --quiet, -q    Minimal output
+    --verbose, -v  Verbose logging
+    --loglevel     Chattiness, one of: silly, verbose, info, warn, error, & silent  [default: "info"]
+    --silent       No output until something goes awry
+    
+  Usage:
+    $ dullard
+    $ dullard -d <dir>,...,<dirN> <step1> ... <stepN>
 ```
 
 ## Config ##
@@ -151,27 +155,58 @@ This only works for values that are __not__ one of Dullard's [CLI options](#usag
 
 ## Tasks ##
 
-Tasks are simple modules that should export a single function. Each task function gets passed two arguments, a shared config object for state in the task chain & an optional callback for async tasks. The callback takes two possible arguments, an error object and an optional object to replace the shared config object. If the task is synchronous any return value will be considered an error.
+Tasks are modules that export a single function. There's no wrapper around `fs`, no streams support baked-in, they're just a function that can do some stuff. Every task will be passed a shared `config` object that represents the state of dullard & the tasks to be run. For async tasks you can also accept a second argument that can be used as a callback function following the normal node-style error-first pattern.
+
+
+### Sync Tasks ###
+
+Any return value will be considered an error.
 
 ```javascript
 // Passing tasks
 function exampleTaskSync(config) {
-    ...
+    // ...
 }
 
-function exampleTaskAsync(config, done) {
-    ...
-
-    process.nextTick(done);
+function exampleTaskSync(config) {
+    // ...
+    
+    return undefined;
 }
 
 // Failing tasks
 function exampleTaskFailureSync(config) {
     return "Task failed";
 }
+```
 
+### Async tasks ###
+
+Tasks can do async work in two different ways. Either by accepting a second callback argument, or returning a promise.
+
+```javascript
+// Passing task
+function exampleTaskAsyncCallback(config, done) {
+    setTimeout(done, 10);
+}
+
+function exampleTaskAsyncPromise(config) {
+    return new Promise(function(reject, resolve) {
+        // ...
+        resolve();
+    });
+}
+
+// Failing task
 function exampleTaskFailureAsync(config, done) {
     done("Task Failed");
+}
+
+function exampleTaskFailureAsyncPromise(config) {
+    return new Promise(function(reject, resolve) {
+        // ...
+        reject();
+    });
 }
 ```
 

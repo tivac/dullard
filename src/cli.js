@@ -102,7 +102,7 @@ Cli.prototype = {
     _test : function(dullard) {
         log.warn("TEST RUN");
         
-        dullard.test(this.args._.length ? this.args._ : null);
+        return dullard.test(this.args._.length ? this.args._ : null);
     },
 
     run : function() {
