@@ -1,5 +1,10 @@
 # Changes
 
+## 2.0.1
+
+- fix: merge order needs to handle includes first (#110)
+- chore: update deps, replace istanbul w/ nyc
+
 ## 2.0.0
 
 - fix: Correct merge order precedence (#109)
