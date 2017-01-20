@@ -1,5 +1,9 @@
 # Changes
 
+## 3.0.0
+
+- feat: Promise support (#111)
+
 ## 2.0.1
 
 - fix: merge order needs to handle includes first (#110)
