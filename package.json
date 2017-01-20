@@ -41,7 +41,7 @@
     "lodash.assign": "^4.1.0",
     "lodash.mergewith": "^4.5.1",
     "lodash.omit": "^4.4.1",
-    "npmlog": "^2.0.0",
+    "npmlog": "^4.0.2",
     "optimist": "^0.6.1",
     "strip-json-comments": "^2.0.0",
     "uppity": "~0.1.1"
