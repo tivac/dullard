@@ -7,7 +7,7 @@
   "main": "./lib/build.js",
   "scripts": {
     "commitmsg": "validate-commit-msg",
-    "cover": "istanbul test --print both ./node_modules/mocha/bin/_mocha",
+    "cover": "nyc mocha",
     "lint": "eslint .",
     "preview": "changes || true",
     "test": "mocha",
@@ -30,20 +30,19 @@
     "eslint": "^3.7.0",
     "eslint-config-arenanet": "^3.0.0",
     "husky": "^0.12.0",
-    "istanbul": "^0.4.0",
     "mocha": "^3.0.0",
+    "nyc": "^10.1.2",
     "validate-commit-msg": "^2.8.2"
   },
   "dependencies": {
     "async": "^2.0.1",
     "glob": "^7.0.0",
     "humanize-duration": "^3.9.1",
-    "lodash.assign": "^4.1.0",
-    "lodash.mergewith": "^4.5.1",
-    "lodash.omit": "^4.4.1",
+    "lodash.mergewith": "^4.6.0",
+    "lodash.omit": "^4.5.0",
     "npmlog": "^2.0.0",
     "optimist": "^0.6.1",
-    "strip-json-comments": "^2.0.0",
+    "strip-json-comments": "^2.0.1",
     "uppity": "~0.1.1"
   },
   "eslintConfig": {
@@ -55,5 +54,21 @@
     "rules": {
       "no-param-reassign": 0
     }
+  },
+  "nyc": {
+    "lines": 80,
+    "statements": 80,
+    "functions": 80,
+    "branches": 80,
+    "check-coverage": true,
+    "cache": true,
+    "reporter": [
+      "lcov",
+      "text-summary",
+      "text"
+    ],
+    "exclude": [
+      "test/**"
+    ]
   }
 }

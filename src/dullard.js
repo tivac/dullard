@@ -5,7 +5,6 @@ var fs     = require("fs"),
     util   = require("util"),
     events = require("events"),
 
-    assign = require("lodash.assign"),
     merge  = require("lodash.mergewith"),
     omit   = require("lodash.omit"),
     async  = require("async"),
@@ -33,7 +32,7 @@ Build = function(config) {
 
 Build.prototype = Object.create(events.EventEmitter.prototype);
 
-assign(Build.prototype, {
+Object.assign(Build.prototype, {
     constructor : Build,
     
     _loadConfig : function(file) {
