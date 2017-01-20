@@ -244,6 +244,19 @@ Object.assign(Build.prototype, {
         
         cwd = config.cwd || process.cwd();
 
+        // Supporting merging in other .dullfiles
+        // needs to happen before this config gets merged to preserve expected
+        // merging order
+        if(config.includes) {
+            if(file) {
+                cwd = path.dirname(file);
+            }
+
+            config.includes.forEach(function addConfig(include) {
+                self.addConfig(path.resolve(cwd, include));
+            });
+        }
+
         if(config.dirs) {
             config.dirs.forEach(function findDirTasks(dir) {
                 dir = path.resolve(config.cwd || process.cwd(), dir);
@@ -264,19 +277,6 @@ Object.assign(Build.prototype, {
             }
         } else {
             config.steps = {};
-        }
-
-        // Supporting merging in other .dullfiles
-        // needs to happen before this config gets merged to preserve expected
-        // merging order
-        if(config.includes) {
-            if(file) {
-                cwd = path.dirname(file);
-            }
-
-            config.includes.forEach(function addConfig(include) {
-                self.addConfig(path.resolve(cwd, include));
-            });
         }
         
         // Merge this config into existing config

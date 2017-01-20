@@ -89,13 +89,26 @@ describe("Dullard", function() {
             d.addConfig(path.resolve(__dirname, "./specimens/config-deep/fooga/.dullfile"));
             d.addConfig(path.resolve(__dirname, "./specimens/config-deep/fooga/wooga/.dullfile"));
             
-            assert.equal(Object.keys(d.tasks).length, 6);
-            assert("a-async" in d.tasks);
-            assert("a" in d.tasks);
-            assert("b-async" in d.tasks);
-            assert("b" in d.tasks);
-            assert("c-async" in d.tasks);
-            assert("c" in d.tasks);
+            assert.deepEqual(d.tasks, {
+                "a" : {
+                    source: path.resolve(__dirname, "./specimens/tasks-a/a.js")
+                },
+                "a-async" : {
+                    source: path.resolve(__dirname, "./specimens/tasks-a/a-async.js")
+                },
+                "b" : {
+                    source: path.resolve(__dirname, "./specimens/tasks-b/b.js")
+                },
+                "b-async" : {
+                    source: path.resolve(__dirname, "./specimens/tasks-b/b-async.js")
+                },
+                "c" : {
+                    source: path.resolve(__dirname, "./specimens/tasks-c/c.js")
+                },
+                "c-async" : {
+                    source: path.resolve(__dirname, "./specimens/tasks-c/c-async.js")
+                }
+            });
 
             assert.deepEqual(d._config.steps, {
                 default : [ "c", "c-async" ]
@@ -120,21 +133,25 @@ describe("Dullard", function() {
 
             d.addConfig(path.resolve(__dirname, "./specimens/config-include/.dullfile"));
 
-            assert.equal(Object.keys(d.tasks).length, 2);
-            assert("a-async" in d.tasks);
-            assert("a" in d.tasks);
+            assert.deepEqual(d.tasks, {
+                a : {
+                    source : path.resolve(__dirname, "./specimens/tasks-a/a.js")
+                },
+                "a-async" : {
+                    source : path.resolve(__dirname, "./specimens/tasks-a/a-async.js")
+                }
+            });
 
-            assert("config-include" in d._config);
             assert.equal(d._config["config-include"], "config-include");
             
-            assert("nested" in d._config);
-            assert("config-include" in d._config.nested);
-            assert("config-js" in d._config.nested);
-            assert.equal(d._config.nested["config-include"], "config-include");
-            assert.equal(d._config.nested["config-js"], "config-js");
+            assert.deepEqual(d._config.nested, {
+                "config-include" : "config-include",
+                "config-js" : "config-js"
+            });
 
-            assert(d._config.dirs.length);
-            assert(d._config.dirs[0].indexOf(path.join("specimens", "tasks-a")) > -1);
+            assert.deepEqual(d._config.dirs, [
+                path.resolve(__dirname, "./specimens/tasks-a")
+            ]);
         });
         
         it("should not overwrite default tasks", function() {
@@ -147,6 +164,21 @@ describe("Dullard", function() {
 
             assert.equal(d.steps.default.length, 1);
             assert.equal(d.steps.default[0], "original-default");
+        });
+
+        it("should use correct precedence for dirs & tasks", function() {
+            var d = new Dullard();
+
+            d.addConfig(path.resolve(__dirname, "./specimens/config-dirs/.dullfile"));
+
+            assert.deepEqual(d.tasks, {
+                a : {
+                    source : path.resolve(__dirname, "./specimens/config-dirs/tasks/a.js")
+                },
+                "a-async" : {
+                    source : path.resolve(__dirname, "./specimens/tasks-a/a-async.js")
+                }
+            });
         });
 
         it("should use current process.cwd() to resolve includes entries if an object is passed", function() {
