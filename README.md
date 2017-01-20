@@ -33,20 +33,22 @@ Dullard is a simple NodeJS-powered task runner. It exists because doing the same
 ## Usage ##
 
 ```
->dullard --help
-dullard v0.4.3
-    Let the computers do the boring stuff.
+$ dullard --help
+    
+  Let the computers do the boring stuff.
 
-Usage: dullard -d <dir>,...,<dirN> <step1> ... <stepN>
-
-Options:
-  --help, -?     Show usage
-  --dirs, -d     directories to load task files from
-  --list, -l     List available tasks
-  --quiet, -q    Minimal output
-  --verbose, -v  Verbose logging
-  --loglevel     Chattiness, one of: silly, verbose, info, warn, error, & silent  [default: "info"]
-  --silent       No output until something goes awry
+  Options:
+    --help, -?     Show usage
+    --dirs, -d     directories to load task files from
+    --list, -l     List available tasks
+    --quiet, -q    Minimal output
+    --verbose, -v  Verbose logging
+    --loglevel     Chattiness, one of: silly, verbose, info, warn, error, & silent  [default: "info"]
+    --silent       No output until something goes awry
+    
+  Usage:
+    $ dullard
+    $ dullard -d <dir>,...,<dirN> <step1> ... <stepN>
 ```
 
 ## Config ##
