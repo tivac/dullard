@@ -3,467 +3,464 @@
 var path   = require("path"),
     assert = require("assert"),
     
-    Cli      = require("../src/cli"),
-    Dullard  = require("../src/dullard"),
-    
-    _dullard = require("./src/_dullard"),
-    _stream  = require("./src/_stream"),
-    _process = require("./src/_process"),
-    
-    _root = process.cwd(),
-    _argv = [ "false", "false" ];
+    tester = require("cli-tester");
 
 describe("Dullard", function() {
     describe("CLI", function() {
-        afterEach(function() {
-            process.chdir(_root);
-        });
+        var cli = require.resolve("../bin/cli.js");
         
-        it("should show help (& not run)", function() {
-            var cli = new Cli({
-                    argv    : [].concat(_argv, "-?"),
-                    Dullard : _dullard(function() {
-                        assert(false, "Should not have been called!");
-                    }),
+        it("should show help", function() {
+            return tester(cli, "--help").then((out) => {
+                assert.equal(out.code, 0);
+                assert.equal(out.stdout.indexOf(require("../package.json").description), 0);
+            });
+        });
+
+        // it("should show help (& not run)", function() {
+        //     var cli = new Cli({
+        //             argv    : [].concat(_argv, "-?"),
+        //             Dullard : _dullard(function() {
+        //                 assert(false, "Should not have been called!");
+        //             }),
                     
-                    stream : _stream(function(help) {
-                        assert(help.indexOf("Options:") > -1);
-                    })
-                });
+        //             stream : _stream(function(help) {
+        //                 assert(help.indexOf("Options:") > -1);
+        //             })
+        //         });
 
-            cli.run();
-        });
+        //     cli.run();
+        // });
 
-        it("should show version (& not run)", function() {
-            var cli = new Cli({
-                    argv    : [].concat(_argv, "--version"),
-                    Dullard : _dullard(function() {
-                        assert(false, "Should not have been called!");
-                    }),
+        // it("should show version (& not run)", function() {
+        //     var cli = new Cli({
+        //             argv    : [].concat(_argv, "--version"),
+        //             Dullard : _dullard(function() {
+        //                 assert(false, "Should not have been called!");
+        //             }),
 
-                    stream : _stream(function(version) {
-                        assert(version.indexOf("dullard") > -1);
-                    })
-                });
+        //             stream : _stream(function(version) {
+        //                 assert(version.indexOf("dullard") > -1);
+        //             })
+        //         });
 
-            cli.run();
-        });
+        //     cli.run();
+        // });
         
-        it("should show available tasks (& not run)", function() {
-            var msgs = "",
-                cli  = new Cli({
-                    argv    : [].concat(_argv, "-l", "-d", "./test/specimens/tasks-a/"),
-                    Dullard : _dullard({
-                        run : function() {
-                            assert(false, "Should not have been called!");
-                        }
-                    }),
+        // it("should show available tasks (& not run)", function() {
+        //     var msgs = "",
+        //         cli  = new Cli({
+        //             argv    : [].concat(_argv, "-l", "-d", "./test/specimens/tasks-a/"),
+        //             Dullard : _dullard({
+        //                 run : function() {
+        //                     assert(false, "Should not have been called!");
+        //                 }
+        //             }),
                     
-                    stream : _stream(
-                        function(msg) {
-                            msgs += msg;
-                        }
-                    )
-                });
+        //             stream : _stream(
+        //                 function(msg) {
+        //                     msgs += msg;
+        //                 }
+        //             )
+        //         });
             
-            cli.run();
-            assert(msgs.indexOf("a-async") > -1);
-        });
+        //     cli.run();
+        //     assert(msgs.indexOf("a-async") > -1);
+        // });
         
-        it("should complain if no tasks are available", function() {
-            var result = "",
-                cli    = new Cli({
-                    argv    : [].concat(_argv, "-l"),
-                    Dullard : Dullard,
-                    stream  : _stream(
-                        function(msg) {
-                            result += msg;
-                        }
-                    ),
-                    process : _process(function(code) {
-                        assert.equal(code, 1);
-                    })
-                });
+        // it("should complain if no tasks are available", function() {
+        //     var result = "",
+        //         cli    = new Cli({
+        //             argv    : [].concat(_argv, "-l"),
+        //             Dullard : Dullard,
+        //             stream  : _stream(
+        //                 function(msg) {
+        //                     result += msg;
+        //                 }
+        //             ),
+        //             process : _process(function(code) {
+        //                 assert.equal(code, 1);
+        //             })
+        //         });
 
-            cli.run();
-            assert(result.indexOf("No tasks available") > -1);
-        });
+        //     cli.run();
+        //     assert(result.indexOf("No tasks available") > -1);
+        // });
         
-        it("shouldn't say anything when loglevel is \"silent\"", function() {
-            var cli = new Cli({
-                    argv    : [].concat(_argv, "--silent"),
-                    Dullard : Dullard,
-                    process : _process(),
-                    stream  : _stream(
-                        function() {
-                            assert(false, "Should not have been called");
-                        }
-                    )
-                });
+        // it("shouldn't say anything when loglevel is \"silent\"", function() {
+        //     var cli = new Cli({
+        //             argv    : [].concat(_argv, "--silent"),
+        //             Dullard : Dullard,
+        //             process : _process(),
+        //             stream  : _stream(
+        //                 function() {
+        //                     assert(false, "Should not have been called");
+        //                 }
+        //             )
+        //         });
 
-            cli.run();
-        });
+        //     cli.run();
+        // });
 
-        it("should log when a task starts and stops", function() {
-            var result = "",
-                cli;
+        // it("should log when a task starts and stops", function() {
+        //     var result = "",
+        //         cli;
             
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv    : _argv,
-                Dullard : Dullard,
-                process : _process(),
-                stream  : _stream(function(msg) {
-                    result += msg;
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : _argv,
+        //         Dullard : Dullard,
+        //         process : _process(),
+        //         stream  : _stream(function(msg) {
+        //             result += msg;
+        //         })
+        //     });
             
-            return cli.run().then(() => {
-                assert(/^info b started$/m.test(result));
-                assert(/^info b complete in/m.test(result));
-            });
-        });
+        //     return cli.run().then(() => {
+        //         assert(/^info b started$/m.test(result));
+        //         assert(/^info b complete in/m.test(result));
+        //     });
+        // });
         
-        it("should be chatty in verbose mode", function() {
-            var result = "",
-                cli;
+        // it("should be chatty in verbose mode", function() {
+        //     var result = "",
+        //         cli;
             
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv    : [].concat(_argv, "--verbose"),
-                Dullard : Dullard,
-                process : _process(),
-                stream  : _stream(function(msg) {
-                    result += msg;
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : [].concat(_argv, "--verbose"),
+        //         Dullard : Dullard,
+        //         process : _process(),
+        //         stream  : _stream(function(msg) {
+        //             result += msg;
+        //         })
+        //     });
             
-            return cli.run().then(() =>
-                assert(/^verb/m.test(result))
-            );
-        });
+        //     return cli.run().then(() =>
+        //         assert(/^verb/m.test(result))
+        //     );
+        // });
         
-        it("should be annoying in silly mode", function() {
-            var result = "",
-                cli;
+        // it("should be annoying in silly mode", function() {
+        //     var result = "",
+        //         cli;
             
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv    : [].concat(_argv, "--silly"),
-                Dullard : Dullard,
-                process : _process(),
-                stream  : _stream(function(msg) {
-                    result += msg;
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : [].concat(_argv, "--silly"),
+        //         Dullard : Dullard,
+        //         process : _process(),
+        //         stream  : _stream(function(msg) {
+        //             result += msg;
+        //         })
+        //     });
             
-            return cli.run().then(() =>
-                assert(/^sill/m.test(result))
-            );
-        });
+        //     return cli.run().then(() =>
+        //         assert(/^sill/m.test(result))
+        //     );
+        // });
               
-        it("should find a local .dullfile containing JS", function() {
-            var configs = [],
-                cli;
+        // it("should find a local .dullfile containing JS", function() {
+        //     var configs = [],
+        //         cli;
 
-            process.chdir("./test/specimens/config-js");
+        //     process.chdir("./test/specimens/config-js");
             
-            cli = new Cli({
-                argv    : _argv,
-                Dullard : _dullard({
-                    addConfig : function(config) {
-                        configs.push(config);
-                    }
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : _argv,
+        //         Dullard : _dullard({
+        //             addConfig : function(config) {
+        //                 configs.push(config);
+        //             }
+        //         })
+        //     });
 
-            cli.run();
+        //     cli.run();
 
-            configs
-                .filter(function(config) {
-                    return typeof config === "string";
-                })
-                .forEach(function(config) {
-                    assert(config);
+        //     configs
+        //         .filter(function(config) {
+        //             return typeof config === "string";
+        //         })
+        //         .forEach(function(config) {
+        //             assert(config);
 
-                    assert(typeof config === "string");
-                    assert(config.indexOf(path.join("config-js", ".dullfile")) > -1);
-                });
-        });
+        //             assert(typeof config === "string");
+        //             assert(config.indexOf(path.join("config-js", ".dullfile")) > -1);
+        //         });
+        // });
         
-        it("should find a local .dullfile containing JSON", function() {
-            var configs = [],
-                cli;
+        // it("should find a local .dullfile containing JSON", function() {
+        //     var configs = [],
+        //         cli;
 
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv    : _argv,
-                Dullard : _dullard({
-                    addConfig : function(config) {
-                        configs.push(config);
-                    }
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : _argv,
+        //         Dullard : _dullard({
+        //             addConfig : function(config) {
+        //                 configs.push(config);
+        //             }
+        //         })
+        //     });
 
-            cli.run();
+        //     cli.run();
 
-            configs
-                .filter(function(config) {
-                    return typeof config === "string";
-                })
-                .forEach(function(config) {
-                    assert(config);
+        //     configs
+        //         .filter(function(config) {
+        //             return typeof config === "string";
+        //         })
+        //         .forEach(function(config) {
+        //             assert(config);
 
-                    assert(typeof config === "string");
-                    assert(config.indexOf(path.join("config-json", ".dullfile")) > -1);
-                });
-        });
+        //             assert(typeof config === "string");
+        //             assert(config.indexOf(path.join("config-json", ".dullfile")) > -1);
+        //         });
+        // });
         
-        it("should find all .dullfile files in parent directories", function() {
-            var cli, result;
+        // it("should find all .dullfile files in parent directories", function() {
+        //     var cli, result;
 
-            process.chdir("./test/specimens/config-deep/fooga/wooga");
+        //     process.chdir("./test/specimens/config-deep/fooga/wooga");
             
-            cli = new Cli({
-                argv    : _argv,
-                Dullard : Dullard
-            });
+        //     cli = new Cli({
+        //         argv    : _argv,
+        //         Dullard : Dullard
+        //     });
 
-            result = cli._dullard();
+        //     result = cli._dullard();
 
-            assert(result._config);
+        //     assert(result._config);
             
-            assert(result._config.root);
-            assert(result._config.fooga);
-            assert(result._config.wooga);
+        //     assert(result._config.root);
+        //     assert(result._config.fooga);
+        //     assert(result._config.wooga);
             
-            assert.equal(result._config.dirs.length, 3);
-            assert(result._config.steps.default.length, 2);
-        });
+        //     assert.equal(result._config.dirs.length, 3);
+        //     assert(result._config.steps.default.length, 2);
+        // });
         
-        it("should support multiple dirs passed on argv", function() {
-            var cli = new Cli({
-                    argv    : [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
-                    Dullard : Dullard
-                }),
-                result;
+        // it("should support multiple dirs passed on argv", function() {
+        //     var cli = new Cli({
+        //             argv    : [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
+        //             Dullard : Dullard
+        //         }),
+        //         result;
 
-            result = cli._dullard();
+        //     result = cli._dullard();
 
-            assert(result._config);
+        //     assert(result._config);
             
-            assert.equal(result._config.dirs.length, 2);
-        });
+        //     assert.equal(result._config.dirs.length, 2);
+        // });
         
-        it("should allow setting arbitrary config values from argv", function() {
-            var cli, result;
+        // it("should allow setting arbitrary config values from argv", function() {
+        //     var cli, result;
 
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv : [].concat(
-                    _argv,
-                    "--argv=argv",
-                    "--nested.nested.argv=argv",
-                    "--nested.argv=argv"
-                ),
-                Dullard : Dullard
-            });
+        //     cli = new Cli({
+        //         argv : [].concat(
+        //             _argv,
+        //             "--argv=argv",
+        //             "--nested.nested.argv=argv",
+        //             "--nested.argv=argv"
+        //         ),
+        //         Dullard : Dullard
+        //     });
 
-            result = cli._dullard();
+        //     result = cli._dullard();
 
-            assert(result._config);
+        //     assert(result._config);
             
-            assert.equal(result._config.argv, "argv");
+        //     assert.equal(result._config.argv, "argv");
             
-            assert("nested" in result._config);
-            assert("argv" in result._config.nested);
-            assert.equal(result._config.nested.argv, "argv");
+        //     assert("nested" in result._config);
+        //     assert("argv" in result._config.nested);
+        //     assert.equal(result._config.nested.argv, "argv");
 
-            assert("config-json" in result._config.nested);
-            assert.equal(result._config.nested["config-json"], "config-json");
+        //     assert("config-json" in result._config.nested);
+        //     assert.equal(result._config.nested["config-json"], "config-json");
 
-            assert("nested" in result._config.nested);
-            assert("argv" in result._config.nested.nested);
-            assert.equal(result._config.nested.nested.argv, "argv");
-        });
+        //     assert("nested" in result._config.nested);
+        //     assert("argv" in result._config.nested.nested);
+        //     assert.equal(result._config.nested.nested.argv, "argv");
+        // });
 
-        it("should let argv config values override everything else", function() {
-            var cli, result;
+        // it("should let argv config values override everything else", function() {
+        //     var cli, result;
 
-            process.chdir("./test/specimens/config-include");
+        //     process.chdir("./test/specimens/config-include");
             
-            cli = new Cli({
-                argv : [].concat(
-                    _argv,
-                    "--argv=argv",
-                    "--nested.config-js=argv"
-                ),
-                Dullard : Dullard
-            });
+        //     cli = new Cli({
+        //         argv : [].concat(
+        //             _argv,
+        //             "--argv=argv",
+        //             "--nested.config-js=argv"
+        //         ),
+        //         Dullard : Dullard
+        //     });
 
-            result = cli._dullard();
+        //     result = cli._dullard();
 
-            assert(result._config);
+        //     assert(result._config);
             
-            assert.equal(result._config.argv, "argv");
-            assert.equal(result._config["config-js"], "config-js");
-            assert.equal(result._config["config-include"], "config-include");
+        //     assert.equal(result._config.argv, "argv");
+        //     assert.equal(result._config["config-js"], "config-js");
+        //     assert.equal(result._config["config-include"], "config-include");
             
-            assert.deepEqual(result._config.nested, {
-                "config-js"      : "argv",
-                "config-include" : "config-include"
-            });
-        });
+        //     assert.deepEqual(result._config.nested, {
+        //         "config-js"      : "argv",
+        //         "config-include" : "config-include"
+        //     });
+        // });
 
-        it("should run steps passed in via argv", function() {
-            var result = "",
-                cli;
+        // it("should run steps passed in via argv", function() {
+        //     var result = "",
+        //         cli;
 
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv    : [].concat(_argv, "-d", "../tasks-a", "a"),
-                Dullard : Dullard,
-                process : _process(),
-                stream  : _stream(function(msg) {
-                    result += msg;
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : [].concat(_argv, "-d", "../tasks-a", "a"),
+        //         Dullard : Dullard,
+        //         process : _process(),
+        //         stream  : _stream(function(msg) {
+        //             result += msg;
+        //         })
+        //     });
 
-            return cli.run().then(() =>
-                assert(result.indexOf("a complete") > -1)
-            );
-        });
+        //     return cli.run().then(() =>
+        //         assert(result.indexOf("a complete") > -1)
+        //     );
+        // });
         
-        it("should complain when a dullard fails", function() {
-            var result = "",
-                cli = new Cli({
-                    argv    : [].concat(_argv, "fooga"),
-                    Dullard : Dullard,
-                    stream  : _stream(function(msg) {
-                        result += msg;
-                    }),
+        // it("should complain when a dullard fails", function() {
+        //     var result = "",
+        //         cli = new Cli({
+        //             argv    : [].concat(_argv, "fooga"),
+        //             Dullard : Dullard,
+        //             stream  : _stream(function(msg) {
+        //                 result += msg;
+        //             }),
                     
-                    process : _process(function(code) {
-                        assert.equal(code, 1);
-                    })
-                });
+        //             process : _process(function(code) {
+        //                 assert.equal(code, 1);
+        //             })
+        //         });
             
-            return cli.run().then(() =>
-                assert(result.indexOf("Build failed") > -1)
-            );
-        });
+        //     return cli.run().then(() =>
+        //         assert(result.indexOf("Build failed") > -1)
+        //     );
+        // });
         
-        it("should respect --quiet", function() {
-            var cli;
+        // it("should respect --quiet", function() {
+        //     var cli;
 
-            process.chdir("./test/specimens/config-js");
+        //     process.chdir("./test/specimens/config-js");
             
-            cli = new Cli({
-                argv    : [].concat(_argv, "--quiet"),
-                Dullard : Dullard,
-                stream  : _stream(
-                    function(error) {
-                        assert(!error, "Should not have been called");
-                    }
-                )
-            });
+        //     cli = new Cli({
+        //         argv    : [].concat(_argv, "--quiet"),
+        //         Dullard : Dullard,
+        //         stream  : _stream(
+        //             function(error) {
+        //                 assert(!error, "Should not have been called");
+        //             }
+        //         )
+        //     });
 
-            cli.run();
-        });
+        //     cli.run();
+        // });
         
-        it("should handle mostly-empty configs", function() {
-            var cli, result;
+        // it("should handle mostly-empty configs", function() {
+        //     var cli, result;
 
-            process.chdir("./test/specimens/config-blank");
+        //     process.chdir("./test/specimens/config-blank");
             
-            cli = new Cli({
-                argv    : _argv,
-                Dullard : Dullard
-            });
+        //     cli = new Cli({
+        //         argv    : _argv,
+        //         Dullard : Dullard
+        //     });
 
-            result = cli._dullard();
+        //     result = cli._dullard();
             
-            assert(result._config);
-            assert(result._config.steps);
+        //     assert(result._config);
+        //     assert(result._config.steps);
 
-            assert.equal(Object.keys(result._config.steps).length, 0);
-            assert.equal(result._config.dirs.length, 0);
-        });
+        //     assert.equal(Object.keys(result._config.steps).length, 0);
+        //     assert.equal(result._config.dirs.length, 0);
+        // });
         
-        it("should log dullard lifecycle events", function() {
-            var result = [],
-                cli;
+        // it("should log dullard lifecycle events", function() {
+        //     var result = [],
+        //         cli;
             
-            process.chdir("./test/specimens/config-js");
+        //     process.chdir("./test/specimens/config-js");
             
-            cli = new Cli({
-                argv    : _argv,
-                Dullard : _dullard({
-                    on  : require("events").EventEmitter.prototype.on,
-                    run : function() {
-                        this.emit("log", { level : "info", body : [ "fooga" ] });
-                        this.emit("log", { level : "info", body : [ "booga %s", "wooga" ] });
-                    }
-                }),
-                stream : _stream(
-                    function(msg) {
-                        result = result.concat(msg);
-                    }
-                )
-            });
+        //     cli = new Cli({
+        //         argv    : _argv,
+        //         Dullard : _dullard({
+        //             on  : require("events").EventEmitter.prototype.on,
+        //             run : function() {
+        //                 this.emit("log", { level : "info", body : [ "fooga" ] });
+        //                 this.emit("log", { level : "info", body : [ "booga %s", "wooga" ] });
+        //             }
+        //         }),
+        //         stream : _stream(
+        //             function(msg) {
+        //                 result = result.concat(msg);
+        //             }
+        //         )
+        //     });
 
-            cli.run();
+        //     cli.run();
             
-            assert(result.indexOf(" fooga\n") > -1);
-            assert(result.indexOf(" booga wooga\n") > -1);
-        });
+        //     assert(result.indexOf(" fooga\n") > -1);
+        //     assert(result.indexOf(" booga wooga\n") > -1);
+        // });
         
-        it("should pretend to execute in test mode", function() {
-            var result = "",
-                cli;
+        // it("should pretend to execute in test mode", function() {
+        //     var result = "",
+        //         cli;
             
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv    : [].concat(_argv, "--test"),
-                Dullard : Dullard,
-                process : _process(),
-                stream  : _stream(function(msg) {
-                    result += msg;
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : [].concat(_argv, "--test"),
+        //         Dullard : Dullard,
+        //         process : _process(),
+        //         stream  : _stream(function(msg) {
+        //             result += msg;
+        //         })
+        //     });
             
-            return cli.run().then(() => {
-                assert(/^WARN TEST RUN/m.test(result));
-                assert(/faked in/.test(result));
-            });
-        });
+        //     return cli.run().then(() => {
+        //         assert(/^WARN TEST RUN/m.test(result));
+        //         assert(/faked in/.test(result));
+        //     });
+        // });
         
-        it("should pretend to execute CLI tasks in test mode", function() {
-            var result = "",
-                cli;
+        // it("should pretend to execute CLI tasks in test mode", function() {
+        //     var result = "",
+        //         cli;
             
-            process.chdir("./test/specimens/config-json");
+        //     process.chdir("./test/specimens/config-json");
             
-            cli = new Cli({
-                argv    : [].concat(_argv, "--test", "b"),
-                Dullard : Dullard,
-                process : _process(),
-                stream  : _stream(function(msg) {
-                    result += msg;
-                })
-            });
+        //     cli = new Cli({
+        //         argv    : [].concat(_argv, "--test", "b"),
+        //         Dullard : Dullard,
+        //         process : _process(),
+        //         stream  : _stream(function(msg) {
+        //             result += msg;
+        //         })
+        //     });
             
-            return cli.run().then(() => {
-                assert(/^WARN TEST RUN/m.test(result));
-                assert(/b faked in/.test(result));
-            });
-        });
+        //     return cli.run().then(() => {
+        //         assert(/^WARN TEST RUN/m.test(result));
+        //         assert(/b faked in/.test(result));
+        //     });
+        // });
     });
 });
