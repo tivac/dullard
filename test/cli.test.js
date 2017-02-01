@@ -14,7 +14,7 @@ describe("Dullard", function() {
 
         afterEach(() => process.chdir(cwd));
         
-        it("should support --help and show help", function() {
+        it("should respond to --help", function() {
             return test(cli, "--help").then((out) => {
                 assert.equal(out.code, 0);
                 assert.equal(text(out.stdout), text(`
@@ -27,15 +27,14 @@ describe("Dullard", function() {
                           --list,    -l  Show a list of available tasks
                           --test,    -t  Run in test mode, no tasks will be executed
                           --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
-                          --quiet,   -q  Quiet logging
-                          --silent,  -s  Really quiet logging
+                          --silent,  -s  No output
                           --verbose, -v  Verbose logging
                           --silly,   -y  REALLY verbose logging
                 `));
             });
         });
 
-        it("should support --list and show available tasks", function() {
+        it("should respond to --list", function() {
             process.chdir("./test/specimens/config-dirs");
             
             return test(cli, "--list").then((out) => {
@@ -59,114 +58,101 @@ describe("Dullard", function() {
             process.chdir("./test/specimens/config-blank");
             
             return test(cli).then((out) => {
-                console.log(out);
+                assert.equal(out.code, 1);
+
+                assert.equal(out.stderr.indexOf("ERR! dullard build failed in"), 0);
+            });
+        });
+
+        describe("loglevels", function() {
+            it("should support --silent", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return test(cli, "--silent").then((out) => {
+                    assert.deepEqual(out, {
+                        code   : 0,
+                        stderr : "",
+                        stdout : ""
+                    });
+                });
+            });
+
+            it("should support --log=silent", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return test(cli, "--log=silent").then((out) => {
+                    assert.deepEqual(out, {
+                        code   : 0,
+                        stderr : "",
+                        stdout : ""
+                    });
+                });
+            });
+
+            it("should support --silly", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return test(cli, "--silly").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
+                    assert(out.stderr.indexOf("verb b started") > -1);
+                });
+            });
+
+            it("should support --log=silly", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return test(cli, "--log=silly").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
+                    assert(out.stderr.indexOf("verb b started") > -1);
+                });
+            });
+
+            it("should support --verbose", function() {
+                process.chdir("./test/specimens/config-json");
+                
+                return test(cli, "--verbose").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
+                    assert(out.stderr.indexOf("verb b started") > -1);
+                });
+            });
+
+            it("should support --log=verbose", function() {
+                process.chdir("./test/specimens/config-json");
+                
+                return test(cli, "--log=verbose").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
+                    assert(out.stderr.indexOf("verb b started") > -1);
+                });
+            });
+        });
+
+        it("should log when a task starts and stops", function() {
+            process.chdir("./test/specimens/config-json");
+            
+            return test(cli).then((out) => {
+                assert.equal(out.code, 0);
+                
+                assert.equal(out.stderr.indexOf("info b complete in"), 0);
             });
         });
         
-        // it("shouldn't say anything when loglevel is \"silent\"", function() {
-        //     var cli = new Cli({
-        //             argv    : [].concat(_argv, "--silent"),
-        //             Dullard : Dullard,
-        //             process : _process(),
-        //             stream  : _stream(
-        //                 function() {
-        //                     assert(false, "Should not have been called");
-        //                 }
-        //             )
-        //         });
+        it("should find a local .dullfile containing JS", function() {
+            process.chdir("./test/specimens/config-js");
 
-        //     cli.run();
-        // });
+            return test(cli).then((out) => {
+                assert.equal(out.code, 0);
 
-        // it("should log when a task starts and stops", function() {
-        //     var result = "",
-        //         cli;
-            
-        //     process.chdir("./test/specimens/config-json");
-            
-        //     cli = new Cli({
-        //         argv    : _argv,
-        //         Dullard : Dullard,
-        //         process : _process(),
-        //         stream  : _stream(function(msg) {
-        //             result += msg;
-        //         })
-        //     });
-            
-        //     return cli.run().then(() => {
-        //         assert(/^info b started$/m.test(result));
-        //         assert(/^info b complete in/m.test(result));
-        //     });
-        // });
-        
-        // it("should be chatty in verbose mode", function() {
-        //     var result = "",
-        //         cli;
-            
-        //     process.chdir("./test/specimens/config-json");
-            
-        //     cli = new Cli({
-        //         argv    : [].concat(_argv, "--verbose"),
-        //         Dullard : Dullard,
-        //         process : _process(),
-        //         stream  : _stream(function(msg) {
-        //             result += msg;
-        //         })
-        //     });
-            
-        //     return cli.run().then(() =>
-        //         assert(/^verb/m.test(result))
-        //     );
-        // });
-        
-        // it("should be annoying in silly mode", function() {
-        //     var result = "",
-        //         cli;
-            
-        //     process.chdir("./test/specimens/config-json");
-            
-        //     cli = new Cli({
-        //         argv    : [].concat(_argv, "--silly"),
-        //         Dullard : Dullard,
-        //         process : _process(),
-        //         stream  : _stream(function(msg) {
-        //             result += msg;
-        //         })
-        //     });
-            
-        //     return cli.run().then(() =>
-        //         assert(/^sill/m.test(result))
-        //     );
-        // });
-              
-        // it("should find a local .dullfile containing JS", function() {
-        //     var configs = [],
-        //         cli;
-
-        //     process.chdir("./test/specimens/config-js");
-            
-        //     cli = new Cli({
-        //         argv    : _argv,
-        //         Dullard : _dullard({
-        //             addConfig : function(config) {
-        //                 configs.push(config);
-        //             }
-        //         })
-        //     });
-
-        //     cli.run();
-
-        //     configs
-        //         .filter(function(config) {
-        //             return typeof config === "string";
-        //         })
-        //         .forEach(function(config) {
-        //             assert(config);
-
-        //             assert(typeof config === "string");
-        //             assert(config.indexOf(path.join("config-js", ".dullfile")) > -1);
-        //         });
-        // });
+                assert(out.stderr.indexOf(path.resolve("./.dullfile")) > -1);
+            });
+        });
         
         // it("should find a local .dullfile containing JSON", function() {
         //     var configs = [],
