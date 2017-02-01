@@ -41,16 +41,14 @@ var path = require("path"),
     
     Dullard = require("../src/dullard.js"),
     dullard = new Dullard(),
-    config  = {};
+    config;
 
-[ "quiet", "silent", "verbose", "silly", "log" ].some((lvl) => {
+[ "quiet", "silent", "verbose", "silly", "log" ].find((lvl) => {
     if(!cli.flags[lvl]) {
         return false;
     }
 
-    log.level = typeof cli.flags[lvl] === "string" ? cli.flags[lvl] : lvl;
-
-    return true;
+    return (log.level = typeof cli.flags[lvl] === "string" ? cli.flags[lvl] : lvl);
 });
 
 // Go find all parent .dullfiles add load them into dullard instance
@@ -64,7 +62,11 @@ uppity(".dullfile", { nocase : true })
     
 // Load tasks from any CLI-specified dirs
 if(cli.flags.dirs) {
-    config.dirs = Array.isArray(cli.flags.dirs) ? cli.flags.dirs : cli.flags.dirs.split(",");
+    config = {
+        dirs : Array.isArray(cli.flags.dirs) ?
+            cli.flags.dirs :
+            cli.flags.dirs.split(",")
+    };
     
     log.verbose("cli", "Adding config: %j", config);
 
@@ -93,7 +95,7 @@ if(cli.flags.list) {
             }
 
             log.info("cli", `name   : ${name}`);
-            log.info("cli", `source : .${path.sep}${path.relative(process.cwd(), task.source)}`);
+            log.info("cli", `source : .${path.sep}${path.relative(process.cwd(), task.source)}`.replace(/\\/g, "/"));
 
             if(task.description) {
                 log.info("cli", `desc   : ${task.description}`);
