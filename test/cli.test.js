@@ -3,88 +3,65 @@
 var path   = require("path"),
     assert = require("assert"),
     
-    tester = require("cli-tester");
+    test = require("cli-tester"),
+    
+    text = require("./lib/text.js");
 
 describe("Dullard", function() {
-    describe("CLI", function() {
-        var cli = require.resolve("../bin/cli.js");
+    describe.only("CLI", function() {
+        var cli = require.resolve("../bin/cli.js"),
+            cwd = process.cwd();
+
+        afterEach(() => process.chdir(cwd));
         
-        it("should show help", function() {
-            return tester(cli, "--help").then((out) => {
+        it("should support --help and show help", function() {
+            return test(cli, "--help").then((out) => {
                 assert.equal(out.code, 0);
-                assert.equal(out.stdout.indexOf(require("../package.json").description), 0);
+                assert.equal(text(out.stdout), text(`
+                    Let the computers do the boring stuff.
+                      Usage
+                          $ dullard <options> <task>, ..., <taskN>
+                      Options
+                          --help         Show this help
+                          --dirs,    -d  Specify directories to load tasks from
+                          --list,    -l  Show a list of available tasks
+                          --test,    -t  Run in test mode, no tasks will be executed
+                          --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
+                          --quiet,   -q  Quiet logging
+                          --silent,  -s  Really quiet logging
+                          --verbose, -v  Verbose logging
+                          --silly,   -y  REALLY verbose logging
+                `));
             });
         });
 
-        // it("should show help (& not run)", function() {
-        //     var cli = new Cli({
-        //             argv    : [].concat(_argv, "-?"),
-        //             Dullard : _dullard(function() {
-        //                 assert(false, "Should not have been called!");
-        //             }),
-                    
-        //             stream : _stream(function(help) {
-        //                 assert(help.indexOf("Options:") > -1);
-        //             })
-        //         });
-
-        //     cli.run();
-        // });
-
-        // it("should show version (& not run)", function() {
-        //     var cli = new Cli({
-        //             argv    : [].concat(_argv, "--version"),
-        //             Dullard : _dullard(function() {
-        //                 assert(false, "Should not have been called!");
-        //             }),
-
-        //             stream : _stream(function(version) {
-        //                 assert(version.indexOf("dullard") > -1);
-        //             })
-        //         });
-
-        //     cli.run();
-        // });
-        
-        // it("should show available tasks (& not run)", function() {
-        //     var msgs = "",
-        //         cli  = new Cli({
-        //             argv    : [].concat(_argv, "-l", "-d", "./test/specimens/tasks-a/"),
-        //             Dullard : _dullard({
-        //                 run : function() {
-        //                     assert(false, "Should not have been called!");
-        //                 }
-        //             }),
-                    
-        //             stream : _stream(
-        //                 function(msg) {
-        //                     msgs += msg;
-        //                 }
-        //             )
-        //         });
+        it("should support --list and show available tasks", function() {
+            process.chdir("./test/specimens/config-dirs");
             
-        //     cli.run();
-        //     assert(msgs.indexOf("a-async") > -1);
-        // });
-        
-        // it("should complain if no tasks are available", function() {
-        //     var result = "",
-        //         cli    = new Cli({
-        //             argv    : [].concat(_argv, "-l"),
-        //             Dullard : Dullard,
-        //             stream  : _stream(
-        //                 function(msg) {
-        //                     result += msg;
-        //                 }
-        //             ),
-        //             process : _process(function(code) {
-        //                 assert.equal(code, 1);
-        //             })
-        //         });
+            return test(cli, "--list").then((out) => {
+                assert.equal(out.code, 0);
 
-        //     cli.run();
-        //     assert(result.indexOf("No tasks available") > -1);
-        // });
+                assert.equal(text(out.stderr), text(`
+                    info cli Available Tasks:
+                    info cli
+                    info cli name   : a
+                    info cli source : ./tasks/a.js
+                    info cli desc   : Task description
+                    info cli
+                    info cli name   : a-async
+                    info cli source : ./../tasks-a/a-async.js
+                    info cli
+                `))
+            });
+        });
+        
+        it("should complain if no tasks are available", function() {
+            process.chdir("./test/specimens/config-blank");
+            
+            return test(cli).then((out) => {
+                console.log(out);
+            });
+        });
         
         // it("shouldn't say anything when loglevel is \"silent\"", function() {
         //     var cli = new Cli({
