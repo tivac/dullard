@@ -15,8 +15,7 @@ var path = require("path"),
         --list,    -l  Show a list of available tasks
         --test,    -t  Run in test mode, no tasks will be executed
         --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
-        --quiet,   -q  Quiet logging
-        --silent,  -s  Really quiet logging
+        --silent,  -s  No output
         --verbose, -v  Verbose logging
         --silly,   -y  REALLY verbose logging
     `, {
@@ -25,7 +24,6 @@ var path = require("path"),
             list    : "l",
             test    : "t",
             log     : "g",
-            quiet   : "q",
             silent  : "s",
             verbose : "v",
             silly   : "y"
@@ -36,14 +34,14 @@ var path = require("path"),
         },
 
         string  : [ "dirs", "log" ],
-        boolean : [ "list", "test", "quiet", "silent", "verbose", "silly" ]
+        boolean : [ "list", "test", "silent", "verbose", "silly" ]
     }),
     
     Dullard = require("../src/dullard.js"),
     dullard = new Dullard(),
     config;
 
-[ "quiet", "silent", "verbose", "silly", "log" ].find((lvl) => {
+[ "silent", "verbose", "silly", "log" ].find((lvl) => {
     if(!cli.flags[lvl]) {
         return false;
     }
@@ -51,14 +49,14 @@ var path = require("path"),
     return (log.level = typeof cli.flags[lvl] === "string" ? cli.flags[lvl] : lvl);
 });
 
+if(cli.flags.test) {
+    log.warn("TEST RUN");
+}
+
 // Go find all parent .dullfiles add load them into dullard instance
 uppity(".dullfile", { nocase : true })
     .reverse()
-    .forEach((file) => {
-        log.verbose("cli", "Adding config: %s", file);
-
-        dullard.addConfig(file);
-    });
+    .forEach((file) => dullard.addConfig(file));
     
 // Load tasks from any CLI-specified dirs
 if(cli.flags.dirs) {
@@ -105,23 +103,14 @@ if(cli.flags.list) {
         });
 }
 
-if(cli.flags.test) {
-    log.warn("TEST RUN");
-    
-    return dullard.test(cli.input);
-}
-
-if(!cli.flags.quiet) {
+if(!cli.flags.silent) {
     dullard.on("log", (args) =>
         log.log.apply(log, [ args.level, args.task || "dullard" ].concat(args.body))
     );
 }
 
-return dullard.run(cli.input)
-    .catch((error) => {
-        log.error("cli", "Build failed!");
-        log.error("cli", error);
-
+return dullard[cli.flags.test ? "test" : "start"](cli.input)
+    .catch(() => {
         // Don't exit immediately, want to make sure any output
         // has a chance to be written first
         process.on("exit", function() {
