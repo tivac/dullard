@@ -1,0 +1,13 @@
+"use strict";
+
+module.exports = {
+    "dirs" : [
+        "../tasks-other"
+    ],
+
+    "steps": [
+        function inline(config) {
+            // no op
+        }
+    ]
+}

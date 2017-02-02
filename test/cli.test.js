@@ -3,72 +3,89 @@
 var path   = require("path"),
     assert = require("assert"),
     
-    test = require("cli-tester"),
+    tester = require("cli-tester"),
     
-    text = require("./lib/text.js");
+    tests = require("./lib/tests.js");
 
 describe("Dullard", function() {
-    describe.only("CLI", function() {
+    describe("CLI", function() {
         var cli = require.resolve("../bin/cli.js"),
             cwd = process.cwd();
 
         afterEach(() => process.chdir(cwd));
         
-        it("should respond to --help", function() {
-            return test(cli, "--help").then((out) => {
-                assert.equal(out.code, 0);
-                assert.equal(text(out.stdout), text(`
-                    Let the computers do the boring stuff.
-                      Usage
-                          $ dullard <options> <task>, ..., <taskN>
-                      Options
-                          --help         Show this help
-                          --dirs,    -d  Specify directories to load tasks from
-                          --list,    -l  Show a list of available tasks
-                          --test,    -t  Run in test mode, no tasks will be executed
-                          --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
-                          --silent,  -s  No output
-                          --verbose, -v  Verbose logging
-                          --silly,   -y  REALLY verbose logging
-                `));
+        describe("--help", function() {
+            it("should show help", function() {
+                return tester(cli, "--help").then((out) => {
+                    assert.equal(out.code, 0);
+                    
+                    tests.text(out.stdout, `
+                        Let the computers do the boring stuff.
+                          Usage
+                              $ dullard <options> <task>, ..., <taskN>
+                          Options
+                              --help         Show this help
+                              --dirs,    -d  Specify directories to load tasks from
+                              --list,    -l  Show a list of available tasks
+                              --test,    -t  Run in test mode, no tasks will be executed
+                              --config,  -c  Output final assembled config for debugging
+                              --silent,  -s  No output
+                              --verbose, -v  Verbose logging
+                              --silly,   -y  REALLY verbose logging
+                              --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
+                    `);
+                });
             });
         });
 
-        it("should respond to --list", function() {
-            process.chdir("./test/specimens/config-dirs");
-            
-            return test(cli, "--list").then((out) => {
-                assert.equal(out.code, 0);
+        describe("--list", function() {
+            it("should describe available tasks", function() {
+                process.chdir("./test/specimens/config-dirs");
+                
+                return tester(cli, "--list").then((out) => {
+                    assert.equal(out.code, 0);
 
-                assert.equal(text(out.stderr), text(`
-                    info cli Available Tasks:
-                    info cli
-                    info cli name   : a
-                    info cli source : ./tasks/a.js
-                    info cli desc   : Task description
-                    info cli
-                    info cli name   : a-async
-                    info cli source : ./../tasks-a/a-async.js
-                    info cli
-                `))
+                    tests.wildcard(out.stderr, `
+                        info cli Config files loaded:
+                        info cli
+                        info cli     */config-dirs/.dullfile
+                        info cli     */config-js/.dullfile
+                        info cli
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : a
+                        info cli source : ./tasks/a.js
+                        info cli desc   : Task description
+                        info cli
+                        info cli name   : a-async
+                        info cli source : ./../tasks-a/a-async.js
+                        info cli
+                    `);
+                });
+            });
+
+            it("should handle no tasks state", function() {
+                process.chdir("./test/specimens/config-blank");
+
+                return tester(cli, "--list").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Config files loaded:
+                        info cli
+                        info cli     */config-blank/.dullfile
+                        info cli
+                        ERR! cli No tasks available.
+                    `);
+                });
             });
         });
-        
-        it("should complain if no tasks are available", function() {
-            process.chdir("./test/specimens/config-blank");
-            
-            return test(cli).then((out) => {
-                assert.equal(out.code, 1);
 
-                assert.equal(out.stderr.indexOf("ERR! dullard build failed in"), 0);
-            });
-        });
-
-        describe("loglevels", function() {
+        describe("--log/--silent/--verbose/--silly", function() {
             it("should support --silent", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return test(cli, "--silent").then((out) => {
+                return tester(cli, "--silent").then((out) => {
                     assert.deepEqual(out, {
                         code   : 0,
                         stderr : "",
@@ -80,7 +97,7 @@ describe("Dullard", function() {
             it("should support --log=silent", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return test(cli, "--log=silent").then((out) => {
+                return tester(cli, "--log=silent").then((out) => {
                     assert.deepEqual(out, {
                         code   : 0,
                         stderr : "",
@@ -92,338 +109,543 @@ describe("Dullard", function() {
             it("should support --silly", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return test(cli, "--silly").then((out) => {
+                return tester(cli, "--silly").then((out) => {
                     assert.equal(out.code, 0);
 
-                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
-                    assert(out.stderr.indexOf("verb b started") > -1);
+                    tests.wildcard(out.stderr, `
+                        verb dullard Build starting
+                        sill dullard Loaded configs
+                        sill dullard    *.dullfile
+                        verb b started
+                        sill b hi
+                        info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
                 });
             });
 
             it("should support --log=silly", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return test(cli, "--log=silly").then((out) => {
+                return tester(cli, "--log=silly").then((out) => {
                     assert.equal(out.code, 0);
 
-                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
-                    assert(out.stderr.indexOf("verb b started") > -1);
+                    tests.wildcard(out.stderr, `
+                        verb dullard Build starting
+                        sill dullard Loaded configs
+                        sill dullard    *.dullfile
+                        verb b started
+                        sill b hi
+                        info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
                 });
             });
 
             it("should support --verbose", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return test(cli, "--verbose").then((out) => {
+                return tester(cli, "--verbose").then((out) => {
                     assert.equal(out.code, 0);
 
-                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
-                    assert(out.stderr.indexOf("verb b started") > -1);
+                    tests.wildcard(out.stderr, `
+                        verb dullard Build starting
+                        verb b started
+                        info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
                 });
             });
 
             it("should support --log=verbose", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return test(cli, "--log=verbose").then((out) => {
+                return tester(cli, "--log=verbose").then((out) => {
                     assert.equal(out.code, 0);
 
-                    assert.equal(out.stderr.indexOf("verb cli Adding config"), 0);
-                    assert(out.stderr.indexOf("verb b started") > -1);
+                    tests.wildcard(out.stderr, `
+                        verb dullard Build starting
+                        verb b started
+                        info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
+        });
+        
+        describe("--dirs/-d", function() {
+            it("should support comma-separated --dirs via argv", function() {
+                return tester(
+                    cli,
+                    "--dirs=./test/specimens/tasks-a,./test/specimens/tasks-b",
+                    "--list"
+                )
+                .then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : a
+                        info cli source : ./test/specimens/tasks-a/a.js
+                        info cli desc   : Task description
+                        info cli
+                        info cli name   : a-async
+                        info cli source : ./test/specimens/tasks-a/a-async.js
+                        info cli
+                        info cli name   : b
+                        info cli source : ./test/specimens/tasks-b/b.js
+                        info cli
+                        info cli name   : b-async
+                        info cli source : ./test/specimens/tasks-b/b-async.js
+                        info cli
+                    `);
+                });
+            });
+
+            it("should support multiple -d params via argv", function() {
+                return tester(
+                    cli,
+                    "-d ./test/specimens/tasks-a",
+                    "-d ./test/specimens/tasks-b",
+                    "--list"
+                )
+                .then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : a
+                        info cli source : ./test/specimens/tasks-a/a.js
+                        info cli desc   : Task description
+                        info cli
+                        info cli name   : a-async
+                        info cli source : ./test/specimens/tasks-a/a-async.js
+                        info cli
+                        info cli name   : b
+                        info cli source : ./test/specimens/tasks-b/b.js
+                        info cli
+                        info cli name   : b-async
+                        info cli source : ./test/specimens/tasks-b/b-async.js
+                        info cli
+                    `);
                 });
             });
         });
 
-        it("should log when a task starts and stops", function() {
-            process.chdir("./test/specimens/config-json");
-            
-            return test(cli).then((out) => {
-                assert.equal(out.code, 0);
+        describe("--config/-c", function() {
+            it("should dump the combined config values", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return tester(cli, "--config").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Generated config object:
+                        info cli
+                        info cli {
+                        info cli     "cwd": "*config-json",
+                        info cli     "dirs": [
+                        info cli         "*tasks-b"
+                        info cli     ],
+                        info cli     "files": [
+                        info cli         "*.dullfile"
+                        info cli     ],
+                        info cli     "nested": {
+                        info cli         "config-json": "config-json"
+                        info cli     },
+                        info cli     "config-json": "config-json",
+                        info cli     "steps": {
+                        info cli         "default": [
+                        info cli             "b"
+                        info cli         ]
+                        info cli     }
+                        info cli }
+                    `);
+                });
+            });
+        });
+
+        describe("--test/-t", function() {
+            it("should pretend to run tasks", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return tester(cli, "--test").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        WARN cli TEST RUN
+                        info b complete
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
+        });
+
+        describe("arbitrary argv values", function() {
+            it("should set arbitrary config values", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return tester(
+                    cli,
+                    "--argv=argv",
+                    "--nested.nested.argv=argv",
+                    "--nested.argv=argv",
+                    "--config"
+                )
+                .then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Generated config object:
+                        info cli
+                        info cli {
+                        info cli     "cwd": "*config-json",
+                        info cli     "dirs": [
+                        info cli         "*tasks-b"
+                        info cli     ],
+                        info cli     "files": [
+                        info cli         "*.dullfile"
+                        info cli     ],
+                        info cli     "nested": {
+                        info cli         "config-json": "config-json",
+                        info cli         "nested": {
+                        info cli             "argv": "argv"
+                        info cli         },
+                        info cli         "argv": "argv"
+                        info cli     },
+                        info cli     "config-json": "config-json",
+                        info cli     "steps": {
+                        info cli         "default": [
+                        info cli             "b"
+                        info cli         ]
+                        info cli     },
+                        info cli     "argv": "argv"
+                        info cli }
+                    `);
+                });
+            });
+
+            it("should override values from .dullfiles", function() {
+                 process.chdir("./test/specimens/config-json");
+
+                return tester(
+                    cli,
+                    "--nested.config-json=argv",
+                    "--config"
+                )
+                .then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Generated config object:
+                        info cli
+                        info cli {
+                        info cli     "cwd": "*config-json",
+                        info cli     "dirs": [
+                        info cli         "*tasks-b"
+                        info cli     ],
+                        info cli     "files": [
+                        info cli         "*.dullfile"
+                        info cli     ],
+                        info cli     "nested": {
+                        info cli         "config-json": "argv"
+                        info cli     },
+                        info cli     "config-json": "config-json",
+                        info cli     "steps": {
+                        info cli         "default": [
+                        info cli             "b"
+                        info cli         ]
+                        info cli     }
+                        info cli }
+                    `);
+                });
+            });
+        });
+
+        describe("argv tasks", function() {
+            it("should support a single task", function() {
+                process.chdir("./test/specimens/config-json");
                 
-                assert.equal(out.stderr.indexOf("info b complete in"), 0);
-            });
-        });
-        
-        it("should find a local .dullfile containing JS", function() {
-            process.chdir("./test/specimens/config-js");
-
-            return test(cli).then((out) => {
-                assert.equal(out.code, 0);
-
-                assert(out.stderr.indexOf(path.resolve("./.dullfile")) > -1);
-            });
-        });
-        
-        // it("should find a local .dullfile containing JSON", function() {
-        //     var configs = [],
-        //         cli;
-
-        //     process.chdir("./test/specimens/config-json");
-            
-        //     cli = new Cli({
-        //         argv    : _argv,
-        //         Dullard : _dullard({
-        //             addConfig : function(config) {
-        //                 configs.push(config);
-        //             }
-        //         })
-        //     });
-
-        //     cli.run();
-
-        //     configs
-        //         .filter(function(config) {
-        //             return typeof config === "string";
-        //         })
-        //         .forEach(function(config) {
-        //             assert(config);
-
-        //             assert(typeof config === "string");
-        //             assert(config.indexOf(path.join("config-json", ".dullfile")) > -1);
-        //         });
-        // });
-        
-        // it("should find all .dullfile files in parent directories", function() {
-        //     var cli, result;
-
-        //     process.chdir("./test/specimens/config-deep/fooga/wooga");
-            
-        //     cli = new Cli({
-        //         argv    : _argv,
-        //         Dullard : Dullard
-        //     });
-
-        //     result = cli._dullard();
-
-        //     assert(result._config);
-            
-        //     assert(result._config.root);
-        //     assert(result._config.fooga);
-        //     assert(result._config.wooga);
-            
-        //     assert.equal(result._config.dirs.length, 3);
-        //     assert(result._config.steps.default.length, 2);
-        // });
-        
-        // it("should support multiple dirs passed on argv", function() {
-        //     var cli = new Cli({
-        //             argv    : [].concat(_argv, "-d", "./test/specimens/tasks-a,./test/specimens/tasks-b"),
-        //             Dullard : Dullard
-        //         }),
-        //         result;
-
-        //     result = cli._dullard();
-
-        //     assert(result._config);
-            
-        //     assert.equal(result._config.dirs.length, 2);
-        // });
-        
-        // it("should allow setting arbitrary config values from argv", function() {
-        //     var cli, result;
-
-        //     process.chdir("./test/specimens/config-json");
-            
-        //     cli = new Cli({
-        //         argv : [].concat(
-        //             _argv,
-        //             "--argv=argv",
-        //             "--nested.nested.argv=argv",
-        //             "--nested.argv=argv"
-        //         ),
-        //         Dullard : Dullard
-        //     });
-
-        //     result = cli._dullard();
-
-        //     assert(result._config);
-            
-        //     assert.equal(result._config.argv, "argv");
-            
-        //     assert("nested" in result._config);
-        //     assert("argv" in result._config.nested);
-        //     assert.equal(result._config.nested.argv, "argv");
-
-        //     assert("config-json" in result._config.nested);
-        //     assert.equal(result._config.nested["config-json"], "config-json");
-
-        //     assert("nested" in result._config.nested);
-        //     assert("argv" in result._config.nested.nested);
-        //     assert.equal(result._config.nested.nested.argv, "argv");
-        // });
-
-        // it("should let argv config values override everything else", function() {
-        //     var cli, result;
-
-        //     process.chdir("./test/specimens/config-include");
-            
-        //     cli = new Cli({
-        //         argv : [].concat(
-        //             _argv,
-        //             "--argv=argv",
-        //             "--nested.config-js=argv"
-        //         ),
-        //         Dullard : Dullard
-        //     });
-
-        //     result = cli._dullard();
-
-        //     assert(result._config);
-            
-        //     assert.equal(result._config.argv, "argv");
-        //     assert.equal(result._config["config-js"], "config-js");
-        //     assert.equal(result._config["config-include"], "config-include");
-            
-        //     assert.deepEqual(result._config.nested, {
-        //         "config-js"      : "argv",
-        //         "config-include" : "config-include"
-        //     });
-        // });
-
-        // it("should run steps passed in via argv", function() {
-        //     var result = "",
-        //         cli;
-
-        //     process.chdir("./test/specimens/config-json");
-            
-        //     cli = new Cli({
-        //         argv    : [].concat(_argv, "-d", "../tasks-a", "a"),
-        //         Dullard : Dullard,
-        //         process : _process(),
-        //         stream  : _stream(function(msg) {
-        //             result += msg;
-        //         })
-        //     });
-
-        //     return cli.run().then(() =>
-        //         assert(result.indexOf("a complete") > -1)
-        //     );
-        // });
-        
-        // it("should complain when a dullard fails", function() {
-        //     var result = "",
-        //         cli = new Cli({
-        //             argv    : [].concat(_argv, "fooga"),
-        //             Dullard : Dullard,
-        //             stream  : _stream(function(msg) {
-        //                 result += msg;
-        //             }),
+                return tester(cli, "b-async").then((out) => {
+                    assert.equal(out.code, 0);
                     
-        //             process : _process(function(code) {
-        //                 assert.equal(code, 1);
-        //             })
-        //         });
-            
-        //     return cli.run().then(() =>
-        //         assert(result.indexOf("Build failed") > -1)
-        //     );
-        // });
-        
-        // it("should respect --quiet", function() {
-        //     var cli;
+                    tests.wildcard(out.stderr, `
+                        info b-async complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
 
-        //     process.chdir("./test/specimens/config-js");
-            
-        //     cli = new Cli({
-        //         argv    : [].concat(_argv, "--quiet"),
-        //         Dullard : Dullard,
-        //         stream  : _stream(
-        //             function(error) {
-        //                 assert(!error, "Should not have been called");
-        //             }
-        //         )
-        //     });
+            it("should support multiple tasks", function() {
+                process.chdir("./test/specimens/config-json");
+                
+                return tester(cli, "b-async", "b").then((out) => {
+                    assert.equal(out.code, 0);
+                    
+                    tests.wildcard(out.stderr, `
+                        info b-async complete in * seconds
+                        info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
 
-        //     cli.run();
-        // });
-        
-        // it("should handle mostly-empty configs", function() {
-        //     var cli, result;
+            it("should support repeated tasks", function() {
+                process.chdir("./test/specimens/config-json");
+                
+                return tester(cli, "b-async", "b", "b-async").then((out) => {
+                    assert.equal(out.code, 0);
+                    
+                    tests.wildcard(out.stderr, `
+                        info b-async complete in * seconds
+                        info b complete in * seconds
+                        info b-async complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
 
-        //     process.chdir("./test/specimens/config-blank");
-            
-        //     cli = new Cli({
-        //         argv    : _argv,
-        //         Dullard : Dullard
-        //     });
+            it("should return an error code on invalid tasks", function() {
+                process.chdir("./test/specimens/config-json");
+                
+                return tester(cli, "fooga").then((out) => {
+                    assert.equal(out.code, 1);
+                    
+                    tests.wildcard(out.stderr, `
+                        ERR! fooga failed
+                        ERR! dullard build failed in * seconds
+                        ERR! dullard Unknown task: fooga
+                    `);
+                });
+            });
+        });
 
-        //     result = cli._dullard();
-            
-        //     assert(result._config);
-        //     assert(result._config.steps);
+        describe("failures", function() {
+            it("should complain if no tasks are available", function() {
+                process.chdir("./test/specimens/config-blank");
+                
+                return tester(cli).then((out) => {
+                    assert.equal(out.code, 1);
 
-        //     assert.equal(Object.keys(result._config.steps).length, 0);
-        //     assert.equal(result._config.dirs.length, 0);
-        // });
-        
-        // it("should log dullard lifecycle events", function() {
-        //     var result = [],
-        //         cli;
-            
-        //     process.chdir("./test/specimens/config-js");
-            
-        //     cli = new Cli({
-        //         argv    : _argv,
-        //         Dullard : _dullard({
-        //             on  : require("events").EventEmitter.prototype.on,
-        //             run : function() {
-        //                 this.emit("log", { level : "info", body : [ "fooga" ] });
-        //                 this.emit("log", { level : "info", body : [ "booga %s", "wooga" ] });
-        //             }
-        //         }),
-        //         stream : _stream(
-        //             function(msg) {
-        //                 result = result.concat(msg);
-        //             }
-        //         )
-        //     });
+                    tests.wildcard(out.stderr, `
+                        ERR! dullard build failed in * seconds
+                        ERR! dullard No tasks found
+                    `);
+                });
+            });
 
-        //     cli.run();
+            it("should handle missing tasks", function() {
+                process.chdir("./test/specimens/config-missingtask");
+                
+                return tester(cli).then((out) => {
+                    assert.equal(out.code, 1);
+                    
+                    tests.wildcard(out.stderr, `
+                        info a complete in * seconds
+                        ERR! missing failed
+                        ERR! dullard build failed in * seconds
+                        ERR! dullard Unknown task: missing
+                    `);
+                });
+            });
+
+            it("should support sync tasks that fail", function() {
+                process.chdir("./test/specimens/config-tasks");
+                
+                return tester(cli, "fail-return").then((out) => {
+                    assert.equal(out.code, 1);
+                    
+                    tests.wildcard(out.stderr, `
+                        ERR! fail-return failed
+                        ERR! dullard build failed in * seconds
+                        ERR! dullard Error
+                    `);
+                });
+            });
             
-        //     assert(result.indexOf(" fooga\n") > -1);
-        //     assert(result.indexOf(" booga wooga\n") > -1);
-        // });
-        
-        // it("should pretend to execute in test mode", function() {
-        //     var result = "",
-        //         cli;
+            it("should support callback tasks that fail", function() {
+                process.chdir("./test/specimens/config-tasks");
+                
+                return tester(cli, "fail-callback").then((out) => {
+                    assert.equal(out.code, 1);
+                    
+                    tests.wildcard(out.stderr, `
+                        ERR! fail-callback failed
+                        ERR! dullard build failed in * seconds
+                        ERR! dullard Error
+                    `);
+                });
+            });
+
+            it("should support promise tasks that fail", function() {
+                process.chdir("./test/specimens/config-tasks");
+                
+                return tester(cli, "fail-promise").then((out) => {
+                    assert.equal(out.code, 1);
+                    
+                    tests.wildcard(out.stderr, `
+                        ERR! fail-promise failed
+                        ERR! dullard build failed in * seconds
+                        ERR! dullard Error
+                    `);
+                });
+            });
+        });
+
+        describe(".dullfile locating", function() {
+            it("should find a local .dullfile containing JS", function() {
+                process.chdir("./test/specimens/config-js");
+
+                return tester(cli, "--list").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Config files loaded:
+                        info cli
+                        info cli    */config-js/.dullfile
+                        info cli
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : a
+                        info cli source : ./../tasks-a/a.js
+                        info cli desc   : Task description
+                        info cli
+                        info cli name   : a-async
+                        info cli source : ./../tasks-a/a-async.js
+                        info cli
+                    `);
+                });
+            });
             
-        //     process.chdir("./test/specimens/config-json");
+            it("should find a local .dullfile containing JSON", function() {
+                process.chdir("./test/specimens/config-json");
+
+                return tester(cli, "--list").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Config files loaded:
+                        info cli
+                        info cli    */config-json/.dullfile
+                        info cli
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : b
+                        info cli source : ./../tasks-b/b.js
+                        info cli
+                        info cli name   : b-async
+                        info cli source : ./../tasks-b/b-async.js
+                        info cli
+                    `);
+                });
+            });
+
+            it("should find all .dullfile files in parent directories", function() {
+                process.chdir("./test/specimens/config-deep/fooga/wooga");
+                
+                return tester(cli, "--list").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Config files loaded:
+                        info cli
+                        info cli    */config-deep/.dullfile
+                        info cli    */config-deep/fooga/.dullfile
+                        info cli    */config-deep/fooga/wooga/.dullfile
+                        info cli
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : a
+                        info cli source : ./../../../tasks-a/a.js
+                        info cli desc   : Task description
+                        info cli
+                        info cli name   : a-async
+                        info cli source : ./../../../tasks-a/a-async.js
+                        info cli
+                        info cli name   : b
+                        info cli source : ./../../../tasks-b/b.js
+                        info cli
+                        info cli name   : b-async
+                        info cli source : ./../../../tasks-b/b-async.js
+                        info cli
+                        info cli name   : c
+                        info cli source : ./../../../tasks-c/c.js
+                        info cli
+                        info cli name   : c-async
+                        info cli source : ./../../../tasks-c/c-async.js
+                        info cli
+                    `);
+                });
+            });
+        });
+
+        describe("features", function() {
+            it("should support inline functions as steps", function() {
+                process.chdir("./test/specimens/config-tasks");
+
+                return tester(cli).then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info inline complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
+
+            it("should log when a task completes", function() {
+                process.chdir("./test/specimens/config-json");
+                
+                return tester(cli).then((out) => {
+                    assert.equal(out.code, 0);
+                    
+                    tests.wildcard(out.stderr, `
+                        info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
             
-        //     cli = new Cli({
-        //         argv    : [].concat(_argv, "--test"),
-        //         Dullard : Dullard,
-        //         process : _process(),
-        //         stream  : _stream(function(msg) {
-        //             result += msg;
-        //         })
-        //     });
-            
-        //     return cli.run().then(() => {
-        //         assert(/^WARN TEST RUN/m.test(result));
-        //         assert(/faked in/.test(result));
-        //     });
-        // });
-        
-        // it("should pretend to execute CLI tasks in test mode", function() {
-        //     var result = "",
-        //         cli;
-            
-        //     process.chdir("./test/specimens/config-json");
-            
-        //     cli = new Cli({
-        //         argv    : [].concat(_argv, "--test", "b"),
-        //         Dullard : Dullard,
-        //         process : _process(),
-        //         stream  : _stream(function(msg) {
-        //             result += msg;
-        //         })
-        //     });
-            
-        //     return cli.run().then(() => {
-        //         assert(/^WARN TEST RUN/m.test(result));
-        //         assert(/b faked in/.test(result));
-        //     });
-        // });
+            it("should support the `include` .dullfile key", function() {
+                process.chdir("./test/specimens/config-include");
+                
+                return tester(cli, "--list").then((out) => {
+                    assert.equal(out.code, 0);
+
+                    tests.wildcard(out.stderr, `
+                        info cli Config files loaded:
+                        info cli
+                        info cli     */config-include/.dullfile
+                        info cli     */config-js/.dullfile
+                        info cli
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : a
+                        info cli source : ./../tasks-a/a.js
+                        info cli desc   : Task description
+                        info cli
+                        info cli name   : a-async
+                        info cli source : ./../tasks-a/a-async.js
+                        info cli
+                    `);
+                });
+            });
+
+            it("should support task aliases", function() {
+                process.chdir("./test/specimens/config-alias");
+                
+                return tester(cli).then((out) => {
+                    assert.equal(out.code, 0);
+                    
+                    tests.wildcard(out.stderr, `
+                        info a complete in * seconds
+                        info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
+        });
     });
 });

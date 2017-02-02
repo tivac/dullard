@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@studio/changes": "^1.1.0",
+    "calmcard": "^0.1.1",
     "cli-tester": "^2.0.0",
     "dentist": "^1.0.3",
     "eslint": "^3.7.0",
@@ -41,6 +42,7 @@
     "is-promise": "^2.1.0",
     "lodash.mergewith": "^4.6.0",
     "lodash.omit": "^4.5.0",
+    "lodash.values": "^4.3.0",
     "meow": "^3.7.0",
     "npmlog": "^4.0.2",
     "p-each-series": "^1.0.0",

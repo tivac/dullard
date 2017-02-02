@@ -1,0 +1,14 @@
+{
+    "dirs" : [
+        "../tasks-a",
+        "../tasks-b"
+    ],
+
+    "steps" : {
+        "default" : "alias",
+        "alias" : [
+            "a",
+            "b"
+        ]
+    }
+}

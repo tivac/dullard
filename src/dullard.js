@@ -18,7 +18,7 @@ var path = require("path"),
 
     Dullard;
 
-Dullard = function(config) {
+Dullard = function() {
     EventEmitter.call(this);
 
     this.testing = false;
@@ -31,10 +31,6 @@ Dullard = function(config) {
         dirs  : [],
         files : []
     };
-    
-    if(config) {
-        this.addConfig(config);
-    }
 };
 
 // Allow for dullard to emit events
@@ -53,11 +49,8 @@ Dullard.prototype.log = function(lvl, message) {
 
 Dullard.prototype.run = function(name) {
     var task, result;
-
-    // Support aliases by recursing down the rabbit hole
-    if(name in this.steps) {
-        return this.series(name);
-    }
+    
+    this._current = name.name || name.toString();
 
     task = loadTask(this.tasks, name);
 
@@ -66,8 +59,6 @@ Dullard.prototype.run = function(name) {
     }
 
     this.tasks[name] = task;
-
-    this._current = name.toString();
 
     this.log("verbose", "started");
     
@@ -109,22 +100,26 @@ Dullard.prototype.series = function(name) {
         steps = name;
     }
 
-    // Sanity checking
-    if(!steps) {
-        return Promise.reject(new Error("No steps defined"));
-    }
-
     if(!Array.isArray(steps)) {
         steps = [ steps ];
     }
 
-    this.log("verbose", "Running");
-    this.log("verbose", `\t${steps.join("\n\t")}`);
+    this._current = name.toString();
+
+    if(steps.length > 1) {
+        this.log("verbose", "Running");
+        this.log("verbose", `    ${steps.join("\n    ")}`);
+    }
 
     return series(
         steps,
         (task) => {
             var start = Date.now();
+
+            // Support aliases by recursing down the rabbit hole
+            if(task in this.steps) {
+                return this.series(task);
+            }
             
             return this.run(task).then(() =>
                 (this.testing ?
@@ -134,7 +129,14 @@ Dullard.prototype.series = function(name) {
             );
         }
     )
-    .then(() => (this._current = null));
+    .then(() => (this._current = null))
+    .catch((error) => {
+        this.log("error", "failed");
+        
+        this._current = null;
+
+        throw error;
+    });
 };
 
 // Public API
@@ -148,7 +150,7 @@ Dullard.prototype.start = function(steps) {
 
     this.log("verbose", "Build starting");
     this.log("silly", "Loaded configs");
-    this.log("silly", `\t${this.config.files.join("\t\n")}`);
+    this.log("silly", `    ${this.config.files.join("    \n")}`);
 
     // Done this way to take advantage of consistent failure handling
     return (
@@ -160,9 +162,13 @@ Dullard.prototype.start = function(steps) {
     .then(() => this.log(`build complete in ${time(Date.now() - start)}`))
     .catch((error) => {
         this.log("error", `build failed in ${time(Date.now() - start)}`);
-        this.log("error", error.message);
-        this.log("silly", error.stack);
-        this.log("silly", this.config);
+
+        if(error instanceof Error) {
+            this.log("error", error.message);
+            this.log("silly", error.stack);
+        } else {
+            this.log("error", error);
+        }
 
         throw error;
     });
@@ -175,10 +181,12 @@ Dullard.prototype.test = function(steps) {
 };
 
 Dullard.prototype.addConfig = function(config) {
-    var file, cwd;
+    var cwd = this.config.cwd,
+        file;
     
     if(typeof config === "string") {
         file   = config;
+        cwd    = path.dirname(file);
         config = loadConfig(config);
 
         this.config.files.push(file);
@@ -187,18 +195,15 @@ Dullard.prototype.addConfig = function(config) {
     // Supporting merging in other .dullfiles, needs to happen before
     // this config gets merged to preserve expected merging order
     if(config.includes) {
-        if(file) {
-            cwd = path.dirname(file);
-        }
-
         config.includes
-            .map((include) => path.resolve(cwd || this.config.cwd, include))
+            .map((include) => path.resolve(cwd, include))
             .forEach((include) => this.addConfig(include));
     }
 
+    // Dirs get added & checked for tasks
     if(config.dirs) {
         config.dirs.forEach((dir) =>
-            this.addDir(path.resolve(config.cwd, dir))
+            this.addDir(path.resolve(cwd, dir))
         );
     }
     
