@@ -1,6 +1,6 @@
 {
   "name": "dullard",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Let the computers do the boring stuff.",
   "bin": "./bin/cli.js",
   "main": "./lib/build.js",

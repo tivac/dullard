@@ -1,5 +1,9 @@
 # Changes
 
+## 4.0.0
+
+- refactor: use meow and optimize for CLI usage (#114)
+
 ## 3.0.0
 
 - feat: Promise support (#111)
