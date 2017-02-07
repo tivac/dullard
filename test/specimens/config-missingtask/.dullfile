@@ -1,0 +1,10 @@
+{
+    "dirs": [
+        "../tasks-a"
+    ],
+
+    "steps": [
+        "a",
+        "missing"
+    ]
+}

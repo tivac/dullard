@@ -2,7 +2,6 @@
   "name": "dullard",
   "version": "3.0.0",
   "description": "Let the computers do the boring stuff.",
-  "usage": "dullard -d <dir>,...,<dirN> <step1> ... <stepN>",
   "bin": "./bin/cli.js",
   "main": "./lib/build.js",
   "scripts": {
@@ -27,6 +26,9 @@
   },
   "devDependencies": {
     "@studio/changes": "^1.1.0",
+    "calmcard": "^0.1.1",
+    "cli-tester": "^2.0.0",
+    "dentist": "^1.0.3",
     "eslint": "^3.7.0",
     "eslint-config-arenanet": "^3.0.0",
     "husky": "^0.12.0",
@@ -40,8 +42,9 @@
     "is-promise": "^2.1.0",
     "lodash.mergewith": "^4.6.0",
     "lodash.omit": "^4.5.0",
-    "npmlog": "^2.0.0",
-    "optimist": "^0.6.1",
+    "lodash.values": "^4.3.0",
+    "meow": "^3.7.0",
+    "npmlog": "^4.0.2",
     "p-each-series": "^1.0.0",
     "strip-json-comments": "^2.0.1",
     "uppity": "~0.1.1"

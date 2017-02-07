@@ -1,5 +1,7 @@
 "use strict";
 
-module.exports = function(build, done) {
-    process.nextTick(done);
+module.exports = function(config) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, 0);
+    });
 };
