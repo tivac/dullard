@@ -1,5 +1,9 @@
 # Changes
 
+## 4.0.1
+
+- fix: bring back the `dullard` property on `config` objects for meta-programming
+
 ## 4.0.0
 
 - refactor: use meow and optimize for CLI usage (#114)
