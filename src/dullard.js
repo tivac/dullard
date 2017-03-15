@@ -48,7 +48,7 @@ Dullard.prototype.log = function(lvl, message) {
 };
 
 Dullard.prototype.run = function(name) {
-    var task, result;
+    var config, task, result;
     
     this._current = name.name || name.toString();
 
@@ -67,9 +67,13 @@ Dullard.prototype.run = function(name) {
         return Promise.resolve();
     }
 
+    // Stick a reference to the current dullard instance
+    // onto the config before executing the task
+    config = Object.assign({}, this.config, { dullard : this });
+
     // No callback fn, so either sync or a promise
     if(task.length < 2) {
-        result = task(this.config);
+        result = task(config);
 
         return (check(result) ?
             result :
@@ -83,7 +87,7 @@ Dullard.prototype.run = function(name) {
     // Wrap the callback fn to support async tasks returning an updated config
     // Store the result so that sync steps can error out by returning a value
     return new Promise((resolve, reject) =>
-        task(this.config, (err) =>
+        task(config, (err) =>
             (err ? reject(err) : resolve())
         )
     );
