@@ -6,14 +6,15 @@
   "main": "./lib/build.js",
   "scripts": {
     "commitmsg": "validate-commit-msg",
-    "cover": "nyc mocha",
+    "cover": "jest --coverage",
     "lint": "eslint .",
     "preview": "changes || true",
-    "test": "mocha",
+    "test": "jest",
     "posttest": "npm run lint",
     "preversion": "npm test",
     "version": "changes",
-    "postversion": "git push --follow-tags"
+    "postversion": "git push --follow-tags",
+    "watch": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -28,12 +29,11 @@
     "@studio/changes": "^1.1.0",
     "calmcard": "^0.1.1",
     "cli-tester": "^2.0.0",
-    "dentist": "^1.0.3",
+    "dedent": "^0.7.0",
     "eslint": "^3.7.0",
     "eslint-config-arenanet": "^3.0.0",
     "husky": "^0.12.0",
-    "mocha": "^3.0.0",
-    "nyc": "^10.1.2",
+    "jest": "^19.0.2",
     "validate-commit-msg": "^2.8.2"
   },
   "dependencies": {
