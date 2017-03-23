@@ -8,14 +8,14 @@ var path   = require("path"),
 
 describe("Dullard", function() {
     describe("CLI", function() {
-        var cli = require.resolve("../bin/cli.js"),
+        var cli = tester.bind(tester, require.resolve("../bin/cli.js")),
             cwd = process.cwd();
 
         afterEach(() => process.chdir(cwd));
         
         describe("--help", function() {
             it("should show help", function() {
-                return tester(cli, "--help").then((out) => {
+                return cli("--help").then((out) => {
                     expect(out.code).toBe(0);
                     
                     expect(out.stdout).toMatchSnapshot();
@@ -27,10 +27,8 @@ describe("Dullard", function() {
             it("should describe available tasks", function() {
                 process.chdir("./test/specimens/config-dirs");
                 
-                return tester(cli, "--list").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--list").then((out) =>
+                    tests.success(out, `
                         info cli Config files loaded:
                         info cli
                         info cli     */config-dirs/.dullfile
@@ -45,24 +43,22 @@ describe("Dullard", function() {
                         info cli name   : a-async
                         info cli source : ./../tasks-a/a-async.js
                         info cli
-                    `);
-                });
+                    `)
+                );
             });
 
             it("should handle no tasks state", function() {
                 process.chdir("./test/specimens/config-blank");
 
-                return tester(cli, "--list").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--list").then((out) =>
+                    tests.success(out, `
                         info cli Config files loaded:
                         info cli
                         info cli     */config-blank/.dullfile
                         info cli
                         ERR! cli No tasks available.
-                    `);
-                });
+                    `)
+                );
             });
         });
 
@@ -70,7 +66,7 @@ describe("Dullard", function() {
             it("should support --silent", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(cli, "--silent").then((out) => {
+                return cli("--silent").then((out) => {
                     expect(out).toMatchSnapshot();
                 });
             });
@@ -78,7 +74,7 @@ describe("Dullard", function() {
             it("should support --log=silent", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(cli, "--log=silent").then((out) => {
+                return cli("--log=silent").then((out) => {
                     expect(out).toMatchSnapshot();
                 });
             });
@@ -86,10 +82,8 @@ describe("Dullard", function() {
             it("should support --silly", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(cli, "--silly").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--silly").then((out) =>
+                    tests.success(out, `
                         verb dullard Build starting
                         sill dullard Loaded configs
                         sill dullard    *.dullfile
@@ -97,17 +91,15 @@ describe("Dullard", function() {
                         sill b hi
                         info b complete in * seconds
                         info dullard build complete in * seconds
-                    `);
-                });
+                    `)
+                );
             });
 
             it("should support --log=silly", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(cli, "--log=silly").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--log=silly").then((out) =>
+                    tests.success(out, `
                         verb dullard Build starting
                         sill dullard Loaded configs
                         sill dullard    *.dullfile
@@ -115,52 +107,45 @@ describe("Dullard", function() {
                         sill b hi
                         info b complete in * seconds
                         info dullard build complete in * seconds
-                    `);
-                });
+                    `)
+                );
             });
 
             it("should support --verbose", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return tester(cli, "--verbose").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--verbose").then((out) =>
+                    tests.success(out, `
                         verb dullard Build starting
                         verb b started
                         info b complete in * seconds
                         info dullard build complete in * seconds
-                    `);
-                });
+                    `)
+                );
             });
 
             it("should support --log=verbose", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return tester(cli, "--log=verbose").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--log=verbose").then((out) =>
+                    tests.success(out, `
                         verb dullard Build starting
                         verb b started
                         info b complete in * seconds
                         info dullard build complete in * seconds
-                    `);
-                });
+                    `)
+                );
             });
         });
         
         describe("--dirs/-d", function() {
             it("should support comma-separated --dirs via argv", function() {
-                return tester(
-                    cli,
+                return cli(
                     "--dirs=./test/specimens/tasks-a,./test/specimens/tasks-b",
                     "--list"
                 )
-                .then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                .then((out) =>
+                    tests.success(out, `
                         info cli Available Tasks:
                         info cli
                         info cli name   : a
@@ -176,21 +161,18 @@ describe("Dullard", function() {
                         info cli name   : b-async
                         info cli source : ./test/specimens/tasks-b/b-async.js
                         info cli
-                    `);
-                });
+                    `)
+                );
             });
 
             it("should support multiple -d params via argv", function() {
-                return tester(
-                    cli,
+                return cli(
                     "-d ./test/specimens/tasks-a",
                     "-d ./test/specimens/tasks-b",
                     "--list"
                 )
-                .then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                .then((out) =>
+                    tests.success(out, `
                         info cli Available Tasks:
                         info cli
                         info cli name   : a
@@ -206,8 +188,8 @@ describe("Dullard", function() {
                         info cli name   : b-async
                         info cli source : ./test/specimens/tasks-b/b-async.js
                         info cli
-                    `);
-                });
+                    `)
+                );
             });
         });
 
@@ -215,10 +197,8 @@ describe("Dullard", function() {
             it("should dump the combined config values", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(cli, "--config").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--config").then((out) =>
+                    tests.success(out, `
                         info cli Generated config object:
                         info cli
                         info cli {
@@ -239,8 +219,8 @@ describe("Dullard", function() {
                         info cli         ]
                         info cli     }
                         info cli }
-                    `);
-                });
+                    `)
+                );
             });
         });
 
@@ -248,15 +228,13 @@ describe("Dullard", function() {
             it("should pretend to run tasks", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(cli, "--test").then((out) => {
-                    expect(out.code).toBe(0);
-
-                    tests.wildcard(out.stderr, `
+                return cli("--test").then((out) =>
+                    tests.success(out, `
                         WARN cli TEST RUN
                         info b complete
                         info dullard build complete in * seconds
-                    `);
-                });
+                    `)
+                );
             });
         });
     });
