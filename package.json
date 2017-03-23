@@ -20,7 +20,7 @@
     "type": "git",
     "url": "https://github.com/tivac/dullard.git"
   },
-  "author": "Pat Cavit <pcavit@gmail.com>",
+  "author": "Pat Cavit <npm@patcavit.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tivac/dullard/issues"
@@ -53,26 +53,7 @@
     "extends": "arenanet",
     "env": {
       "node": true,
-      "mocha": true
-    },
-    "rules": {
-      "no-param-reassign": 0
+      "jest": true
     }
-  },
-  "nyc": {
-    "lines": 80,
-    "statements": 80,
-    "functions": 80,
-    "branches": 80,
-    "check-coverage": true,
-    "cache": true,
-    "reporter": [
-      "lcov",
-      "text-summary",
-      "text"
-    ],
-    "exclude": [
-      "test/**"
-    ]
   }
 }
