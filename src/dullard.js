@@ -29,7 +29,11 @@ Dullard = function() {
         cwd   : process.cwd(),
         log   : this.log.bind(this),
         dirs  : [],
-        files : []
+        files : [],
+
+        // Stick a reference to the current dullard instance on the config
+        // to allow for fun meta-programming nonsense
+        dullard : this
     };
 };
 
@@ -48,7 +52,7 @@ Dullard.prototype.log = function(lvl, message) {
 };
 
 Dullard.prototype.run = function(name) {
-    var config, task, result;
+    var task, result;
     
     this._current = name.name || name.toString();
 
@@ -67,13 +71,9 @@ Dullard.prototype.run = function(name) {
         return Promise.resolve();
     }
 
-    // Stick a reference to the current dullard instance
-    // onto the config before executing the task
-    config = Object.assign({}, this.config, { dullard : this });
-
     // No callback fn, so either sync or a promise
     if(task.length < 2) {
-        result = task(config);
+        result = task(this.config);
 
         return (check(result) ?
             result :
@@ -87,7 +87,7 @@ Dullard.prototype.run = function(name) {
     // Wrap the callback fn to support async tasks returning an updated config
     // Store the result so that sync steps can error out by returning a value
     return new Promise((resolve, reject) =>
-        task(config, (err) =>
+        task(this.config, (err) =>
             (err ? reject(err) : resolve())
         )
     );

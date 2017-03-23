@@ -5,7 +5,6 @@ var path = require("path"),
 
     omit   = require("lodash.omit"),
     values = require("lodash.values"),
-
     log    = require("npmlog"),
     uppity = require("uppity"),
     meow   = require("meow"),
@@ -134,7 +133,7 @@ dullard.addConfig(config);
 if(cli.flags.config) {
     log.info("cli", "Generated config object:");
     log.info("cli", "");
-    log.info("cli", JSON.stringify(dullard.config, null, 4));
+    log.info("cli", JSON.stringify(omit(dullard.config, "dullard"), null, 4));
 
     return false;
 }
