@@ -1,5 +1,9 @@
 # Changes
 
+## 4.0.2
+
+- fix: config not being shared between tasks (#116)
+
 ## 4.0.1
 
 - fix: bring back the `dullard` property on `config` objects for meta-programming
