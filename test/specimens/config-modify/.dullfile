@@ -1,0 +1,12 @@
+{
+    "dirs": [
+        "./tasks"
+    ],
+
+    "steps" : {
+        "default": [
+            "modify",
+            "report"
+        ]
+    }
+}

@@ -12,11 +12,7 @@ function clean(str) {
     return dedent(str).replace(crlf, "\n").replace(trailing, "\n");
 };
 
-module.exports.text = function(one, two) {
-    expect(clean(one)).toBe(clean(two));
-};
-
-module.exports.wildcard = function(one, two) {
+exports.wildcard = function(one, two) {
     var result = calmcard(clean(two), clean(one));
 
     if(!result) {
@@ -24,3 +20,14 @@ module.exports.wildcard = function(one, two) {
     }
 };
 
+exports.failure = function(result, text) {
+    exports.wildcard(result.stderr, text);
+
+    expect(result.code).toBe(1);
+};
+
+exports.success = function(result, text) {
+    exports.wildcard(result.stderr, text);
+
+    expect(result.code).toBe(0);
+};

@@ -1,7 +1,6 @@
 "use strict";
 
-var path   = require("path"),
-    assert = require("assert"),
+var path = require("path"),
     
     tester = require("cli-tester"),
     
@@ -9,7 +8,7 @@ var path   = require("path"),
 
 describe("Dullard", function() {
     describe("CLI", function() {
-        var cli = require.resolve("../bin/cli.js"),
+        var cli = tester.bind(tester, require.resolve("../bin/cli.js")),
             cwd = process.cwd();
 
         afterEach(() => process.chdir(cwd));
@@ -18,80 +17,70 @@ describe("Dullard", function() {
             it("should set arbitrary config values", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(
-                    cli,
+                return cli(
                     "--argv=argv",
                     "--nested.nested.argv=argv",
                     "--nested.argv=argv",
                     "--config"
                 )
-                .then((out) => {
-                    assert.equal(out.code, 0);
-
-                    tests.wildcard(out.stderr, `
-                        info cli Generated config object:
-                        info cli
-                        info cli {
-                        info cli     "cwd": "*config-json",
-                        info cli     "dirs": [
-                        info cli         "*tasks-b"
-                        info cli     ],
-                        info cli     "files": [
-                        info cli         "*.dullfile"
-                        info cli     ],
-                        info cli     "nested": {
-                        info cli         "config-json": "config-json",
-                        info cli         "nested": {
-                        info cli             "argv": "argv"
-                        info cli         },
-                        info cli         "argv": "argv"
-                        info cli     },
-                        info cli     "config-json": "config-json",
-                        info cli     "steps": {
-                        info cli         "default": [
-                        info cli             "b"
-                        info cli         ]
-                        info cli     },
-                        info cli     "argv": "argv"
-                        info cli }
-                    `);
-                });
+                .then((out) => tests.success(out, `
+                    info cli Generated config object:
+                    info cli
+                    info cli {
+                    info cli     "cwd": "*config-json",
+                    info cli     "dirs": [
+                    info cli         "*tasks-b"
+                    info cli     ],
+                    info cli     "files": [
+                    info cli         "*.dullfile"
+                    info cli     ],
+                    info cli     "nested": {
+                    info cli         "config-json": "config-json",
+                    info cli         "nested": {
+                    info cli             "argv": "argv"
+                    info cli         },
+                    info cli         "argv": "argv"
+                    info cli     },
+                    info cli     "config-json": "config-json",
+                    info cli     "steps": {
+                    info cli         "default": [
+                    info cli             "b"
+                    info cli         ]
+                    info cli     },
+                    info cli     "argv": "argv"
+                    info cli }
+                `));
             });
 
             it("should override values from .dullfiles", function() {
                  process.chdir("./test/specimens/config-json");
 
-                return tester(
-                    cli,
+                return cli(
                     "--nested.config-json=argv",
                     "--config"
                 )
-                .then((out) => {
-                    assert.equal(out.code, 0);
-
-                    tests.wildcard(out.stderr, `
-                        info cli Generated config object:
-                        info cli
-                        info cli {
-                        info cli     "cwd": "*config-json",
-                        info cli     "dirs": [
-                        info cli         "*tasks-b"
-                        info cli     ],
-                        info cli     "files": [
-                        info cli         "*.dullfile"
-                        info cli     ],
-                        info cli     "nested": {
-                        info cli         "config-json": "argv"
-                        info cli     },
-                        info cli     "config-json": "config-json",
-                        info cli     "steps": {
-                        info cli         "default": [
-                        info cli             "b"
-                        info cli         ]
-                        info cli     }
-                        info cli }
-                    `);
-                });
+                .then((out) => tests.success(out, `
+                    info cli Generated config object:
+                    info cli
+                    info cli {
+                    info cli     "cwd": "*config-json",
+                    info cli     "dirs": [
+                    info cli         "*tasks-b"
+                    info cli     ],
+                    info cli     "files": [
+                    info cli         "*.dullfile"
+                    info cli     ],
+                    info cli     "nested": {
+                    info cli         "config-json": "argv"
+                    info cli     },
+                    info cli     "config-json": "config-json",
+                    info cli     "steps": {
+                    info cli         "default": [
+                    info cli             "b"
+                    info cli         ]
+                    info cli     }
+                    info cli }
+                `));
             });
         });
 
@@ -99,21 +88,20 @@ describe("Dullard", function() {
             it("should support a single task", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return tester(cli, "b-async").then((out) => {
-                    assert.equal(out.code, 0);
-                    
-                    tests.wildcard(out.stderr, `
-                        info b-async complete in * seconds
-                        info dullard build complete in * seconds
-                    `);
-                });
+                return cli(
+                    "b-async"
+                )
+                .then((out) => tests.success(out, `
+                    info b-async complete in * seconds
+                    info dullard build complete in * seconds
+                `));
             });
 
             it("should support multiple tasks", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return tester(cli, "b-async", "b").then((out) => {
-                    assert.equal(out.code, 0);
+                return cli("b-async", "b").then((out) => {
+                    expect(out.code).toBe(0);
                     
                     tests.wildcard(out.stderr, `
                         info b-async complete in * seconds
@@ -126,8 +114,8 @@ describe("Dullard", function() {
             it("should support repeated tasks", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return tester(cli, "b-async", "b", "b-async").then((out) => {
-                    assert.equal(out.code, 0);
+                return cli("b-async", "b", "b-async").then((out) => {
+                    expect(out.code).toBe(0);
                     
                     tests.wildcard(out.stderr, `
                         info b-async complete in * seconds
@@ -141,8 +129,8 @@ describe("Dullard", function() {
             it("should return an error code on invalid tasks", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return tester(cli, "fooga").then((out) => {
-                    assert.equal(out.code, 1);
+                return cli("fooga").then((out) => {
+                    expect(out.code).toBe(1);
                     
                     tests.wildcard(out.stderr, `
                         ERR! fooga failed
@@ -157,8 +145,8 @@ describe("Dullard", function() {
             it("should complain if no tasks are available", function() {
                 process.chdir("./test/specimens/config-blank");
                 
-                return tester(cli).then((out) => {
-                    assert.equal(out.code, 1);
+                return cli().then((out) => {
+                    expect(out.code).toBe(1);
 
                     tests.wildcard(out.stderr, `
                         ERR! dullard build failed in * seconds
@@ -170,8 +158,8 @@ describe("Dullard", function() {
             it("should handle missing tasks", function() {
                 process.chdir("./test/specimens/config-missingtask");
                 
-                return tester(cli).then((out) => {
-                    assert.equal(out.code, 1);
+                return cli().then((out) => {
+                    expect(out.code).toBe(1);
                     
                     tests.wildcard(out.stderr, `
                         info a complete in * seconds
@@ -185,8 +173,8 @@ describe("Dullard", function() {
             it("should support sync tasks that fail", function() {
                 process.chdir("./test/specimens/config-tasks");
                 
-                return tester(cli, "fail-return").then((out) => {
-                    assert.equal(out.code, 1);
+                return cli("fail-return").then((out) => {
+                    expect(out.code).toBe(1);
                     
                     tests.wildcard(out.stderr, `
                         ERR! fail-return failed
@@ -199,8 +187,8 @@ describe("Dullard", function() {
             it("should support callback tasks that fail", function() {
                 process.chdir("./test/specimens/config-tasks");
                 
-                return tester(cli, "fail-callback").then((out) => {
-                    assert.equal(out.code, 1);
+                return cli("fail-callback").then((out) => {
+                    expect(out.code).toBe(1);
                     
                     tests.wildcard(out.stderr, `
                         ERR! fail-callback failed
@@ -213,8 +201,8 @@ describe("Dullard", function() {
             it("should support promise tasks that fail", function() {
                 process.chdir("./test/specimens/config-tasks");
                 
-                return tester(cli, "fail-promise").then((out) => {
-                    assert.equal(out.code, 1);
+                return cli("fail-promise").then((out) => {
+                    expect(out.code).toBe(1);
                     
                     tests.wildcard(out.stderr, `
                         ERR! fail-promise failed
@@ -229,8 +217,8 @@ describe("Dullard", function() {
             it("should find a local .dullfile containing JS", function() {
                 process.chdir("./test/specimens/config-js");
 
-                return tester(cli, "--list").then((out) => {
-                    assert.equal(out.code, 0);
+                return cli("--list").then((out) => {
+                    expect(out.code).toBe(0);
 
                     tests.wildcard(out.stderr, `
                         info cli Config files loaded:
@@ -253,8 +241,8 @@ describe("Dullard", function() {
             it("should find a local .dullfile containing JSON", function() {
                 process.chdir("./test/specimens/config-json");
 
-                return tester(cli, "--list").then((out) => {
-                    assert.equal(out.code, 0);
+                return cli("--list").then((out) => {
+                    expect(out.code).toBe(0);
 
                     tests.wildcard(out.stderr, `
                         info cli Config files loaded:
@@ -276,8 +264,8 @@ describe("Dullard", function() {
             it("should find all .dullfile files in parent directories", function() {
                 process.chdir("./test/specimens/config-deep/fooga/wooga");
                 
-                return tester(cli, "--list").then((out) => {
-                    assert.equal(out.code, 0);
+                return cli("--list").then((out) => {
+                    expect(out.code).toBe(0);
 
                     tests.wildcard(out.stderr, `
                         info cli Config files loaded:
@@ -316,8 +304,8 @@ describe("Dullard", function() {
             it("should support inline functions as steps", function() {
                 process.chdir("./test/specimens/config-tasks");
 
-                return tester(cli).then((out) => {
-                    assert.equal(out.code, 0);
+                return cli().then((out) => {
+                    expect(out.code).toBe(0);
 
                     tests.wildcard(out.stderr, `
                         info inline complete in * seconds
@@ -329,8 +317,8 @@ describe("Dullard", function() {
             it("should log when a task completes", function() {
                 process.chdir("./test/specimens/config-json");
                 
-                return tester(cli).then((out) => {
-                    assert.equal(out.code, 0);
+                return cli().then((out) => {
+                    expect(out.code).toBe(0);
                     
                     tests.wildcard(out.stderr, `
                         info b complete in * seconds
@@ -342,8 +330,8 @@ describe("Dullard", function() {
             it("should support the `include` .dullfile key", function() {
                 process.chdir("./test/specimens/config-include");
                 
-                return tester(cli, "--list").then((out) => {
-                    assert.equal(out.code, 0);
+                return cli("--list").then((out) => {
+                    expect(out.code).toBe(0);
 
                     tests.wildcard(out.stderr, `
                         info cli Config files loaded:
@@ -367,12 +355,26 @@ describe("Dullard", function() {
             it("should support task aliases", function() {
                 process.chdir("./test/specimens/config-alias");
                 
-                return tester(cli).then((out) => {
-                    assert.equal(out.code, 0);
+                return cli().then((out) => {
+                    expect(out.code).toBe(0);
                     
                     tests.wildcard(out.stderr, `
                         info a complete in * seconds
                         info b complete in * seconds
+                        info dullard build complete in * seconds
+                    `);
+                });
+            });
+
+            it("should support modifying the config value", function() {
+                process.chdir("./test/specimens/config-modify");
+                
+                return cli().then((out) => {
+                    expect(out.code).toBe(0);
+                    
+                    tests.wildcard(out.stderr, `
+                        info modify complete in * seconds
+                        info report complete in * seconds
                         info dullard build complete in * seconds
                     `);
                 });
