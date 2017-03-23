@@ -18,21 +18,7 @@ describe("Dullard", function() {
                 return tester(cli, "--help").then((out) => {
                     expect(out.code).toBe(0);
                     
-                    tests.text(out.stdout, `
-                        Let the computers do the boring stuff.
-                          Usage
-                              $ dullard <options> <task>, ..., <taskN>
-                          Options
-                              --help         Show this help
-                              --dirs,    -d  Specify directories to load tasks from
-                              --list,    -l  Show a list of available tasks
-                              --test,    -t  Run in test mode, no tasks will be executed
-                              --config,  -c  Output final assembled config for debugging
-                              --silent,  -s  No output
-                              --verbose, -v  Verbose logging
-                              --silly,   -y  REALLY verbose logging
-                              --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
-                    `);
+                    expect(out.stdout).toMatchSnapshot();
                 });
             });
         });
@@ -85,11 +71,7 @@ describe("Dullard", function() {
                 process.chdir("./test/specimens/config-json");
 
                 return tester(cli, "--silent").then((out) => {
-                    assert.deepEqual(out, {
-                        code   : 0,
-                        stderr : "",
-                        stdout : ""
-                    });
+                    expect(out).toMatchSnapshot();
                 });
             });
 
@@ -97,11 +79,7 @@ describe("Dullard", function() {
                 process.chdir("./test/specimens/config-json");
 
                 return tester(cli, "--log=silent").then((out) => {
-                    assert.deepEqual(out, {
-                        code   : 0,
-                        stderr : "",
-                        stdout : ""
-                    });
+                    expect(out).toMatchSnapshot();
                 });
             });
 
