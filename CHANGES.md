@@ -1,5 +1,14 @@
 # Changes
 
+## 5.0.0
+
+- feat: Add sub tasks support (#117)
+
+### Breaking Changes
+
+- Returning a value no longer considered an error
+- Removed `--test` CLI option and support
+
 ## 4.0.2
 
 - fix: config not being shared between tasks (#116)
