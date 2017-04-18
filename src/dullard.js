@@ -67,8 +67,6 @@ Dullard.prototype.run = function(name) {
         throw new Error(`Unknown task: ${name}`);
     }
 
-    this.tasks[name] = task;
-
     this.log("verbose", "started");
     
     // No callback fn, so either sync or a promise

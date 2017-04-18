@@ -21,5 +21,8 @@ module.exports = function(tasks, name) {
     task = require(tasks[name].source);
     task.source = tasks[name].source;
 
+    // Save for re-use
+    tasks[name] = task;
+
     return task;
 };
