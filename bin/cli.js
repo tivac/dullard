@@ -3,13 +3,15 @@
 
 var path = require("path"),
 
-    omit   = require("lodash.omit"),
-    values = require("lodash.values"),
-    log    = require("npmlog"),
-    uppity = require("uppity"),
-    meow   = require("meow"),
+    omit    = require("lodash.omit"),
+    values  = require("lodash.values"),
+    log     = require("npmlog"),
+    uppity  = require("uppity"),
+    meow    = require("meow"),
+    updated = require("update-notifier"),
     
     Dullard = require("../src/dullard.js"),
+    
     dullard = new Dullard(),
     aliases = {
         config  : "c",
@@ -22,7 +24,6 @@ var path = require("path"),
     },
     
     cli, config;
-
 
 function sep(str) {
     return str.replace(/\\/g, "/");
@@ -51,6 +52,9 @@ cli = meow(`
     string  : [ "dirs", "log" ],
     boolean : [ "config", "list", "silent", "verbose", "silly" ]
 });
+
+// Update checks
+updated(cli);
 
 [ "silent", "verbose", "silly", "log" ].find((lvl) => {
     if(!cli.flags[lvl]) {

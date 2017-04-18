@@ -48,6 +48,7 @@
     "npmlog": "^4.0.2",
     "p-each-series": "^1.0.0",
     "strip-json-comments": "^2.0.1",
+    "update-notifier": "^2.1.0",
     "uppity": "~0.1.1"
   },
   "eslintConfig": {
