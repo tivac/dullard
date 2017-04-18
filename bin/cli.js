@@ -15,7 +15,6 @@ var path = require("path"),
         config  : "c",
         dirs    : "d",
         list    : "l",
-        test    : "t",
         log     : "g",
         silent  : "s",
         verbose : "v",
@@ -37,7 +36,6 @@ cli = meow(`
         --help         Show this help
         --dirs,    -d  Specify directories to load tasks from
         --list,    -l  Show a list of available tasks
-        --test,    -t  Run in test mode, no tasks will be executed
         --config,  -c  Output final assembled config for debugging
         --silent,  -s  No output
         --verbose, -v  Verbose logging
@@ -51,7 +49,7 @@ cli = meow(`
     },
 
     string  : [ "dirs", "log" ],
-    boolean : [ "config", "list", "test", "silent", "verbose", "silly" ]
+    boolean : [ "config", "list", "silent", "verbose", "silly" ]
 });
 
 [ "silent", "verbose", "silly", "log" ].find((lvl) => {
@@ -61,10 +59,6 @@ cli = meow(`
 
     return (log.level = typeof cli.flags[lvl] === "string" ? cli.flags[lvl] : lvl);
 });
-
-if(cli.flags.test) {
-    log.warn("cli", "TEST RUN");
-}
 
 // Go find all parent .dullfiles add load them into dullard instance
 uppity(".dullfile", { nocase : true })
@@ -144,7 +138,7 @@ if(!cli.flags.silent) {
     );
 }
 
-return dullard[cli.flags.test ? "test" : "start"](cli.input)
+return dullard.start(cli.input)
     .catch(() => {
         // Don't exit immediately, want to make sure any output
         // has a chance to be written first
