@@ -5,6 +5,7 @@ var merge  = require("lodash.mergewith");
 // Merge two configs, except arrays
 module.exports = function(one, two) {
     return merge(
+        {},
         one,
         two,
         
