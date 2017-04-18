@@ -6,7 +6,7 @@
   "main": "./lib/build.js",
   "scripts": {
     "commitmsg": "validate-commit-msg",
-    "cover": "jest --coverage",
+    "cover": "nyc jest --cache",
     "lint": "eslint .",
     "preview": "changes || true",
     "test": "jest",
@@ -34,6 +34,7 @@
     "eslint-config-arenanet": "^3.0.0",
     "husky": "^0.12.0",
     "jest": "^19.0.2",
+    "nyc": "^10.2.0",
     "validate-commit-msg": "^2.8.2"
   },
   "dependencies": {
@@ -47,6 +48,7 @@
     "npmlog": "^4.0.2",
     "p-each-series": "^1.0.0",
     "strip-json-comments": "^2.0.1",
+    "update-notifier": "^2.1.0",
     "uppity": "~0.1.1"
   },
   "eslintConfig": {
@@ -55,5 +57,11 @@
       "node": true,
       "jest": true
     }
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   }
 }

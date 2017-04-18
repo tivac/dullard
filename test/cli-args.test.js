@@ -223,19 +223,5 @@ describe("Dullard", function() {
                 );
             });
         });
-
-        describe("--test/-t", function() {
-            it("should pretend to run tasks", function() {
-                process.chdir("./test/specimens/config-json");
-
-                return cli("--test").then((out) =>
-                    tests.success(out, `
-                        WARN cli TEST RUN
-                        info b complete
-                        info dullard build complete in * seconds
-                    `)
-                );
-            });
-        });
     });
 });

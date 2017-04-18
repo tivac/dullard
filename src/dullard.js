@@ -21,7 +21,6 @@ var path = require("path"),
 Dullard = function() {
     EventEmitter.call(this);
 
-    this.testing = false;
     this.tasks   = {};
     this.steps   = {};
     
@@ -54,7 +53,13 @@ Dullard.prototype.log = function(lvl, message) {
 Dullard.prototype.run = function(name) {
     var task, result;
     
-    this._current = name.name || name.toString();
+    if(name.name) {
+        this._current = name.name;
+    } else if(typeof name === "string") {
+        this._current = name;
+    } else {
+        this._current = "no-name";
+    }
 
     task = loadTask(this.tasks, name);
 
@@ -62,29 +67,19 @@ Dullard.prototype.run = function(name) {
         throw new Error(`Unknown task: ${name}`);
     }
 
-    this.tasks[name] = task;
-
     this.log("verbose", "started");
     
-    // Early-out in testing mode
-    if(this.testing) {
-        return Promise.resolve();
-    }
-
     // No callback fn, so either sync or a promise
     if(task.length < 2) {
         result = task(this.config);
 
-        return (check(result) ?
+        // Ensure a promise is returned
+        return check(result) ?
             result :
-            // Handle non-promise return values with a wrapper
-            new Promise((resolve, reject) =>
-                (typeof result !== "undefined" ? reject(result) : resolve())
-            )
-        );
+            Promise.resolve(result);
     }
 
-    // Wrap the callback fn to support async tasks returning an updated config
+    // Wrap the callback fn to support async tasks returning an error
     // Store the result so that sync steps can error out by returning a value
     return new Promise((resolve, reject) =>
         task(this.config, (err) =>
@@ -96,10 +91,8 @@ Dullard.prototype.run = function(name) {
 Dullard.prototype.series = function(name) {
     var steps;
 
-    if(this.steps && (name in this.steps)) {
+    if(name in this.steps) {
         steps = this.steps[name];
-    } else if(name in this.tasks) {
-        steps = [ name ];
     } else {
         steps = name;
     }
@@ -124,12 +117,9 @@ Dullard.prototype.series = function(name) {
             if(task in this.steps) {
                 return this.series(task);
             }
-            
+
             return this.run(task).then(() =>
-                (this.testing ?
-                    this.log("complete") :
-                    this.log(`complete in ${time(Date.now() - start)}`)
-                )
+                this.log(`complete in ${time(Date.now() - start)}`)
             );
         }
     )
@@ -157,13 +147,14 @@ Dullard.prototype.start = function(steps) {
     this.log("silly", `    ${this.config.files.join("    \n")}`);
 
     // Done this way to take advantage of consistent failure handling
-    return (
-        !Object.keys(this.tasks).length ?
-            Promise.reject(new Error("No tasks found")) :
-            Promise.resolve()
+    return this.series(
+        steps
     )
-    .then(() => this.series(steps))
-    .then(() => this.log(`build complete in ${time(Date.now() - start)}`))
+    .then(() => {
+        this.log(`build complete in ${time(Date.now() - start)}`);
+
+        return this;
+    })
     .catch((error) => {
         this.log("error", `build failed in ${time(Date.now() - start)}`);
 
@@ -176,12 +167,6 @@ Dullard.prototype.start = function(steps) {
 
         throw error;
     });
-};
-
-Dullard.prototype.test = function(steps) {
-    this.testing = true;
-    
-    return this.start(steps);
 };
 
 Dullard.prototype.addConfig = function(config) {
@@ -217,7 +202,7 @@ Dullard.prototype.addConfig = function(config) {
     // Ignoring keys we treated specially up above
     this.config = mergeConfigs(
         this.config,
-        omit(config, "dirs", "includes")
+        omit(config, [ "dirs", "includes", "dullard" ])
     );
 
     this.steps = this.config.steps;
@@ -227,6 +212,28 @@ Dullard.prototype.addDir = function(dir) {
     this.tasks = Object.assign(this.tasks, findTasks(dir));
 
     this.config.dirs.push(dir);
+};
+
+// Return a copy of this dullard instance (mostly used for sub-tasks)
+Dullard.prototype.clone = function() {
+    var clone = new Dullard();
+
+    clone.addConfig(this.config);
+
+    return clone;
+};
+
+Dullard.prototype.children = function(steps) {
+    var clone = this.clone();
+
+    this.log("verbose", "Running children tasks");
+
+    return clone.start(steps)
+        .then(() => {
+            this.log("verbose", "Completed children tasks");
+
+            return clone;
+        });
 };
 
 module.exports = Dullard;

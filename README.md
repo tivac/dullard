@@ -27,8 +27,6 @@ Dullard is a simple NodeJS-powered task runner. It exists because doing the same
     - [Logging in a task](#logging-in-a-task)
 - [Install](#install)
 - [Develop](#develop)
-- [FAQ](#faq)
-    - [Q: What about file watching?](#q-what-about-file-watching)
 
 ## Usage ##
 
@@ -37,18 +35,18 @@ $ dullard --help
     
   Let the computers do the boring stuff.
 
-  Options:
-    --help, -?     Show usage
-    --dirs, -d     directories to load task files from
-    --list, -l     List available tasks
-    --quiet, -q    Minimal output
-    --verbose, -v  Verbose logging
-    --loglevel     Chattiness, one of: silly, verbose, info, warn, error, & silent  [default: "info"]
-    --silent       No output until something goes awry
-    
-  Usage:
-    $ dullard
-    $ dullard -d <dir>,...,<dirN> <step1> ... <stepN>
+  Usage
+      $ dullard <options> <task>, ..., <taskN>
+
+  Options
+      --help         Show this help
+      --dirs,    -d  Specify directories to load tasks from
+      --list,    -l  Show a list of available tasks
+      --config,  -c  Output final assembled config for debugging
+      --silent,  -s  No output
+      --verbose, -v  Verbose logging
+      --silly,   -y  REALLY verbose logging
+      --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
 ```
 
 ## Config ##
@@ -155,12 +153,10 @@ This only works for values that are __not__ one of Dullard's [CLI options](#usag
 
 ## Tasks ##
 
-Tasks are modules that export a single function. There's no wrapper around `fs`, no streams support baked-in, they're just a function that can do some stuff. Every task will be passed a shared `config` object that represents the state of dullard & the tasks to be run. For async tasks you can also accept a second argument that can be used as a callback function following the normal node-style error-first pattern.
+Tasks are modules that export a single function. There's no wrapper around `fs`, no streams support baked-in, they're a function that can do some stuff. Every task will be passed a shared `config` object that represents the state of dullard & the tasks to be run. For async tasks you can also accept a second argument that can be used as a callback function following the normal node-style error-first pattern.
 
 
 ### Sync Tasks ###
-
-Any return value will be considered an error.
 
 ```javascript
 // Passing tasks
@@ -176,7 +172,7 @@ function exampleTaskSync(config) {
 
 // Failing tasks
 function exampleTaskFailureSync(config) {
-    return "Task failed";
+    throw new Error("Task failed");
 }
 ```
 
@@ -224,9 +220,3 @@ Dullard makes a `log` function available to tasks via `config.log`, this is a re
 1. `npm i`
 1. Make changes
 1. `npm test`
-
-## FAQ ##
-
-### Q: What about file watching? ###
-
-__A__: Nothing built-in yet, still trying to figure out if I'm comfortable with cluttering up the `.dullfile`(s) with watcher config stuff. For now check out [this gist](https://gist.github.com/tivac/6591278).
