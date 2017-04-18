@@ -6,7 +6,7 @@
   "main": "./lib/build.js",
   "scripts": {
     "commitmsg": "validate-commit-msg",
-    "cover": "nyc jest",
+    "cover": "nyc jest --cache",
     "lint": "eslint .",
     "preview": "changes || true",
     "test": "jest",
@@ -56,5 +56,11 @@
       "node": true,
       "jest": true
     }
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
   }
 }
