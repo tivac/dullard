@@ -15,7 +15,7 @@ module.exports = {
         default : [
             "one",
             function(config) {
-                return config.dullard.child([ "one", "two" ]);
+                return config.dullard.children([ "one", "two" ]);
             },
             "two"
         ]

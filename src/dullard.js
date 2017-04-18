@@ -223,7 +223,7 @@ Dullard.prototype.clone = function() {
     return clone;
 };
 
-Dullard.prototype.child = function(steps) {
+Dullard.prototype.children = function(steps) {
     var clone = this.clone();
 
     this.log("verbose", "Running children tasks");
