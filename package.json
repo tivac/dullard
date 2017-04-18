@@ -9,6 +9,7 @@
     "cover": "nyc jest --cache",
     "lint": "eslint .",
     "preview": "changes || true",
+    "release": "npm version -m \"v%s\"",
     "test": "jest",
     "posttest": "npm run lint",
     "preversion": "npm test",
