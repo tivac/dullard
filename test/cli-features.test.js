@@ -179,18 +179,6 @@ describe("Dullard", function() {
                 );
             });
 
-            it("should support sync tasks that fail", function() {
-                process.chdir("./test/specimens/config-tasks");
-                
-                return cli("fail-return").then((out) =>
-                    tests.failure(out, `
-                        ERR! fail-return failed
-                        ERR! dullard build failed in * seconds
-                        ERR! dullard Error
-                    `)
-                );
-            });
-            
             it("should support callback tasks that fail", function() {
                 process.chdir("./test/specimens/config-tasks");
                 
@@ -209,6 +197,18 @@ describe("Dullard", function() {
                 return cli("fail-promise").then((out) =>
                     tests.failure(out, `
                         ERR! fail-promise failed
+                        ERR! dullard build failed in * seconds
+                        ERR! dullard Error
+                    `)
+                );
+            });
+
+            it("should support tasks that throw an error", function() {
+                process.chdir("./test/specimens/config-tasks");
+                
+                return cli("fail-throw").then((out) =>
+                    tests.failure(out, `
+                        ERR! fail-throw failed
                         ERR! dullard build failed in * seconds
                         ERR! dullard Error
                     `)
@@ -362,6 +362,36 @@ describe("Dullard", function() {
                     tests.success(out, `
                         info modify complete in * seconds
                         info report complete in * seconds
+                        info dullard build complete in * seconds
+                    `)
+                );
+            });
+
+            it("should support cloning a dullard instance", function() {
+                process.chdir("./test/specimens/config-clone");
+
+                return cli().then((out) =>
+                    tests.success(out, `
+                        info default 1
+                        info default 2
+                        info default complete in * seconds
+                        info dullard build complete in * seconds
+                    `)
+                );
+            });
+
+            it("should support running children tasks", function() {
+                process.chdir("./test/specimens/config-children");
+
+                return cli().then((out) =>
+                    tests.success(out, `
+                        info one 1
+                        info one complete in * seconds
+                        info no-name 1
+                        info no-name 2
+                        info no-name complete in * seconds
+                        info two 2
+                        info two complete in * seconds
                         info dullard build complete in * seconds
                     `)
                 );
