@@ -21,7 +21,6 @@ var path = require("path"),
 Dullard = function() {
     EventEmitter.call(this);
 
-    this.testing = false;
     this.tasks   = {};
     this.steps   = {};
     
@@ -72,11 +71,6 @@ Dullard.prototype.run = function(name) {
 
     this.log("verbose", "started");
     
-    // Early-out in testing mode
-    if(this.testing) {
-        return Promise.resolve();
-    }
-
     // No callback fn, so either sync or a promise
     if(task.length < 2) {
         result = task(this.config);
@@ -132,10 +126,7 @@ Dullard.prototype.series = function(name) {
             }
             
             return this.run(task).then(() =>
-                (this.testing ?
-                    this.log("complete") :
-                    this.log(`complete in ${time(Date.now() - start)}`)
-                )
+                this.log(`complete in ${time(Date.now() - start)}`)
             );
         }
     )
@@ -183,12 +174,6 @@ Dullard.prototype.start = function(steps) {
 
         throw error;
     });
-};
-
-Dullard.prototype.test = function(steps) {
-    this.testing = true;
-    
-    return this.start(steps);
 };
 
 Dullard.prototype.addConfig = function(config) {
