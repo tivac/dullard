@@ -6,7 +6,7 @@
   "main": "./lib/build.js",
   "scripts": {
     "commitmsg": "validate-commit-msg",
-    "cover": "jest --coverage",
+    "cover": "nyc jest",
     "lint": "eslint .",
     "preview": "changes || true",
     "test": "jest",
@@ -34,6 +34,7 @@
     "eslint-config-arenanet": "^3.0.0",
     "husky": "^0.12.0",
     "jest": "^19.0.2",
+    "nyc": "^10.2.0",
     "validate-commit-msg": "^2.8.2"
   },
   "dependencies": {
