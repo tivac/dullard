@@ -54,7 +54,13 @@ Dullard.prototype.log = function(lvl, message) {
 Dullard.prototype.run = function(name) {
     var task, result;
     
-    this._current = name.name || name.toString();
+    if(name.name) {
+        this._current = name.name;
+    } else if(typeof name === "string") {
+        this._current = name;
+    } else {
+        this._current = "no-name";
+    }
 
     task = loadTask(this.tasks, name);
 
