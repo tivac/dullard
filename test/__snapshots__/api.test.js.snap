@@ -1,0 +1,118 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Dullard API .child should return expected errors 1`] = `[Error: Unknown task: two]`;
+
+exports[`Dullard API .child should run in a clone of the main instance 1`] = `
+Dullard {
+  "_current": null,
+  "_events": Object {},
+  "_eventsCount": 0,
+  "_maxListeners": undefined,
+  "config": Object {
+    "cwd": "D:\\\\git\\\\dullard",
+    "dirs": Array [],
+    "dullard": [Circular],
+    "files": Array [],
+    "log": [Function],
+    "steps": Object {
+      "one": [Function],
+    },
+  },
+  "domain": null,
+  "steps": Object {
+    "one": [Function],
+  },
+  "tasks": Object {
+    "one() {}": [Function],
+  },
+  "testing": false,
+}
+`;
+
+exports[`Dullard API .child should run in a clone of the main instance 2`] = `
+Dullard {
+  "_events": Object {},
+  "_eventsCount": 0,
+  "_maxListeners": undefined,
+  "config": Object {
+    "cwd": "D:\\\\git\\\\dullard",
+    "dirs": Array [],
+    "dullard": [Circular],
+    "files": Array [],
+    "log": [Function],
+    "steps": Object {
+      "one": [Function],
+    },
+  },
+  "domain": null,
+  "one": 2,
+  "steps": Object {
+    "one": [Function],
+  },
+  "tasks": Object {},
+  "testing": false,
+}
+`;
+
+exports[`Dullard API .clone() should return a new instance 1`] = `
+Dullard {
+  "_events": Object {},
+  "_eventsCount": 0,
+  "_maxListeners": undefined,
+  "config": Object {
+    "cwd": "D:\\\\git\\\\dullard",
+    "dirs": Array [],
+    "dullard": [Circular],
+    "files": Array [],
+    "log": [Function],
+    "one": 1,
+    "steps": Object {
+      "default": Array [
+        [Function],
+      ],
+      "one": [Function],
+    },
+  },
+  "domain": null,
+  "steps": Object {
+    "default": Array [
+      [Function],
+    ],
+    "one": [Function],
+  },
+  "tasks": Object {},
+  "testing": false,
+}
+`;
+
+exports[`Dullard API .clone() should return a new instance 2`] = `
+Dullard {
+  "_events": Object {},
+  "_eventsCount": 0,
+  "_maxListeners": undefined,
+  "config": Object {
+    "cwd": "D:\\\\git\\\\dullard",
+    "dirs": Array [],
+    "dullard": [Circular],
+    "files": Array [],
+    "log": [Function],
+    "one": 1,
+    "steps": Object {
+      "default": Array [
+        [Function],
+      ],
+      "one": [Function],
+    },
+  },
+  "domain": null,
+  "one": 2,
+  "steps": Object {
+    "default": Array [
+      [Function],
+    ],
+    "one": [Function],
+  },
+  "tasks": Object {},
+  "testing": false,
+}
+`;

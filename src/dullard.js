@@ -230,4 +230,19 @@ Dullard.prototype.addDir = function(dir) {
     this.config.dirs.push(dir);
 };
 
+// Return a copy of this dullard instance (mostly used for sub-tasks)
+Dullard.prototype.clone = function() {
+    var clone = new Dullard();
+
+    clone.addConfig(this.config);
+
+    return clone;
+};
+
+Dullard.prototype.child = function(steps) {
+    var clone = this.clone();
+
+    return clone.start(steps);
+};
+
 module.exports = Dullard;
