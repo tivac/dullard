@@ -10,7 +10,6 @@ exports[`Dullard CLI --help should show help 1`] = `
       --help         Show this help
       --dirs,    -d  Specify directories to load tasks from
       --list,    -l  Show a list of available tasks
-      --test,    -t  Run in test mode, no tasks will be executed
       --config,  -c  Output final assembled config for debugging
       --silent,  -s  No output
       --verbose, -v  Verbose logging
