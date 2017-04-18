@@ -159,8 +159,9 @@ describe("Dullard", function() {
                 
                 return cli().then((out) =>
                     tests.failure(out, `
+                        ERR! default failed
                         ERR! dullard build failed in * seconds
-                        ERR! dullard No tasks found
+                        ERR! dullard Unknown task: default
                     `)
                 );
             });

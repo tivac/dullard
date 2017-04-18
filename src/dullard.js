@@ -157,13 +157,14 @@ Dullard.prototype.start = function(steps) {
     this.log("silly", `    ${this.config.files.join("    \n")}`);
 
     // Done this way to take advantage of consistent failure handling
-    return (
-        !Object.keys(this.tasks).length ?
-            Promise.reject(new Error("No tasks found")) :
-            Promise.resolve()
+    return this.series(
+        steps
     )
-    .then(() => this.series(steps))
-    .then(() => this.log(`build complete in ${time(Date.now() - start)}`))
+    .then(() => {
+        this.log(`build complete in ${time(Date.now() - start)}`);
+
+        return this;
+    })
     .catch((error) => {
         this.log("error", `build failed in ${time(Date.now() - start)}`);
 
@@ -217,7 +218,7 @@ Dullard.prototype.addConfig = function(config) {
     // Ignoring keys we treated specially up above
     this.config = mergeConfigs(
         this.config,
-        omit(config, "dirs", "includes")
+        omit(config, [ "dirs", "includes", "dullard" ])
     );
 
     this.steps = this.config.steps;
