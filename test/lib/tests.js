@@ -12,22 +12,30 @@ function clean(str) {
     return dedent(str).replace(crlf, "\n").replace(trailing, "\n");
 };
 
-exports.wildcard = function(one, two) {
-    var result = calmcard(clean(two), clean(one));
+function wildcard(one, two) {
+    var result;
+    
+    one = clean(one);
+    two = clean(two);
+    
+    // wildcard comparison
+    result = calmcard(two, one);
 
+    // If wildcard match failed show nice diff output
+    // it won't respect wildcard chars, but not much to do about that
     if(!result) {
-        expect(clean(one)).toBe(clean(two));
+        expect(one).toBe(two);
     }
-};
+}
 
 exports.failure = function(result, text) {
-    exports.wildcard(result.stderr, text);
-
     expect(result.code).toBe(1);
+
+    wildcard(result.stderr, text);
 };
 
 exports.success = function(result, text) {
-    exports.wildcard(result.stderr, text);
-
     expect(result.code).toBe(0);
+
+    wildcard(result.stderr, text);
 };

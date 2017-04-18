@@ -1,0 +1,23 @@
+"use strict";
+
+module.exports = {
+    one : 1,
+    
+    steps : {
+        one : function(config) {
+            config.log(1);
+        },
+
+        two : function(config) {
+            config.log(2);
+        },
+
+        default : [
+            "one",
+            function(config) {
+                return config.dullard.child([ "one", "two" ]);
+            },
+            "two"
+        ]
+    }
+};

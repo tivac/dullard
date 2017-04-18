@@ -75,16 +75,13 @@ Dullard.prototype.run = function(name) {
     if(task.length < 2) {
         result = task(this.config);
 
-        return (check(result) ?
+        // Ensure a promise is returned
+        return check(result) ?
             result :
-            // Handle non-promise return values with a wrapper
-            new Promise((resolve, reject) =>
-                (typeof result !== "undefined" ? reject(result) : resolve())
-            )
-        );
+            Promise.resolve(result);
     }
 
-    // Wrap the callback fn to support async tasks returning an updated config
+    // Wrap the callback fn to support async tasks returning an error
     // Store the result so that sync steps can error out by returning a value
     return new Promise((resolve, reject) =>
         task(this.config, (err) =>
@@ -96,10 +93,8 @@ Dullard.prototype.run = function(name) {
 Dullard.prototype.series = function(name) {
     var steps;
 
-    if(this.steps && (name in this.steps)) {
+    if(name in this.steps) {
         steps = this.steps[name];
-    } else if(name in this.tasks) {
-        steps = [ name ];
     } else {
         steps = name;
     }
@@ -124,7 +119,7 @@ Dullard.prototype.series = function(name) {
             if(task in this.steps) {
                 return this.series(task);
             }
-            
+
             return this.run(task).then(() =>
                 this.log(`complete in ${time(Date.now() - start)}`)
             );
@@ -233,7 +228,14 @@ Dullard.prototype.clone = function() {
 Dullard.prototype.child = function(steps) {
     var clone = this.clone();
 
-    return clone.start(steps);
+    this.log("verbose", "Running children tasks");
+
+    return clone.start(steps)
+        .then(() => {
+            this.log("verbose", "Completed children tasks");
+
+            return clone;
+        });
 };
 
 module.exports = Dullard;
