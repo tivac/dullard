@@ -15,6 +15,7 @@ var path = require("path"),
     mergeConfigs = require("./merge-configs.js"),
     findTasks    = require("./find-tasks.js"),
     parseSteps   = require("./parse-steps.js"),
+    stepName     = require("./step-name.js"),
 
     Dullard;
 
@@ -53,13 +54,7 @@ Dullard.prototype.log = function(lvl, message) {
 Dullard.prototype.run = function(name) {
     var task, result;
     
-    if(name.name) {
-        this._current = name.name;
-    } else if(typeof name === "string") {
-        this._current = name;
-    } else {
-        this._current = "no-name";
-    }
+    this._current = stepName(name);
 
     task = loadTask(this.tasks, name);
 
@@ -105,7 +100,7 @@ Dullard.prototype.series = function(name) {
 
     if(steps.length > 1) {
         this.log("verbose", "Running");
-        this.log("verbose", `    ${steps.join("\n    ")}`);
+        this.log("verbose", steps.map((step) => `    ${stepName(step)}`).join("\n"));
     }
 
     return series(
@@ -144,7 +139,7 @@ Dullard.prototype.start = function(steps) {
 
     this.log("verbose", "Build starting");
     this.log("silly", "Loaded configs");
-    this.log("silly", `    ${this.config.files.join("    \n")}`);
+    this.log("silly", this.config.files.map((file) => `    ${file}`).join("\n"));
 
     // Done this way to take advantage of consistent failure handling
     return this.series(
@@ -202,7 +197,7 @@ Dullard.prototype.addConfig = function(config) {
     // Ignoring keys we treated specially up above
     this.config = mergeConfigs(
         this.config,
-        omit(config, [ "dirs", "includes", "dullard" ])
+        omit(config, [ "dirs", "includes", "dullard", "log" ])
     );
 
     this.steps = this.config.steps;
@@ -215,17 +210,30 @@ Dullard.prototype.addDir = function(dir) {
 };
 
 // Return a copy of this dullard instance (mostly used for sub-tasks)
-Dullard.prototype.clone = function() {
+Dullard.prototype.clone = function(opts) {
     var clone = new Dullard();
 
+    if(!opts) {
+        opts = false;
+    }
+
     clone.addConfig(this.config);
+
+    // Bubble clone events up to whomever may be listening
+    clone.on("log", (e) => {
+        if(opts.prefix) {
+            e.task = `${opts.prefix}-${e.task || "dullard"}`;
+        }
+        
+        this.emit("log", e);
+    });
 
     return clone;
 };
 
-Dullard.prototype.children = function(steps) {
-    var clone = this.clone();
-
+Dullard.prototype.children = function(steps, opts) {
+    var clone = this.clone(opts);
+    
     this.log("verbose", "Running children tasks");
 
     return clone.start(steps)
