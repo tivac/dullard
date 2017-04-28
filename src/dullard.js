@@ -154,8 +154,7 @@ Dullard.prototype.start = function(steps) {
         this.log("error", `build failed in ${time(Date.now() - start)}`);
 
         if(error instanceof Error) {
-            this.log("error", error.message);
-            this.log("silly", error.stack);
+            this.log("error", error.stack);
         } else {
             this.log("error", error);
         }
