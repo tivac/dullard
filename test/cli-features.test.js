@@ -55,7 +55,7 @@ describe("Dullard", function() {
             });
 
             it("should override values from .dullfiles", function() {
-                 process.chdir("./test/specimens/config-json");
+                process.chdir("./test/specimens/config-json");
 
                 return cli(
                     "--nested.config-json=argv",
@@ -291,6 +291,35 @@ describe("Dullard", function() {
                         info cli
                         info cli name   : c-async
                         info cli source : ./../../../tasks-c/c-async.js
+                        info cli
+                    `)
+                );
+            });
+
+            it("should find .dullfile, .dullfile.js, and .dullfile.json", function() {
+                process.chdir("./test/specimens/config-extensions/subfolder");
+                
+                return cli("--list").then((out) =>
+                    tests.success(out, `
+                        info cli Config files loaded:
+                        info cli
+                        info cli    */config-extensions/.dullfile.js
+                        info cli    */config-extensions/subfolder/.dullfile.json
+                        info cli
+                        info cli Available Tasks:
+                        info cli
+                        info cli name   : a
+                        info cli source : ./../../tasks-a/a.js
+                        info cli desc   : Task description
+                        info cli
+                        info cli name   : a-async
+                        info cli source : ./../../tasks-a/a-async.js
+                        info cli
+                        info cli name   : b
+                        info cli source : ./../../tasks-b/b.js
+                        info cli
+                        info cli name   : b-async
+                        info cli source : ./../../tasks-b/b-async.js
                         info cli
                     `)
                 );

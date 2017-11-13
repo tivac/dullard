@@ -65,7 +65,7 @@ updated(cli);
 });
 
 // Go find all parent .dullfiles add load them into dullard instance
-uppity(".dullfile", { nocase : true })
+uppity("{.dullfile,.dullfile.js,.dullfile.json}", { nocase : true })
     .reverse()
     .forEach((file) => dullard.addConfig(file));
     

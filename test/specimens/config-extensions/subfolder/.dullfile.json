@@ -1,0 +1,11 @@
+{
+    "json": true,
+
+    "dirs" : [
+        "../../tasks-b"
+    ],
+    
+    "steps" : [
+        "b"
+    ]
+}
