@@ -31,10 +31,10 @@
     "calmcard": "^0.1.1",
     "cli-tester": "^2.0.0",
     "dedent": "^0.7.0",
-    "eslint": "^3.7.0",
+    "eslint": "^4.10.0",
     "eslint-config-arenanet": "^3.0.0",
-    "husky": "^0.13.3",
-    "jest": "^19.0.2",
+    "husky": "^0.14.3",
+    "jest": "^21.2.1",
     "nyc": "^10.2.0",
     "validate-commit-msg": "^2.8.2"
   },
