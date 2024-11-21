@@ -93,13 +93,15 @@ if (cli.flags.list) {
     }
     
     if (!Object.keys(dullard.tasks).length) {
-        return log.error("cli", "No tasks available.");
+        log.error("cli", "No tasks available.");
+
+        process.exit();
     }
 
     log.info("cli", "Available Tasks:");
     log.info("cli", "");
 
-    return Object.keys(dullard.tasks)
+    Object.keys(dullard.tasks)
         .sort()
         .forEach((name) => {
             let task = dullard.tasks[name],
@@ -121,6 +123,8 @@ if (cli.flags.list) {
 
             log.info("cli", "");
         });
+
+    process.exit();
 }
 
 // Merge non-CLI specific args into the dullard config
@@ -133,7 +137,7 @@ if (cli.flags.config) {
     log.info("cli", "");
     log.info("cli", JSON.stringify(omit(dullard.config, "dullard"), null, 4));
 
-    return false;
+    process.exit();
 }
 
 if (!cli.flags.silent) {
@@ -142,7 +146,7 @@ if (!cli.flags.silent) {
     );
 }
 
-return dullard.start(cli.input)
+dullard.start(cli.input)
     .catch(() => {
         // Don't exit immediately, want to make sure any output
         // has a chance to be written first

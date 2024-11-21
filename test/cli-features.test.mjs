@@ -1,15 +1,19 @@
-"use strict";
+import path              from "node:path";
+import { fileURLToPath } from "node:url";
 
-var path = require("path"),
-    
-    tester = require("cli-tester"),
-    
-    tests = require("./lib/tests.js");
+import { afterEach, describe, it, expect } from "vitest";
+
+import tester from "cli-tester";
+
+import * as tests from "./lib/tests.mjs";
+
+const __dirname = fileURLToPath(import.meta.url);
+const dullard   = path.resolve(__dirname, "../../bin/cli");
 
 describe("Dullard", function() {
     describe("CLI", function() {
-        var cli = tester.bind(tester, require.resolve("../bin/cli.js")),
-            cwd = process.cwd();
+        const cli = tester.bind(tester, dullard);
+        const cwd = process.cwd();
 
         afterEach(() => process.chdir(cwd));
 

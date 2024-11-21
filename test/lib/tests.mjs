@@ -1,41 +1,37 @@
-"use strict";
+import { expect } from "vitest";
 
-var assert = require("assert"),
+import dedent   from "dedent";
+import calmcard from "calmcard";
 
-    dedent   = require("dedent"),
-    calmcard = require("calmcard"),
-    
-    crlf     = /\r\n/g,
-    trailing = /\s+\n/g;
+const crlf     = /\r\r/g;
+const trailing = /\s+\n/g;
 
 function clean(str) {
     return dedent(str).replace(crlf, "\n").replace(trailing, "\n");
-};
+}
 
-function wildcard(one, two) {
-    var result;
-    
+function wildcard(one, two) {    
     one = clean(one);
     two = clean(two);
     
     // wildcard comparison
-    result = calmcard(two, one);
+    const result = calmcard(two, one);
 
     // If wildcard match failed show nice diff output
     // it won't respect wildcard chars, but not much to do about that
-    if(!result) {
+    if (!result) {
         expect(one).toBe(two);
     }
 }
 
-exports.failure = function(result, text) {
+export function failure(result, text) {
     expect(result.code).toBe(1);
 
     wildcard(result.stderr, text);
-};
+}
 
-exports.success = function(result, text) {
+export function success(result, text) {
     expect(result.code).toBe(0);
 
     wildcard(result.stderr, text);
-};
+}

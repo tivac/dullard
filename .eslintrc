@@ -1,5 +1,8 @@
 {
     "extends": "arenanet",
+    "parserOptions": {
+        "ecmaVersion": 2022
+    },
     "env": {
       "node": true
     },
@@ -12,6 +15,12 @@
             "files": [ "test/**/*.js" ],
             "env": {
                 "jest": true
+            }
+        },
+        {
+            "files": [ "test/**/*.mjs" ],
+            "parserOptions": {
+                "sourceType": "module"
             }
         }
     ]

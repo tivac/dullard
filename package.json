@@ -10,12 +10,12 @@
     "lint": "eslint .",
     "preview": "changes || true",
     "release": "npm version -m \"v%s\"",
-    "test": "jest",
+    "test": "vitest --watch=false",
     "posttest": "npm run lint",
     "preversion": "npm test",
     "version": "changes",
     "postversion": "git push --follow-tags",
-    "watch": "jest --watch"
+    "watch": "vitest"
   },
   "repository": {
     "type": "git",
@@ -34,9 +34,9 @@
     "eslint": "8.12",
     "eslint-config-arenanet": "^5.11.2",
     "husky": "^0.14.3",
-    "jest": "^21.2.1",
     "nyc": "^10.2.0",
-    "validate-commit-msg": "^2.8.2"
+    "validate-commit-msg": "^2.8.2",
+    "vitest": "^2.1.5"
   },
   "dependencies": {
     "glob": "^7.0.0",
