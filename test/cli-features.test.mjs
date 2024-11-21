@@ -1,7 +1,7 @@
 import path              from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { afterEach, describe, it, expect } from "vitest";
+import { afterEach, describe, it } from "vitest";
 
 import tester from "cli-tester";
 
