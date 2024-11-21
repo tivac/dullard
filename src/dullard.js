@@ -1,6 +1,6 @@
 "use strict";
 
-var path = require("path"),
+let path = require("path"),
     util = require("util"),
     
     EventEmitter = require("events"),
@@ -21,8 +21,8 @@ var path = require("path"),
 Dullard = function() {
     EventEmitter.call(this);
 
-    this.tasks   = {};
-    this.steps   = {};
+    this.tasks = {};
+    this.steps = {};
     
     this.config = {
         cwd   : process.cwd(),
@@ -41,7 +41,7 @@ util.inherits(Dullard, EventEmitter);
 
 // Fire a logging event, generally caught by CLI module & logged
 Dullard.prototype.log = function(lvl, message) {
-    var level = message ? lvl : "info";
+    const level = message ? lvl : "info";
 
     this.emit("log", {
         level : level,
@@ -51,11 +51,11 @@ Dullard.prototype.log = function(lvl, message) {
 };
 
 Dullard.prototype.run = function(name) {
-    var task, result;
+    let task, result;
     
-    if(name.name) {
+    if (name.name) {
         this._current = name.name;
-    } else if(typeof name === "string") {
+    } else if (typeof name === "string") {
         this._current = name;
     } else {
         this._current = "no-name";
@@ -63,14 +63,14 @@ Dullard.prototype.run = function(name) {
 
     task = loadTask(this.tasks, name);
 
-    if(!task) {
+    if (!task) {
         throw new Error(`Unknown task: ${name}`);
     }
 
     this.log("verbose", "started");
     
     // No callback fn, so either sync or a promise
-    if(task.length < 2) {
+    if (task.length < 2) {
         result = task(this.config);
 
         // Ensure a promise is returned
@@ -89,21 +89,21 @@ Dullard.prototype.run = function(name) {
 };
 
 Dullard.prototype.series = function(name) {
-    var steps;
+    let steps;
 
-    if(name in this.steps) {
+    if (name in this.steps) {
         steps = this.steps[name];
     } else {
         steps = name;
     }
 
-    if(!Array.isArray(steps)) {
+    if (!Array.isArray(steps)) {
         steps = [ steps ];
     }
 
     this._current = name.toString();
 
-    if(steps.length > 1) {
+    if (steps.length > 1) {
         this.log("verbose", "Running");
         this.log("verbose", `    ${steps.join("\n    ")}`);
     }
@@ -111,10 +111,10 @@ Dullard.prototype.series = function(name) {
     return series(
         steps,
         (task) => {
-            var start = Date.now();
+            const start = Date.now();
 
             // Support aliases by recursing down the rabbit hole
-            if(task in this.steps) {
+            if (task in this.steps) {
                 return this.series(task);
             }
 
@@ -135,10 +135,10 @@ Dullard.prototype.series = function(name) {
 
 // Public API
 Dullard.prototype.start = function(steps) {
-    var start = Date.now();
+    const start = Date.now();
 
     // select "default" step if steps is empty/doesn't exist
-    if(!steps || !steps.length) {
+    if (!steps || !steps.length) {
         steps = "default";
     }
 
@@ -158,7 +158,7 @@ Dullard.prototype.start = function(steps) {
     .catch((error) => {
         this.log("error", `build failed in ${time(Date.now() - start)}`);
 
-        if(error instanceof Error) {
+        if (error instanceof Error) {
             this.log("error", error.message);
             this.log("silly", error.stack);
         } else {
@@ -170,10 +170,10 @@ Dullard.prototype.start = function(steps) {
 };
 
 Dullard.prototype.addConfig = function(config) {
-    var cwd = this.config.cwd,
+    let cwd = this.config.cwd,
         file;
     
-    if(typeof config === "string") {
+    if (typeof config === "string") {
         file   = config;
         cwd    = path.dirname(file);
         config = loadConfig(config);
@@ -183,14 +183,14 @@ Dullard.prototype.addConfig = function(config) {
     
     // Supporting merging in other .dullfiles, needs to happen before
     // this config gets merged to preserve expected merging order
-    if(config.includes) {
+    if (config.includes) {
         config.includes
             .map((include) => path.resolve(cwd, include))
             .forEach((include) => this.addConfig(include));
     }
 
     // Dirs get added & checked for tasks
-    if(config.dirs) {
+    if (config.dirs) {
         config.dirs.forEach((dir) =>
             this.addDir(path.resolve(cwd, dir))
         );
@@ -216,7 +216,7 @@ Dullard.prototype.addDir = function(dir) {
 
 // Return a copy of this dullard instance (mostly used for sub-tasks)
 Dullard.prototype.clone = function() {
-    var clone = new Dullard();
+    const clone = new Dullard();
 
     clone.addConfig(this.config);
 
@@ -224,7 +224,7 @@ Dullard.prototype.clone = function() {
 };
 
 Dullard.prototype.children = function(steps) {
-    var clone = this.clone();
+    const clone = this.clone();
 
     this.log("verbose", "Running children tasks");
 

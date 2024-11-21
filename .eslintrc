@@ -1,0 +1,17 @@
+{
+    "extends": "arenanet",
+    "env": {
+      "node": true
+    },
+    "rules": {
+        "arenanet/must-assign-out-of-place-array-method": "off"
+    },
+    "overrides": [
+        {
+            "files": [ "test/**/*.js" ],
+            "env": {
+                "jest": true
+            }
+        }
+    ]
+}

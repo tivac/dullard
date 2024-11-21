@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-var path = require("path"),
+let path = require("path"),
 
     omit    = require("lodash.omit"),
     values  = require("lodash.values"),
@@ -57,7 +57,7 @@ cli = meow(`
 updated(cli);
 
 [ "silent", "verbose", "silly", "log" ].find((lvl) => {
-    if(!cli.flags[lvl]) {
+    if (!cli.flags[lvl]) {
         return false;
     }
 
@@ -70,7 +70,7 @@ uppity(".dullfile", { nocase : true })
     .forEach((file) => dullard.addConfig(file));
     
 // Load tasks from any CLI-specified dirs
-if(cli.flags.dirs) {
+if (cli.flags.dirs) {
     config = {
         dirs : (Array.isArray(cli.flags.dirs) ?
             cli.flags.dirs :
@@ -84,15 +84,15 @@ if(cli.flags.dirs) {
     dullard.addConfig(config);
 }
 
-if(cli.flags.list) {
-    if(dullard.config.files.length) {
+if (cli.flags.list) {
+    if (dullard.config.files.length) {
         log.info("cli", "Config files loaded:");
         log.info("cli", "");
         log.info("cli", `    ${dullard.config.files.map((file) => sep(file)).join("\n    ")}`);
         log.info("cli", "");
     }
     
-    if(!Object.keys(dullard.tasks).length) {
+    if (!Object.keys(dullard.tasks).length) {
         return log.error("cli", "No tasks available.");
     }
 
@@ -102,20 +102,20 @@ if(cli.flags.list) {
     return Object.keys(dullard.tasks)
         .sort()
         .forEach((name) => {
-            var task   = dullard.tasks[name],
+            let task = dullard.tasks[name],
                 source = task.source;
 
             try {
-                task = require(source);
+                task        = require(source);
                 task.source = source;
-            } catch(e) {
+            } catch (e) {
                 // just ignore the error, since it doesn't really matter
             }
 
             log.info("cli", `name   : ${name}`);
             log.info("cli", `source : .${sep(path.sep + path.relative(process.cwd(), task.source))}`);
 
-            if(task.description) {
+            if (task.description) {
                 log.info("cli", `desc   : ${task.description}`);
             }
 
@@ -128,7 +128,7 @@ config = omit(cli.flags, Object.keys(aliases).concat(values(aliases)));
 
 dullard.addConfig(config);
 
-if(cli.flags.config) {
+if (cli.flags.config) {
     log.info("cli", "Generated config object:");
     log.info("cli", "");
     log.info("cli", JSON.stringify(omit(dullard.config, "dullard"), null, 4));
@@ -136,7 +136,7 @@ if(cli.flags.config) {
     return false;
 }
 
-if(!cli.flags.silent) {
+if (!cli.flags.silent) {
     dullard.on("log", (args) =>
         log.log.apply(log, [ args.level, args.task || "dullard" ].concat(args.body))
     );

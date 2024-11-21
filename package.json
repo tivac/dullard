@@ -31,8 +31,8 @@
     "calmcard": "^0.1.1",
     "cli-tester": "^2.0.0",
     "dedent": "^0.7.0",
-    "eslint": "^4.10.0",
-    "eslint-config-arenanet": "^3.0.0",
+    "eslint": "8.12",
+    "eslint-config-arenanet": "^5.11.2",
     "husky": "^0.14.3",
     "jest": "^21.2.1",
     "nyc": "^10.2.0",
@@ -51,13 +51,6 @@
     "strip-json-comments": "^2.0.1",
     "update-notifier": "^2.1.0",
     "uppity": "~0.1.1"
-  },
-  "eslintConfig": {
-    "extends": "arenanet",
-    "env": {
-      "node": true,
-      "jest": true
-    }
   },
   "nyc": {
     "reporter": [

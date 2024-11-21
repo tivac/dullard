@@ -1,12 +1,12 @@
 "use strict";
 
-var fs = require("fs"),
-    path = require("path"),
+const fs   = require("fs");
+    const path = require("path");
 
-    strip = require("strip-json-comments");
+    const strip = require("strip-json-comments");
 
-module.exports  = function(file) {
-    var base = path.dirname(file),
+module.exports = function(file) {
+    let base = path.dirname(file),
         contents, obj;
 
     contents = fs.readFileSync(file, "utf8");
@@ -15,11 +15,11 @@ module.exports  = function(file) {
     try {
         contents = strip(contents);
         obj      = JSON.parse(contents);
-    } catch(e) {
+    } catch (e) {
         obj = require(file);
     }
 
-    if(obj.dirs) {
+    if (obj.dirs) {
         obj.dirs = obj.dirs.map(function(dir) {
             return path.resolve(base, dir);
         });
