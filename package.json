@@ -1,9 +1,8 @@
 {
   "name": "dullard",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Let the computers do the boring stuff.",
-  "bin": "./bin/cli.js",
-  "main": "./lib/build.js",
+  "bin": "./bin/cli.mjs",
   "scripts": {
     "commitmsg": "validate-commit-msg",
     "cover": "nyc jest --cache",
