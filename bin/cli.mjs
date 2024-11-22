@@ -2,7 +2,6 @@
 import path from "node:path";
 
 import omit    from "lodash.omit";
-import values  from "lodash.values";
 import log     from "npmlog";
 import uppity  from "uppity";
 import meow    from "meow";
@@ -12,35 +11,35 @@ import Dullard from "../src/dullard.mjs";
     
 const dullard = new Dullard();
 const flags   = {
-        config : {
-            type      : "boolean",
-            shortFlag : "c"
-        },
-        dirs : {
-            type      : "string",
-            shortFlag : "d"
-        },
-        list : {
-            type      : "boolean",
-            shortFlag : "l"
-        },
-        log : {
-            type      : "string",
-            shortFlag : "g"
-        },
-        silent : {
-            type      : "boolean",
-            shortFlag : "s"
-        },
-        verbose : {
-            type      : "boolean",
-            shortFlag : "v"
-        },
-        silly : {
-            type      : "boolean",
-            shortFlag : "y"
-        }
-    };
+    config : {
+        type      : "boolean",
+        shortFlag : "c"
+    },
+    dirs : {
+        type      : "string",
+        shortFlag : "d"
+    },
+    list : {
+        type      : "boolean",
+        shortFlag : "l"
+    },
+    log : {
+        type      : "string",
+        shortFlag : "g"
+    },
+    silent : {
+        type      : "boolean",
+        shortFlag : "s"
+    },
+    verbose : {
+        type      : "boolean",
+        shortFlag : "v"
+    },
+    silly : {
+        type      : "boolean",
+        shortFlag : "y"
+    }
+};
     
 let config;
 
@@ -62,7 +61,6 @@ const cli = meow(`
         --silly,   -y  REALLY verbose logging
         --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent
 `, {
-    // aliases : flags,
     flags,
 
     default : {

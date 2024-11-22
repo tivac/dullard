@@ -8,7 +8,7 @@ import tester from "cli-tester";
 import * as tests from "./lib/tests.mjs";
 
 const __dirname = fileURLToPath(import.meta.url);
-const dullard   = path.resolve(__dirname, "../../bin/cli");
+const dullard   = path.resolve(__dirname, "../../bin/cli.mjs");
 
 describe("Dullard", function() {
     describe("CLI", function() {
