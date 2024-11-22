@@ -2,15 +2,17 @@
 
 module.exports = {
     one : 1,
-    
+
     steps : {
-        default : function(config) {
-            var clone = config.dullard.clone();
+        default : async function(config, done) {
+            const clone = await config.dullard.clone();
 
             clone.config.one = 2;
 
             config.log(config.one);
             config.log(clone.config.one);
+
+            done();
         }
     }
 };
