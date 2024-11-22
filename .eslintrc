@@ -12,13 +12,7 @@
     },
     "overrides": [
         {
-            "files": [ "test/**/*.js" ],
-            "env": {
-                "jest": true
-            }
-        },
-        {
-            "files": [ "test/**/*.mjs" ],
+            "files": [ "**/*.mjs" ],
             "parserOptions": {
                 "sourceType": "module"
             }
