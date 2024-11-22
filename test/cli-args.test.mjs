@@ -20,12 +20,12 @@ describe("Dullard", function() {
         afterEach(() => {
             process.chdir(cwd);
         });
-        
+
         describe("--help", function() {
             it("should show help", async () => {
                 await cli("--help").then((out) => {
                     expect(out.code).toBe(0);
-                    
+
                     expect(out.stdout).toMatchSnapshot();
                 });
             });
@@ -34,7 +34,7 @@ describe("Dullard", function() {
         describe("--list", function() {
             it("should describe available tasks", async () => {
                 process.chdir("./test/specimens/config-dirs");
-                
+
                 await cli("--list").then((out) =>
                     tests.success(out, `
                         info cli Config files loaded:
@@ -121,7 +121,7 @@ describe("Dullard", function() {
 
             it("should support --verbose", async () => {
                 process.chdir("./test/specimens/config-json");
-                
+
                 await cli("--verbose").then((out) =>
                     tests.success(out, `
                         verb dullard Build starting
@@ -134,7 +134,7 @@ describe("Dullard", function() {
 
             it("should support --log=verbose", async () => {
                 process.chdir("./test/specimens/config-json");
-                
+
                 await cli("--log=verbose").then((out) =>
                     tests.success(out, `
                         verb dullard Build starting
@@ -145,7 +145,7 @@ describe("Dullard", function() {
                 );
             });
         });
-        
+
         describe("--dirs/-d", function() {
             it("should support comma-separated --dirs via argv", async () => {
                 await cli(

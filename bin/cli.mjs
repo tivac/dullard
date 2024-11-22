@@ -6,9 +6,9 @@ import log     from "npmlog";
 import uppity  from "uppity";
 import meow    from "meow";
 import updated from "update-notifier";
-    
+
 import Dullard from "../src/dullard.mjs";
-    
+
 const dullard = new Dullard();
 const flags   = {
     config : {
@@ -16,8 +16,9 @@ const flags   = {
         shortFlag : "c"
     },
     dirs : {
-        type      : "string",
-        shortFlag : "d"
+        type       : "string",
+        shortFlag  : "d",
+        isMultiple : true
     },
     list : {
         type      : "boolean",
@@ -40,7 +41,7 @@ const flags   = {
         shortFlag : "y"
     }
 };
-    
+
 let config;
 
 function sep(str) {
@@ -86,17 +87,13 @@ await Promise.all(
         .reverse()
         .map((file) => dullard.addConfig(file))
 );
-    
+
 // Load tasks from any CLI-specified dirs
-if (cli.flags.dirs) {
+if (cli.flags.dirs.length) {
     config = {
-        dirs : (Array.isArray(cli.flags.dirs) ?
-            cli.flags.dirs :
-            cli.flags.dirs.split(",")
-        )
-        .map((dir) => dir.trim())
+        dirs : cli.flags.dirs.flatMap((dir) => dir.split(",").map((d) => d.trim()))
     };
-    
+
     log.verbose("cli", "Adding config: %j", config);
 
     await dullard.addConfig(config);
@@ -109,7 +106,7 @@ if (cli.flags.list) {
         log.info("cli", `    ${dullard.config.files.map((file) => sep(file)).join("\n    ")}`);
         log.info("cli", "");
     }
-    
+
     if (!Object.keys(dullard.tasks).length) {
         log.error("cli", "No tasks available.");
 
@@ -119,32 +116,30 @@ if (cli.flags.list) {
     log.info("cli", "Available Tasks:");
     log.info("cli", "");
 
-    await Promise.all(
-        Object.keys(dullard.tasks)
-            .sort()
-            .map(async (name) => {
-                let task     = dullard.tasks[name];
-                const source = task.source;
+    const alphabetizedTasks = Object.keys(dullard.tasks).sort();
 
-                try {
-                    task = await import(new URL(`file://${source}`)).then((module) => ({
-                        ...module,
-                        source
-                    }));
-                } catch (e) {
-                    // just ignore the error, since it doesn't really matter
-                }
+    for await (const name of alphabetizedTasks) {
+        let task     = dullard.tasks[name];
+        const source = task.source;
 
-                log.info("cli", `name   : ${name}`);
-                log.info("cli", `source : .${sep(path.sep + path.relative(process.cwd(), task.source))}`);
+        try {
+            task = await import(new URL(`file://${source}`)).then((module) => ({
+                ...module,
+                source
+            }));
+        } catch (e) {
+            // just ignore the error, since it doesn't really matter
+        }
 
-                if (task.description) {
-                    log.info("cli", `desc   : ${task.description}`);
-                }
+        log.info("cli", `name   : ${name}`);
+        log.info("cli", `source : .${sep(path.sep + path.relative(process.cwd(), task.source))}`);
 
-                log.info("cli", "");
-            })
-    );
+        if (task.description) {
+            log.info("cli", `desc   : ${task.description}`);
+        }
+
+        log.info("cli", "");
+    }
 
     process.exit();
 }

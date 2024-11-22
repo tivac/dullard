@@ -18,7 +18,7 @@ function Dullard() {
 
     this.tasks = {};
     this.steps = {};
-    
+
     this.config = {
         cwd   : process.cwd(),
         log   : this.log.bind(this),
@@ -61,7 +61,7 @@ Dullard.prototype.run = async function(name) {
     }
 
     this.log("verbose", "started");
-    
+
     // No callback fn, so either sync or a promise
     if (task.length < 2) {
         const result = task(this.config);
@@ -119,7 +119,7 @@ Dullard.prototype.series = function(name) {
     .then(() => (this._current = null))
     .catch((error) => {
         this.log("error", "failed");
-        
+
         this._current = null;
 
         throw error;
@@ -165,7 +165,7 @@ Dullard.prototype.start = function(steps) {
 Dullard.prototype.addConfig = async function(config) {
     let cwd = this.config.cwd,
         file;
-    
+
     if (typeof config === "string") {
         file   = config;
         cwd    = path.dirname(file);
@@ -173,7 +173,7 @@ Dullard.prototype.addConfig = async function(config) {
 
         this.config.files.push(file);
     }
-    
+
     // Supporting merging in other .dullfiles, needs to happen before
     // this config gets merged to preserve expected merging order
     if (config.includes) {
@@ -193,9 +193,9 @@ Dullard.prototype.addConfig = async function(config) {
             this.addDir(path.resolve(cwd, dir))
         );
     }
-    
+
     config.steps = parseSteps(config);
-    
+
     // Merge this config into existing config
     // Ignoring keys we treated specially up above
     this.config = mergeConfigs(
