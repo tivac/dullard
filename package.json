@@ -26,31 +26,31 @@
     "url": "https://github.com/tivac/dullard/issues"
   },
   "devDependencies": {
-    "@studio/changes": "^1.1.0",
+    "@studio/changes": "^3.0.0",
     "calmcard": "^0.1.1",
     "cli-tester": "^2.0.0",
-    "dedent": "^0.7.0",
+    "dedent": "^1.5.3",
     "eslint": "8.12",
     "eslint-config-arenanet": "^5.11.2",
-    "husky": "^0.14.3",
+    "husky": "^9.1.7",
     "minimatch": "^10.0.1",
-    "nyc": "^10.2.0",
-    "validate-commit-msg": "^2.8.2",
+    "nyc": "^17.1.0",
+    "validate-commit-msg": "^2.14.0",
     "vitest": "^2.1.5"
   },
   "dependencies": {
     "fast-glob": "^3.3.2",
-    "humanize-duration": "^3.9.1",
-    "is-promise": "^2.1.0",
-    "lodash.mergewith": "^4.6.0",
+    "humanize-duration": "^3.32.1",
+    "is-promise": "^4.0.0",
+    "lodash.mergewith": "^4.6.2",
     "lodash.omit": "^4.5.0",
     "lodash.values": "^4.3.0",
     "meow": "^13.2.0",
-    "npmlog": "^4.0.2",
-    "p-each-series": "^1.0.0",
-    "strip-json-comments": "^2.0.1",
-    "update-notifier": "^2.1.0",
-    "uppity": "~0.1.1"
+    "npmlog": "^7.0.1",
+    "p-each-series": "^3.0.0",
+    "strip-json-comments": "^5.0.1",
+    "update-notifier": "^7.3.1",
+    "uppity": "^2.0.1"
   },
   "nyc": {
     "reporter": [
