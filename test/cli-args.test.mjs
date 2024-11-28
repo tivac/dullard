@@ -1,33 +1,41 @@
-"use strict";
 
-var path   = require("path"),
-    
-    tester = require("cli-tester"),
-    
-    tests = require("./lib/tests.js");
+
+import path              from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { afterEach, describe, it, expect } from "vitest";
+
+import tester from "cli-tester";
+
+import * as tests from "./lib/tests.mjs";
+
+const __dirname = fileURLToPath(import.meta.url);
+const dullard   = path.resolve(__dirname, "../../bin/cli.mjs");
 
 describe("Dullard", function() {
     describe("CLI", function() {
-        var cli = tester.bind(tester, require.resolve("../bin/cli.js")),
-            cwd = process.cwd();
+        const cli = tester.bind(tester, dullard);
+        const cwd = process.cwd();
 
-        afterEach(() => process.chdir(cwd));
-        
+        afterEach(() => {
+            process.chdir(cwd);
+        });
+
         describe("--help", function() {
-            it("should show help", function() {
-                return cli("--help").then((out) => {
+            it("should show help", async () => {
+                await cli("--help").then((out) => {
                     expect(out.code).toBe(0);
-                    
+
                     expect(out.stdout).toMatchSnapshot();
                 });
             });
         });
 
         describe("--list", function() {
-            it("should describe available tasks", function() {
+            it("should describe available tasks", async () => {
                 process.chdir("./test/specimens/config-dirs");
-                
-                return cli("--list").then((out) =>
+
+                await cli("--list").then((out) =>
                     tests.success(out, `
                         info cli Config files loaded:
                         info cli
@@ -47,10 +55,10 @@ describe("Dullard", function() {
                 );
             });
 
-            it("should handle no tasks state", function() {
+            it("should handle no tasks state", async () => {
                 process.chdir("./test/specimens/config-blank");
 
-                return cli("--list").then((out) =>
+                await cli("--list").then((out) =>
                     tests.success(out, `
                         info cli Config files loaded:
                         info cli
@@ -63,26 +71,26 @@ describe("Dullard", function() {
         });
 
         describe("--log/--silent/--verbose/--silly", function() {
-            it("should support --silent", function() {
+            it("should support --silent", async () => {
                 process.chdir("./test/specimens/config-json");
 
-                return cli("--silent").then((out) => {
+                await cli("--silent").then((out) => {
                     expect(out).toMatchSnapshot();
                 });
             });
 
-            it("should support --log=silent", function() {
+            it("should support --log=silent", async () => {
                 process.chdir("./test/specimens/config-json");
 
-                return cli("--log=silent").then((out) => {
+                await cli("--log=silent").then((out) => {
                     expect(out).toMatchSnapshot();
                 });
             });
 
-            it("should support --silly", function() {
+            it("should support --silly", async () => {
                 process.chdir("./test/specimens/config-json");
 
-                return cli("--silly").then((out) =>
+                await cli("--silly").then((out) =>
                     tests.success(out, `
                         verb dullard Build starting
                         sill dullard Loaded configs
@@ -95,10 +103,10 @@ describe("Dullard", function() {
                 );
             });
 
-            it("should support --log=silly", function() {
+            it("should support --log=silly", async () => {
                 process.chdir("./test/specimens/config-json");
 
-                return cli("--log=silly").then((out) =>
+                await cli("--log=silly").then((out) =>
                     tests.success(out, `
                         verb dullard Build starting
                         sill dullard Loaded configs
@@ -111,10 +119,10 @@ describe("Dullard", function() {
                 );
             });
 
-            it("should support --verbose", function() {
+            it("should support --verbose", async () => {
                 process.chdir("./test/specimens/config-json");
-                
-                return cli("--verbose").then((out) =>
+
+                await cli("--verbose").then((out) =>
                     tests.success(out, `
                         verb dullard Build starting
                         verb b started
@@ -124,10 +132,10 @@ describe("Dullard", function() {
                 );
             });
 
-            it("should support --log=verbose", function() {
+            it("should support --log=verbose", async () => {
                 process.chdir("./test/specimens/config-json");
-                
-                return cli("--log=verbose").then((out) =>
+
+                await cli("--log=verbose").then((out) =>
                     tests.success(out, `
                         verb dullard Build starting
                         verb b started
@@ -137,10 +145,10 @@ describe("Dullard", function() {
                 );
             });
         });
-        
+
         describe("--dirs/-d", function() {
-            it("should support comma-separated --dirs via argv", function() {
-                return cli(
+            it("should support comma-separated --dirs via argv", async () => {
+                await cli(
                     "--dirs=./test/specimens/tasks-a,./test/specimens/tasks-b",
                     "--list"
                 )
@@ -165,8 +173,8 @@ describe("Dullard", function() {
                 );
             });
 
-            it("should support multiple -d params via argv", function() {
-                return cli(
+            it("should support multiple -d params via argv", async () => {
+                await cli(
                     "-d ./test/specimens/tasks-a",
                     "-d ./test/specimens/tasks-b",
                     "--list"
@@ -194,10 +202,10 @@ describe("Dullard", function() {
         });
 
         describe("--config/-c", function() {
-            it("should dump the combined config values", function() {
+            it("should dump the combined config values", async () => {
                 process.chdir("./test/specimens/config-json");
 
-                return cli("--config").then((out) =>
+                await cli("--config").then((out) =>
                     tests.success(out, `
                         info cli Generated config object:
                         info cli

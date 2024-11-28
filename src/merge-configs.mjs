@@ -1,9 +1,7 @@
-"use strict";
-
-var merge  = require("lodash.mergewith");
+import merge from "lodash.mergewith";
 
 // Merge two configs, except arrays
-module.exports = function(one, two) {
+export default function mergeConfigs(one, two) {
     return merge(
         {},
         one,
@@ -13,4 +11,4 @@ module.exports = function(one, two) {
         // see https://github.com/tivac/dullard/issues/15
         (a, b) => (Array.isArray(b) ? b : undefined)
     );
-};
+}

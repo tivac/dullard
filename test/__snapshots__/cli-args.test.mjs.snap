@@ -1,0 +1,34 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Dullard > CLI > --help > should show help 1`] = `
+"Let the computers do the boring stuff.
+
+  Usage
+      $ dullard <options> <task>, ..., <taskN>
+
+  Options
+      --help         Show this help
+      --dirs,    -d  Specify directories to load tasks from
+      --list,    -l  Show a list of available tasks
+      --config,  -c  Output final assembled config for debugging
+      --silent,  -s  No output
+      --verbose, -v  Verbose logging
+      --silly,   -y  REALLY verbose logging
+      --log,     -g  Specify log level, one of silly, verbose, info, warn, error, & silent"
+`;
+
+exports[`Dullard > CLI > --log/--silent/--verbose/--silly > should support --log=silent 1`] = `
+{
+  "code": 0,
+  "stderr": "",
+  "stdout": "",
+}
+`;
+
+exports[`Dullard > CLI > --log/--silent/--verbose/--silly > should support --silent 1`] = `
+{
+  "code": 0,
+  "stderr": "",
+  "stdout": "",
+}
+`;

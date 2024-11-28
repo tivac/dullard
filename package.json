@@ -1,21 +1,20 @@
 {
   "name": "dullard",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Let the computers do the boring stuff.",
-  "bin": "./bin/cli.js",
-  "main": "./lib/build.js",
+  "bin": "./bin/cli.mjs",
   "scripts": {
     "commitmsg": "validate-commit-msg",
     "cover": "nyc jest --cache",
     "lint": "eslint .",
     "preview": "changes || true",
     "release": "npm version -m \"v%s\"",
-    "test": "jest",
+    "test": "vitest --watch=false",
     "posttest": "npm run lint",
     "preversion": "npm test",
     "version": "changes",
     "postversion": "git push --follow-tags",
-    "watch": "jest --watch"
+    "watch": "vitest"
   },
   "repository": {
     "type": "git",
@@ -27,37 +26,31 @@
     "url": "https://github.com/tivac/dullard/issues"
   },
   "devDependencies": {
-    "@studio/changes": "^1.1.0",
+    "@studio/changes": "^3.0.0",
     "calmcard": "^0.1.1",
     "cli-tester": "^2.0.0",
-    "dedent": "^0.7.0",
-    "eslint": "^4.10.0",
-    "eslint-config-arenanet": "^3.0.0",
-    "husky": "^0.14.3",
-    "jest": "^21.2.1",
-    "nyc": "^10.2.0",
-    "validate-commit-msg": "^2.8.2"
+    "dedent": "^1.5.3",
+    "eslint": "8.12",
+    "eslint-config-arenanet": "^5.11.2",
+    "husky": "^9.1.7",
+    "minimatch": "^10.0.1",
+    "nyc": "^17.1.0",
+    "validate-commit-msg": "^2.14.0",
+    "vitest": "^2.1.5"
   },
   "dependencies": {
-    "glob": "^7.0.0",
-    "humanize-duration": "^3.9.1",
-    "is-promise": "^2.1.0",
-    "lodash.mergewith": "^4.6.0",
+    "fast-glob": "^3.3.2",
+    "humanize-duration": "^3.32.1",
+    "is-promise": "^4.0.0",
+    "lodash.mergewith": "^4.6.2",
     "lodash.omit": "^4.5.0",
     "lodash.values": "^4.3.0",
-    "meow": "^3.7.0",
-    "npmlog": "^4.0.2",
-    "p-each-series": "^1.0.0",
-    "strip-json-comments": "^2.0.1",
-    "update-notifier": "^2.1.0",
-    "uppity": "~0.1.1"
-  },
-  "eslintConfig": {
-    "extends": "arenanet",
-    "env": {
-      "node": true,
-      "jest": true
-    }
+    "meow": "^13.2.0",
+    "npmlog": "^7.0.1",
+    "p-each-series": "^3.0.0",
+    "strip-json-comments": "^5.0.1",
+    "update-notifier": "^7.3.1",
+    "uppity": "^2.0.1"
   },
   "nyc": {
     "reporter": [

@@ -1,0 +1,21 @@
+{
+    "extends": "arenanet",
+    "parserOptions": {
+        "ecmaVersion": 2022
+    },
+    "env": {
+      "node": true
+    },
+    "rules": {
+        "arenanet/must-assign-out-of-place-array-method": "off",
+        "prefer-const": "warn"
+    },
+    "overrides": [
+        {
+            "files": [ "**/*.mjs" ],
+            "parserOptions": {
+                "sourceType": "module"
+            }
+        }
+    ]
+}

@@ -1,15 +1,19 @@
-"use strict";
+import path              from "node:path";
+import { fileURLToPath } from "node:url";
 
-var path = require("path"),
-    
-    tester = require("cli-tester"),
-    
-    tests = require("./lib/tests.js");
+import { afterEach, describe, it } from "vitest";
+
+import tester from "cli-tester";
+
+import * as tests from "./lib/tests.mjs";
+
+const __dirname = fileURLToPath(import.meta.url);
+const dullard   = path.resolve(__dirname, "../../bin/cli.mjs");
 
 describe("Dullard", function() {
     describe("CLI", function() {
-        var cli = tester.bind(tester, require.resolve("../bin/cli.js")),
-            cwd = process.cwd();
+        const cli = tester.bind(tester, dullard);
+        const cwd = process.cwd();
 
         afterEach(() => process.chdir(cwd));
 
@@ -74,7 +78,8 @@ describe("Dullard", function() {
                         info cli         "*.dullfile"
                         info cli     ],
                         info cli     "nested": {
-                        info cli         "config-json": "argv"
+                        info cli         "config-json": "argv",
+                        info cli         "configJson": "argv"
                         info cli     },
                         info cli     "config-json": "config-json",
                         info cli     "steps": {
@@ -91,7 +96,7 @@ describe("Dullard", function() {
         describe("argv tasks", function() {
             it("should support a single task", function() {
                 process.chdir("./test/specimens/config-json");
-                
+
                 return cli(
                     "b-async"
                 )
@@ -105,7 +110,7 @@ describe("Dullard", function() {
 
             it("should support multiple tasks", function() {
                 process.chdir("./test/specimens/config-json");
-                
+
                 return cli(
                     "b-async",
                     "b"
@@ -121,7 +126,7 @@ describe("Dullard", function() {
 
             it("should support repeated tasks", function() {
                 process.chdir("./test/specimens/config-json");
-                
+
                 return cli(
                     "b-async",
                     "b",
@@ -139,7 +144,7 @@ describe("Dullard", function() {
 
             it("should return an error code on invalid tasks", function() {
                 process.chdir("./test/specimens/config-json");
-                
+
                 return cli(
                     "fooga"
                 )
@@ -156,7 +161,7 @@ describe("Dullard", function() {
         describe("failures", function() {
             it("should complain if no tasks are available", function() {
                 process.chdir("./test/specimens/config-blank");
-                
+
                 return cli().then((out) =>
                     tests.failure(out, `
                         ERR! default failed
@@ -168,7 +173,7 @@ describe("Dullard", function() {
 
             it("should handle missing tasks", function() {
                 process.chdir("./test/specimens/config-missingtask");
-                
+
                 return cli().then((out) =>
                     tests.failure(out, `
                         info a complete in * seconds
@@ -181,7 +186,7 @@ describe("Dullard", function() {
 
             it("should support callback tasks that fail", function() {
                 process.chdir("./test/specimens/config-tasks");
-                
+
                 return cli("fail-callback").then((out) =>
                     tests.failure(out, `
                         ERR! fail-callback failed
@@ -193,7 +198,7 @@ describe("Dullard", function() {
 
             it("should support promise tasks that fail", function() {
                 process.chdir("./test/specimens/config-tasks");
-                
+
                 return cli("fail-promise").then((out) =>
                     tests.failure(out, `
                         ERR! fail-promise failed
@@ -205,7 +210,7 @@ describe("Dullard", function() {
 
             it("should support tasks that throw an error", function() {
                 process.chdir("./test/specimens/config-tasks");
-                
+
                 return cli("fail-throw").then((out) =>
                     tests.failure(out, `
                         ERR! fail-throw failed
@@ -238,7 +243,7 @@ describe("Dullard", function() {
                     `)
                 );
             });
-            
+
             it("should find a local .dullfile containing JSON", function() {
                 process.chdir("./test/specimens/config-json");
 
@@ -262,7 +267,7 @@ describe("Dullard", function() {
 
             it("should find all .dullfile files in parent directories", function() {
                 process.chdir("./test/specimens/config-deep/fooga/wooga");
-                
+
                 return cli("--list").then((out) =>
                     tests.success(out, `
                         info cli Config files loaded:
@@ -311,7 +316,7 @@ describe("Dullard", function() {
 
             it("should log when a task completes", function() {
                 process.chdir("./test/specimens/config-json");
-                
+
                 return cli().then((out) =>
                     tests.success(out, `
                         info b complete in * seconds
@@ -319,10 +324,10 @@ describe("Dullard", function() {
                     `)
                 );
             });
-            
+
             it("should support the `include` .dullfile key", function() {
                 process.chdir("./test/specimens/config-include");
-                
+
                 return cli("--list").then((out) =>
                     tests.success(out, `
                         info cli Config files loaded:
@@ -345,7 +350,7 @@ describe("Dullard", function() {
 
             it("should support task aliases", function() {
                 process.chdir("./test/specimens/config-alias");
-                
+
                 return cli().then((out) =>
                     tests.success(out, `
                         info a complete in * seconds
@@ -357,7 +362,7 @@ describe("Dullard", function() {
 
             it("should support modifying the config value", function() {
                 process.chdir("./test/specimens/config-modify");
-                
+
                 return cli().then((out) =>
                     tests.success(out, `
                         info modify complete in * seconds
